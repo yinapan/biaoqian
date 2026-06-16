@@ -1,4 +1,38 @@
-# 标乔资产搜索平台 - 系统设计文档
+# 美术标签搜索平台 - 系统设计文档
+
+## 方案概述
+
+为游戏美术团队提供模型/特效/动作/图标四大模块的资源搜索系统。
+
+**架构**：Vue 3 前端 → Nginx → FastAPI 后端 → PostgreSQL 16 + Redis 7，Docker Compose 一键部署。
+
+**数据库核心设计**：单表 `assets`，所有模块共用，标签全部存在 `tags JSONB` 列中。`tag_definitions` 表驱动前端筛选面板渲染、查询构建、LLM prompt 生成——新增标签维度只需 INSERT 一行配置，零代码改动。
+
+**搜索方式**：
+
+1. **左侧筛选面板** — 动态渲染，精确筛选，JSONB GIN 索引，< 30ms
+2. **自然语言搜索栏** — 两层解析：
+   - 第一层：内存词典匹配（< 5ms），覆盖 ~70% 查询
+   - 第二层：仅剩余未匹配文本发给 LLM（3s 超时，失败降级为模糊搜索）
+   - 结果缓存 24h，二次查询 < 5ms
+3. **数值条件** — 如"播放时长 > 5s"，支持比较运算符
+4. **模糊关键词** — pg_trgm 字符相似度匹配
+
+**性能**：10 万数据量，100 并发无瓶颈。纯筛选 < 30ms，自然语言首次 1-2s（含 LLM），缓存命中 < 5ms。
+
+**数据导入**：Excel 自动解析入库，Sheet 名映射模块，列名映射标签字段，多值自动拆数组。
+
+**二期可选升级**：
+
+| 方向 | 当前方案 | 可升级为 |
+|------|----------|----------|
+| 中文模糊搜索 | pg_trgm（按字符） | 加 zhparser 中文分词 |
+| 词典匹配算法 | 正向最长匹配 | Aho-Corasick 多模式匹配 |
+| 搜索结果高亮 | 无 | 返回命中字段高亮片段 |
+| 热门搜索/搜索历史 | search_logs 记录但未利用 | 基于日志做热门推荐 |
+| 监控告警 | 无 | Prometheus + Grafana |
+
+---
 
 ## 项目概述
 
@@ -11,7 +45,7 @@
 - **并发**：100 人同时使用
 - **搜索方式**：筛选面板精确筛选 + 自然语言解析 + 模糊关键词搜索 + 数值条件查询
 - **部署**：公司内网服务器，LLM 解析请求允许走外网
-- **一期不含**：预览图/缩略图
+- **一期预览**：模型（截图缩略图）、特效（GIF 预览），动作/图标暂不含预览
 
 ### 数据来源
 
@@ -264,11 +298,16 @@ CREATE TABLE tag_synonyms (
     field_name      VARCHAR(50) NOT NULL,
     target_value    VARCHAR(100) NOT NULL,
     synonym         VARCHAR(100) NOT NULL,
+    priority        INTEGER DEFAULT 0,
+    -- 同一个词可映射到不同字段（如"金"→color:金 和 attribute:金）
+    -- 词典匹配时按 priority DESC 取最高优先级
+    -- 命中多字段且 priority 相同时，降级为 keyword
     created_at      TIMESTAMPTZ DEFAULT NOW(),
-    UNIQUE(module_type, synonym)
+    UNIQUE(module_type, field_name, synonym)
 );
 
 CREATE INDEX idx_synonyms_module ON tag_synonyms (module_type);
+CREATE INDEX idx_synonyms_lookup ON tag_synonyms (module_type, synonym);
 ```
 
 ### 表 5：search_logs（搜索日志）
@@ -301,6 +340,25 @@ CREATE TABLE user_favorites (
     created_at      TIMESTAMPTZ DEFAULT NOW(),
     PRIMARY KEY (user_id, asset_id)
 );
+```
+
+### 表 7：import_errors（导入错误记录）
+
+```sql
+CREATE TABLE import_errors (
+    id              BIGSERIAL PRIMARY KEY,
+    batch_id        VARCHAR(64) NOT NULL,
+    module_type     SMALLINT,
+    sheet_name      VARCHAR(100),
+    row_number      INTEGER,
+    field_name      VARCHAR(50),
+    raw_value       TEXT,
+    error_type      VARCHAR(50),
+    error_message   TEXT,
+    created_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX idx_import_errors_batch ON import_errors (batch_id);
 ```
 
 ### 物化视图：tag_counts
@@ -623,7 +681,11 @@ LLM 调用失败（超时/报错/不可用）
     "total": 386,
     "page": 1, "page_size": 20,
     "parse_info": {
-        "recognized_tags": {"gender":"女","profession":["刺客"],"region":["中原"]},
+        "parsed_filters": {"gender":"女","profession":["刺客"],"region":["中原"]},
+        "effective_filters": {"gender":"男","profession":["刺客"],"region":["中原"]},
+        "ignored_tags": [
+            {"field":"gender","value":"女","reason":"overridden_by_manual_filter"}
+        ],
         "keyword": "红衣",
         "confidence": 0.9,
         "fallback": false,
@@ -640,7 +702,8 @@ LLM 调用失败（超时/报错/不可用）
         "gender": [{"value":"女","count":386},{"value":"男","count":0}],
         "body_type": [{"value":"标准","count":312},{"value":"胖子","count":40}]
     },
-    "query_time_ms": 23
+    "query_time_ms": 23,
+    "facet_time_ms": 12
 }
 ```
 
@@ -682,6 +745,9 @@ LLM 调用失败（超时/报错/不可用）
 
 - 无筛选条件 → 读物化视图 (< 1ms)
 - 有筛选条件 → 实时计算（每个维度排除自身条件，并行查询）
+- facet 降级：结果列表和总数优先返回，facet 计数超时(200ms)则返回上一次缓存值或空计数
+- 物化视图刷新使用 `REFRESH MATERIALIZED VIEW CONCURRENTLY`，大批量导入后触发，小批量修改异步延迟刷新
+- 响应中返回 `facet_time_ms`，便于定位慢查询
 
 ### Excel 数据导入
 
@@ -694,8 +760,19 @@ LLM 调用失败（超时/报错/不可用）
 - 多值字段（" / " 或换行分隔）→ 数组
 - 跳过空行和无效路径
 - 每 500 条一批 UPSERT（根据 module_type + resource_path 去重）
-- 失败处理：单条解析失败记录到错误日志并跳过，不中断整批；导入完成后返回成功/跳过/失败计数
 - 导入后自动刷新物化视图 + 词典
+
+**数据质量校验**（导入层作为数据质量边界）：
+- 所有字段按 `tag_definitions.field_type` 做类型校验
+- 数值字段统一存 JSON number，不存字符串
+- 布尔字段统一存 true/false
+- 固定枚举字段必须归一到 `tag_values.value`，无法匹配的记入 `import_errors`
+- 多值字段统一去空格、去空值、去重
+- 路径字段统一规范化（反斜杠、大小写、重复分隔符）
+
+**失败处理**：
+- 单条解析失败记录到 `import_errors` 表并跳过，不中断整批
+- 导入完成后返回四类计数：成功、跳过、失败、未知标签
 
 ### 项目目录结构
 
@@ -744,6 +821,8 @@ biaoqiao/
 │   │   │   ├── ResultGrid.vue
 │   │   │   ├── ResultList.vue
 │   │   │   ├── AssetCard.vue
+│   │   │   ├── ThumbnailPreview.vue
+│   │   │   ├── AssetDetailModal.vue
 │   │   │   └── Pagination.vue
 │   │   ├── stores/searchStore.ts
 │   │   └── api/search.ts
@@ -756,6 +835,81 @@ biaoqiao/
 │   ├── 002_init_tags.sql
 │   └── 003_materialized_views.sql
 └── docs/
+```
+
+---
+
+## 预览方案
+
+### 一期预览范围
+
+| 模块 | 预览类型 | 来源 | 展示方式 |
+|------|----------|------|----------|
+| 模型 | 截图（PNG） | Excel 单元格内嵌图片（WPS DISPIMG） | 搜索结果卡片缩略图 + 详情弹窗大图 |
+| 特效 | GIF 动图 | 现有 GIF 文件（`特效/` 目录） | 搜索结果卡片动图 + 详情弹窗播放 |
+| 动作 | 无 | 暂无预览素材 | 仅标签和路径信息 |
+| 图标 | 无 | 预留 | — |
+
+### 模型截图提取（WPS 单元格图片）
+
+Excel 文件使用 WPS 格式存储单元格内嵌图片，提取链路：
+
+```
+Sheet XML 单元格公式
+  _xlfn.DISPIMG("ID_579830C7...", 1)     ← 单元格 C7 引用图片 ID
+        │
+        ▼
+xl/cellimages.xml
+  <cellImage> name="ID_579830C7..." → r:embed="rId5"   ← ID → rId 映射
+        │
+        ▼
+xl/_rels/cellimages.xml.rels
+  <Relationship Id="rId5" Target="media/image5.png"/>   ← rId → 文件路径
+        │
+        ▼
+xl/media/image5.png                                     ← 实际图片文件（共 6298 张）
+```
+
+**导入时提取流程**：
+
+1. 解析 `cellimages.xml` 构建 `image_name → rId` 映射
+2. 解析 `cellimages.xml.rels` 构建 `rId → media/imageN.png` 映射
+3. 遍历每个 Sheet XML，解析单元格公式中的 `DISPIMG("image_name", 1)`
+4. 根据单元格行号匹配资源记录（同行的 A 列 = resource_path）
+5. 从 xlsx zip 包中提取对应 PNG 文件，保存到 `static/previews/1/{resource_id}.png`
+6. 写入 assets 表的 `thumbnail_path` 字段
+
+### 预览文件管理
+
+- `thumbnail_path` 字段（assets 表已有）存储预览文件的相对路径
+- 模型截图：`static/previews/1/{resource_id}.png`
+- 特效 GIF：`static/previews/2/{resource_id}.gif`
+- Nginx 直接提供静态文件服务，后端不做文件中转
+- 无预览文件的资源显示模块默认占位图
+
+### 前端展示
+
+- **搜索结果卡片（网格视图）**：展示缩略图 + 名称 + 核心标签
+  - 模型：显示截图缩略图（懒加载，默认 200×200 裁切）
+  - 特效：显示 GIF（鼠标悬停播放，默认静止首帧）
+- **搜索结果列表（列表视图）**：左侧小缩略图(80×80) + 右侧标签信息
+- **详情弹窗**：点击卡片展开大图预览 + 完整标签信息 + 资源路径
+
+### Nginx 静态文件配置
+
+```nginx
+location /static/previews/ {
+    alias /data/previews/;
+    expires 7d;
+    add_header Cache-Control "public, immutable";
+}
+```
+
+### 搜索响应中的预览字段
+
+items 中已有 `thumbnail_path`，前端拼接为完整 URL：
+```
+{baseUrl}/static/previews/{thumbnail_path}
 ```
 
 ---
@@ -779,7 +933,9 @@ App.vue
     │       └── BooleanFilter       #     布尔开关
     ├── ResultToolbar.vue           # 排序+视图切换
     ├── ResultGrid.vue / ResultList.vue  # 结果展示
-    │   └── AssetCard.vue
+    │   └── AssetCard.vue           #   含缩略图预览
+    │       └── ThumbnailPreview.vue #   模型截图/特效GIF
+    ├── AssetDetailModal.vue        # 详情弹窗（大图预览）
     └── Pagination.vue
 ```
 
@@ -805,7 +961,7 @@ services:
     image: redis:7-alpine
   backend:
     build: ./backend
-    deploy: { replicas: 2 }
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
     depends_on: [postgres, redis]
   frontend:
     build: ./frontend
@@ -814,6 +970,8 @@ services:
     ports: ["80:80"]
     depends_on: [backend, frontend]
 ```
+
+如需多容器副本可用 `docker compose up --scale backend=2`，同时在 Nginx upstream 中配置负载均衡。
 
 ### 硬件要求
 

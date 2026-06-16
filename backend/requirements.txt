@@ -1,0 +1,15 @@
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+asyncpg==0.30.0
+elasticsearch[async]==8.15.1
+cachetools==5.5.0
+openpyxl==3.1.5
+Pillow==11.1.0
+beautifulsoup4==4.12.3
+defusedxml==0.7.1
+httpx==0.28.1
+pydantic==2.10.3
+pydantic-settings==2.7.0
+python-multipart==0.0.18
+pytest==8.3.4
+pytest-asyncio==0.24.0

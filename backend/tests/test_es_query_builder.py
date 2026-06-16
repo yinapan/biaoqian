@@ -1,0 +1,56 @@
+from app.services.es_query_builder import build_search_query
+
+
+def test_filter_only():
+    q = build_search_query(
+        module_type=1,
+        filters={"gender": "女", "profession": ["刺客"]},
+        page=1,
+        page_size=20,
+        filterable_fields=["gender", "profession"],
+    )
+    bool_filter = q["query"]["function_score"]["query"]["bool"]["filter"]
+    assert {"term": {"module_type": "1"}} in bool_filter
+    assert {"term": {"tags.gender": "女"}} in bool_filter
+    assert {"terms": {"tags.profession": ["刺客"]}} in bool_filter
+
+
+def test_keyword_search():
+    q = build_search_query(
+        module_type=1,
+        keyword="红衣",
+        page=1,
+        page_size=20,
+    )
+    must = q["query"]["function_score"]["query"]["bool"]["must"]
+    assert any("match" in clause for clause in must)
+
+
+def test_range_condition():
+    q = build_search_query(
+        module_type=2,
+        conditions=[{"field": "duration", "op": ">", "value": 5}],
+        page=1,
+        page_size=20,
+    )
+    bool_filter = q["query"]["function_score"]["query"]["bool"]["filter"]
+    assert any("range" in f for f in bool_filter)
+
+
+def test_pagination():
+    q = build_search_query(module_type=1, page=3, page_size=20)
+    assert q["from"] == 40
+    assert q["size"] == 20
+
+
+def test_dynamic_function_score():
+    q = build_search_query(
+        module_type=1,
+        filters={"gender": "女", "profession": ["刺客"]},
+        page=1,
+        page_size=20,
+        filterable_fields=["gender", "profession"],
+    )
+    functions = q["query"]["function_score"]["functions"]
+    filter_funcs = [f for f in functions if "filter" in f]
+    assert len(filter_funcs) == 2

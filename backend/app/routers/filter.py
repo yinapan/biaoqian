@@ -1,3 +1,5 @@
+import json
+
 from fastapi import APIRouter
 
 from app.models.database import get_pool
@@ -24,7 +26,7 @@ async def get_definitions(module_type: int):
                 is_filterable=d["is_filterable"],
                 is_searchable=d["is_searchable"],
                 sort_order=d["sort_order"],
-                config=d.get("config", {}),
+                config=json.loads(d["config"]) if isinstance(d.get("config"), str) else (d.get("config") or {}),
                 values=[
                     {"value": v, "display_name": v}
                     for v in (d.get("values") or [])

@@ -115,7 +115,7 @@ const tagLabel = computed(() => {
 .card-thumb img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 

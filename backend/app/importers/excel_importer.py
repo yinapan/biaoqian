@@ -65,6 +65,29 @@ SKIP_SHEETS = {
     "WpsReserved_CellImgList",
 }
 
+MODEL_SHEETS = {
+    "P080【完成】",
+    "P081【完成】",
+    "M2【完成】",
+    "F2【完成】",
+    "F1【完成】",
+    "M1【完成】",
+    "A",
+    "P003【完成】",
+    "P006【完成】",
+    "P009【完成】",
+    "P010【完成】",
+    "P011【完成】",
+    "P014【完成】",
+    "P018【完成】",
+    "P022【完成】",
+    "P031【完成】",
+    "P091【完成】",
+    "P092【完成】",
+}
+
+ACTION_SHEETS = {"动作模组"}
+
 MULTI_VALUE_FIELDS = {
     "region",
     "faction",
@@ -84,17 +107,15 @@ MULTI_VALUE_FIELDS = {
 def classify_sheet(name: str) -> int | None:
     """Return module_type for a sheet name, or ``None`` to skip.
 
-    - Known skip sheets -> None
-    - "动作模组" -> 3 (action)
-    - Names starting with P/M/F/A followed by optional digits -> 1 (model)
-    - Everything else -> None
+    Only whitelisted sheets are imported:
+    - MODEL_SHEETS -> 1 (model)
+    - ACTION_SHEETS -> 3 (action)
+    - Everything else -> None (skip)
     """
-    if name in SKIP_SHEETS:
-        return None
-    if name == "动作模组":
-        return 3
-    if re.match(r"^[PMFA]\d{0,3}", name):
+    if name in MODEL_SHEETS:
         return 1
+    if name in ACTION_SHEETS:
+        return 3
     return None
 
 

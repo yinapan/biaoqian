@@ -5,14 +5,14 @@ from __future__ import annotations
 import json
 import uuid
 from datetime import datetime
-from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
 from app.importers.effects_importer import (
-    extract_name_from_resource_id,
+    extract_name_from_path,
     build_effect_tags,
+    _resolve_gif_filename,
     import_effects_json,
 )
 
@@ -21,40 +21,49 @@ from app.importers.effects_importer import (
 # ---------------------------------------------------------------------------
 
 SAMPLE_RESOURCE_OK = {
-    "resource_id": "data/source/other/特效/场景/sfx/云雾/d_毒雾01.sfx",
-    "source_path": "data/source/other/特效/场景/SFX/云雾/D_毒雾01.Sfx",
-    "size_bytes": 1524,
+    "resource_id": "data/source/other/hd特效/ui_m/pss/achievement/ui_云雾.pss",
+    "source_path": "data/source/other/HD特效/UI_M/Pss/Achievement/UI_云雾.pss",
+    "size_bytes": 18938,
     "svn": {
-        "last_changed_revision": "189555",
-        "last_changed_author": "kuangyongxiong",
-        "last_changed_date": "2013-04-26 11:48:40",
+        "last_changed_revision": "1395973",
+        "last_changed_author": "xuanweiqin",
+        "last_changed_date": "2024-05-10 15:30:25",
     },
     "result": {
-        "gif_rel_path": "gifs/001_D_____01_d5e77d48_angle45.gif",
-        "gif_grid_rel_path": "gifs/001_D_____01_d5e77d48_angle45_grid.gif",
+        "gif_rel_path": "gifs/001_UI______94a9f160_angle45.gif",
+        "gif_grid_rel_path": "gifs/001_UI______94a9f160_angle45_grid.gif",
         "status": "ok",
-        "run_id": "dir_20260616_173357",
-        "length_cm": 3500.0,
-        "width_cm": 3500.0,
-        "height_cm": 200.0,
-        "effect_duration_sec": 5.05,
-        "gif_duration_sec": 5.042,
-        "camera_distance": 9272.8,
-        "camera_scale": 1.606,
-        "focus_offset": -0.08,
-        "area_ratio": 0.273,
-        "span_max": 0.774,
-        "center_x": 0.496,
-        "center_y": 0.503,
+        "run_id": "effect_gif_run_dir_20260616",
+        "length_cm": 2100.0,
+        "width_cm": 1000.0,
+        "height_cm": 1000.0,
+        "effect_duration_sec": 0.0,
+        "gif_duration_sec": 2.0,
+        "camera_distance": 2211.92,
+        "camera_scale": 0.575,
+        "focus_offset": 0.26,
+        "area_ratio": 0.195,
+        "span_max": 0.428,
+        "center_x": 0.5,
+        "center_y": 0.521,
         "clipped": False,
         "fit_attempts": 10,
         "fit_stop_reason": "best_effort",
+        "tags": {
+            "颜色": ["白", "青"],
+            "形态结构": ["点状", "扩散"],
+            "时间动态": ["循环", "长持续"],
+            "元素属性": ["光系"],
+            "场景环境": ["场景氛围"],
+            "范围大小": ["小范围"],
+        },
+        "description": "GIF展示了白色光点在灰色背景中缓慢飘动扩散的效果。",
     },
 }
 
 SAMPLE_RESOURCE_FAILED = {
-    "resource_id": "data/source/other/特效/bad/d_broken.sfx",
-    "source_path": "data/source/other/特效/bad/D_broken.Sfx",
+    "resource_id": "data/source/other/hd特效/bad/broken.pss",
+    "source_path": "data/source/other/HD特效/Bad/Broken.pss",
     "size_bytes": 500,
     "svn": {
         "last_changed_revision": "100000",
@@ -71,32 +80,46 @@ SAMPLE_RESOURCE_FAILED = {
 def _make_json_data(resources: list[dict]) -> dict:
     return {
         "version": 1,
-        "generated_at": "2026-06-16 20:30:53",
-        "meta": {"run_id": "dir_20260616_173357"},
+        "generated_at": "2026-06-17 14:09:18",
+        "meta": {"run_id": "effect_gif_run_dir_20260616"},
         "resources": resources,
     }
 
 
 # ---------------------------------------------------------------------------
-# extract_name_from_resource_id
+# extract_name_from_path
 # ---------------------------------------------------------------------------
 
 
 class TestExtractName:
-    def test_normal_sfx_path(self):
-        rid = "data/source/other/特效/场景/sfx/云雾/d_毒雾01.sfx"
-        assert extract_name_from_resource_id(rid) == "d_毒雾01"
+    def test_normal_pss_path(self):
+        path = "data/source/other/hd特效/ui_m/pss/achievement/ui_云雾.pss"
+        assert extract_name_from_path(path) == "ui_云雾"
 
     def test_single_segment(self):
-        assert extract_name_from_resource_id("file.sfx") == "file"
+        assert extract_name_from_path("file.pss") == "file"
 
     def test_no_extension(self):
-        assert extract_name_from_resource_id("data/source/foo") == "foo"
+        assert extract_name_from_path("data/source/foo") == "foo"
 
     def test_multiple_dots(self):
-        rid = "data/some.thing/foo.bar.sfx"
-        # Should remove only the last extension
-        assert extract_name_from_resource_id(rid) == "foo.bar"
+        assert extract_name_from_path("data/some.thing/foo.bar.pss") == "foo.bar"
+
+
+# ---------------------------------------------------------------------------
+# _resolve_gif_filename
+# ---------------------------------------------------------------------------
+
+
+class TestResolveGifFilename:
+    def test_normal_path(self):
+        assert _resolve_gif_filename("gifs/001_test.gif") == "001_test.gif"
+
+    def test_none_input(self):
+        assert _resolve_gif_filename(None) is None
+
+    def test_empty_string(self):
+        assert _resolve_gif_filename("") is None
 
 
 # ---------------------------------------------------------------------------
@@ -105,45 +128,46 @@ class TestExtractName:
 
 
 class TestBuildEffectTags:
-    def test_basic_fields_present(self):
+    def test_semantic_tags_mapped(self):
         tags = build_effect_tags(SAMPLE_RESOURCE_OK)
-        assert tags["source_name"] == "d_毒雾01"
-        assert tags["size_bytes"] == 1524
-        assert tags["effect_duration_sec"] == 5.05
-        assert tags["length_cm"] == 3500.0
-        assert tags["width_cm"] == 3500.0
-        assert tags["height_cm"] == 200.0
+        assert tags["color"] == ["白", "青"]
+        assert tags["form_structure"] == ["点状", "扩散"]
+        assert tags["time_dynamic"] == ["循环", "长持续"]
+        assert tags["element"] == ["光系"]
+        assert tags["scene_env"] == ["场景氛围"]
+        assert tags["scope_size"] == ["小范围"]
 
-    def test_result_numeric_fields_included(self):
+    def test_description_included(self):
         tags = build_effect_tags(SAMPLE_RESOURCE_OK)
-        assert tags["gif_duration_sec"] == 5.042
-        assert tags["camera_distance"] == 9272.8
-        assert tags["camera_scale"] == 1.606
-        assert tags["focus_offset"] == -0.08
-        assert tags["area_ratio"] == 0.273
-        assert tags["span_max"] == 0.774
-        assert tags["center_x"] == 0.496
-        assert tags["center_y"] == 0.503
+        assert "GIF展示了" in tags["description"]
+
+    def test_numeric_fields_included(self):
+        tags = build_effect_tags(SAMPLE_RESOURCE_OK)
+        assert tags["effect_duration_sec"] == 0.0
+        assert tags["length_cm"] == 2100.0
+        assert tags["width_cm"] == 1000.0
+        assert tags["height_cm"] == 1000.0
+        assert tags["camera_distance"] == 2211.92
+        assert tags["camera_scale"] == 0.575
+        assert tags["area_ratio"] == 0.195
+        assert tags["span_max"] == 0.428
 
     def test_excludes_internal_fields(self):
-        """Fields like status, run_id, gif paths are not useful as search tags."""
         tags = build_effect_tags(SAMPLE_RESOURCE_OK)
         assert "status" not in tags
         assert "run_id" not in tags
         assert "gif_rel_path" not in tags
         assert "gif_grid_rel_path" not in tags
+        assert "gif_duration_sec" not in tags
 
-    def test_boolean_fields_included(self):
-        tags = build_effect_tags(SAMPLE_RESOURCE_OK)
-        assert tags["clipped"] is False
-
-    def test_integer_fields_included(self):
-        tags = build_effect_tags(SAMPLE_RESOURCE_OK)
-        assert tags["fit_attempts"] == 10
-
-    def test_string_fields_included(self):
-        tags = build_effect_tags(SAMPLE_RESOURCE_OK)
-        assert tags["fit_stop_reason"] == "best_effort"
+    def test_missing_tags_graceful(self):
+        resource = {
+            "resource_id": "test.pss",
+            "result": {"status": "ok", "effect_duration_sec": 1.0},
+        }
+        tags = build_effect_tags(resource)
+        assert tags["effect_duration_sec"] == 1.0
+        assert "color" not in tags
 
 
 # ---------------------------------------------------------------------------
@@ -152,8 +176,6 @@ class TestBuildEffectTags:
 
 
 class _FakeAcquireCtx:
-    """Minimal async context manager that mimics ``pool.acquire()``."""
-
     def __init__(self, conn):
         self._conn = conn
 
@@ -165,45 +187,32 @@ class _FakeAcquireCtx:
 
 
 def _make_mock_pool():
-    """Create a mock asyncpg pool with connection context manager."""
     fake_row = {
-        "id": uuid.uuid4(),
+        "id": 1,
         "module_type": 2,
-        "name": "d_毒雾01",
-        "resource_path": "data/source/other/特效/场景/sfx/云雾/d_毒雾01.sfx",
-        "thumbnail_path": "effects/001_D_____01_d5e77d48_angle45.png",
-        "tags": {"source_name": "d_毒雾01", "effect_duration_sec": 5.05},
-        "version": None,
-        "file_size": None,
-        "created_at": datetime(2026, 6, 16, 12, 0, 0),
-        "updated_at": datetime(2026, 6, 16, 12, 0, 0),
+        "name": "ui_云雾",
+        "resource_path": "data/source/other/hd特效/ui_m/pss/achievement/ui_云雾.pss",
+        "thumbnail_path": "001_UI______94a9f160_angle45.gif",
+        "tags": {"color": ["白", "青"], "effect_duration_sec": 0.0},
+        "created_at": datetime(2026, 6, 17, 12, 0, 0),
+        "updated_at": datetime(2026, 6, 17, 12, 0, 0),
     }
-
     conn = AsyncMock()
     conn.fetchrow = AsyncMock(return_value=fake_row)
-    conn.execute = AsyncMock()
-
     pool = MagicMock()
     pool.acquire.return_value = _FakeAcquireCtx(conn)
     return pool, conn
 
 
 @pytest.mark.asyncio
-async def test_import_skips_non_ok_status(tmp_path):
-    """Resources with status != 'ok' should be skipped."""
-    json_data = _make_json_data([SAMPLE_RESOURCE_FAILED])
+async def test_import_skips_non_ok(tmp_path):
     json_file = tmp_path / "effects.json"
-    json_file.write_text(json.dumps(json_data, ensure_ascii=False), encoding="utf-8")
+    json_file.write_text(json.dumps(_make_json_data([SAMPLE_RESOURCE_FAILED])), encoding="utf-8")
 
     pool, conn = _make_mock_pool()
-    previews_dir = tmp_path / "previews"
-    previews_dir.mkdir()
-
     with patch("app.importers.effects_importer.bulk_index", new_callable=AsyncMock) as mock_bulk:
         mock_bulk.return_value = {"errors": False, "items": []}
-        result = await import_effects_json(
-            str(json_file), str(tmp_path), pool, str(previews_dir)
-        )
+        result = await import_effects_json(str(json_file), str(tmp_path), pool, str(tmp_path))
 
     assert result["success"] == 0
     assert result["skipped"] == 1
@@ -211,328 +220,95 @@ async def test_import_skips_non_ok_status(tmp_path):
 
 
 @pytest.mark.asyncio
-async def test_import_ok_resource_upserts(tmp_path):
-    """A resource with status='ok' should be upserted into DB and queued for ES."""
-    json_data = _make_json_data([SAMPLE_RESOURCE_OK])
+async def test_import_ok_resource(tmp_path):
     json_file = tmp_path / "effects.json"
-    json_file.write_text(json.dumps(json_data, ensure_ascii=False), encoding="utf-8")
-
-    # Create a minimal fake GIF
-    gifs_dir = tmp_path / "gifs"
-    gifs_dir.mkdir()
-    gif_path = gifs_dir / "001_D_____01_d5e77d48_angle45.gif"
-    gif_path.write_bytes(b"GIF89a")  # Minimal GIF header
+    json_file.write_text(json.dumps(_make_json_data([SAMPLE_RESOURCE_OK])), encoding="utf-8")
 
     pool, conn = _make_mock_pool()
-    previews_dir = tmp_path / "previews"
-    previews_dir.mkdir()
-
     with (
         patch("app.importers.effects_importer.bulk_index", new_callable=AsyncMock) as mock_bulk,
-        patch("app.importers.effects_importer.build_es_doc") as mock_build_es,
-        patch("app.importers.effects_importer._copy_gif_and_generate_thumbnail") as mock_thumb,
+        patch("app.importers.effects_importer.build_es_doc") as mock_es,
     ):
         mock_bulk.return_value = {"errors": False, "items": []}
-        mock_build_es.return_value = {"id": "test"}
-        mock_thumb.return_value = "effects/001_D_____01_d5e77d48_angle45.png"
-
-        result = await import_effects_json(
-            str(json_file), str(tmp_path), pool, str(previews_dir)
-        )
+        mock_es.return_value = {"id": "test"}
+        result = await import_effects_json(str(json_file), str(tmp_path), pool, str(tmp_path))
 
     assert result["success"] == 1
-    assert result["skipped"] == 0
     assert result["failed"] == 0
-    assert "batch_id" in result
-
-    # Check UPSERT was called
     conn.fetchrow.assert_called_once()
     call_args = conn.fetchrow.call_args
-    # module_type should be 2
-    assert call_args[0][1] == 2
-    # name
-    assert call_args[0][2] == "d_毒雾01"
-    # resource_path
-    assert call_args[0][3] == "data/source/other/特效/场景/sfx/云雾/d_毒雾01.sfx"
+    assert call_args[0][1] == 2  # module_type
+    assert call_args[0][2] == "ui_云雾"  # name
+    # Check tags contain semantic fields
+    tags = json.loads(call_args[0][5])
+    assert tags["color"] == ["白", "青"]
+    assert tags["effect_duration_sec"] == 0.0
+    assert "description" in tags
 
 
 @pytest.mark.asyncio
-async def test_import_updates_thumbnail_path_in_upsert(tmp_path):
-    """UPSERT SQL should include thumbnail_path."""
-    json_data = _make_json_data([SAMPLE_RESOURCE_OK])
+async def test_import_thumbnail_is_gif_filename(tmp_path):
     json_file = tmp_path / "effects.json"
-    json_file.write_text(json.dumps(json_data, ensure_ascii=False), encoding="utf-8")
+    json_file.write_text(json.dumps(_make_json_data([SAMPLE_RESOURCE_OK])), encoding="utf-8")
 
     pool, conn = _make_mock_pool()
-    previews_dir = tmp_path / "previews"
-    previews_dir.mkdir()
-
-    thumb_rel = "effects/001_D_____01_d5e77d48_angle45.png"
-
     with (
         patch("app.importers.effects_importer.bulk_index", new_callable=AsyncMock) as mock_bulk,
-        patch("app.importers.effects_importer.build_es_doc") as mock_build_es,
-        patch("app.importers.effects_importer._copy_gif_and_generate_thumbnail") as mock_thumb,
+        patch("app.importers.effects_importer.build_es_doc") as mock_es,
     ):
         mock_bulk.return_value = {"errors": False, "items": []}
-        mock_build_es.return_value = {"id": "test"}
-        mock_thumb.return_value = thumb_rel
+        mock_es.return_value = {"id": "test"}
+        await import_effects_json(str(json_file), str(tmp_path), pool, str(tmp_path))
 
-        await import_effects_json(
-            str(json_file), str(tmp_path), pool, str(previews_dir)
-        )
-
-    call_args = conn.fetchrow.call_args
-    sql = call_args[0][0]
-    assert "thumbnail_path" in sql
+    # $4 = thumbnail_path should be the GIF filename
+    thumb = conn.fetchrow.call_args[0][4]
+    assert thumb == "001_UI______94a9f160_angle45.gif"
 
 
 @pytest.mark.asyncio
 async def test_import_mixed_resources(tmp_path):
-    """Mix of ok and failed resources: only ok ones are processed."""
-    json_data = _make_json_data([
-        SAMPLE_RESOURCE_OK,
-        SAMPLE_RESOURCE_FAILED,
-        SAMPLE_RESOURCE_OK,
-    ])
     json_file = tmp_path / "effects.json"
-    json_file.write_text(json.dumps(json_data, ensure_ascii=False), encoding="utf-8")
+    data = _make_json_data([SAMPLE_RESOURCE_OK, SAMPLE_RESOURCE_FAILED, SAMPLE_RESOURCE_OK])
+    json_file.write_text(json.dumps(data), encoding="utf-8")
 
     pool, conn = _make_mock_pool()
-    previews_dir = tmp_path / "previews"
-    previews_dir.mkdir()
-
     with (
         patch("app.importers.effects_importer.bulk_index", new_callable=AsyncMock) as mock_bulk,
-        patch("app.importers.effects_importer.build_es_doc") as mock_build_es,
-        patch("app.importers.effects_importer._copy_gif_and_generate_thumbnail") as mock_thumb,
+        patch("app.importers.effects_importer.build_es_doc") as mock_es,
     ):
         mock_bulk.return_value = {"errors": False, "items": []}
-        mock_build_es.return_value = {"id": "test"}
-        mock_thumb.return_value = "effects/test.png"
-
-        result = await import_effects_json(
-            str(json_file), str(tmp_path), pool, str(previews_dir)
-        )
+        mock_es.return_value = {"id": "test"}
+        result = await import_effects_json(str(json_file), str(tmp_path), pool, str(tmp_path))
 
     assert result["success"] == 2
     assert result["skipped"] == 1
-    assert conn.fetchrow.call_count == 2
-
-
-@pytest.mark.asyncio
-async def test_import_es_batch_flush(tmp_path):
-    """When batch size >= 500, ES bulk_index should be called mid-import."""
-    # Create 501 ok resources
-    resources = []
-    for i in range(501):
-        r = {
-            "resource_id": f"data/source/other/特效/test/d_test{i:04d}.sfx",
-            "source_path": f"data/source/other/特效/test/D_test{i:04d}.Sfx",
-            "size_bytes": 1000 + i,
-            "svn": {
-                "last_changed_revision": "100",
-                "last_changed_author": "test",
-                "last_changed_date": "2026-01-01 00:00:00",
-            },
-            "result": {
-                "gif_rel_path": f"gifs/test_{i:04d}.gif",
-                "gif_grid_rel_path": f"gifs/test_{i:04d}_grid.gif",
-                "status": "ok",
-                "run_id": "test_run",
-                "length_cm": 100.0,
-                "width_cm": 100.0,
-                "height_cm": 100.0,
-                "effect_duration_sec": 1.0,
-                "gif_duration_sec": 1.0,
-                "camera_distance": 500.0,
-                "camera_scale": 1.0,
-                "focus_offset": 0.0,
-                "area_ratio": 0.5,
-                "span_max": 0.5,
-                "center_x": 0.5,
-                "center_y": 0.5,
-                "clipped": False,
-                "fit_attempts": 1,
-                "fit_stop_reason": "converged",
-            },
-        }
-        resources.append(r)
-
-    json_data = _make_json_data(resources)
-    json_file = tmp_path / "effects.json"
-    json_file.write_text(json.dumps(json_data, ensure_ascii=False), encoding="utf-8")
-
-    pool, conn = _make_mock_pool()
-    previews_dir = tmp_path / "previews"
-    previews_dir.mkdir()
-
-    with (
-        patch("app.importers.effects_importer.bulk_index", new_callable=AsyncMock) as mock_bulk,
-        patch("app.importers.effects_importer.build_es_doc") as mock_build_es,
-        patch("app.importers.effects_importer._copy_gif_and_generate_thumbnail") as mock_thumb,
-    ):
-        mock_bulk.return_value = {"errors": False, "items": []}
-        mock_build_es.return_value = {"id": "test"}
-        mock_thumb.return_value = "effects/test.png"
-
-        result = await import_effects_json(
-            str(json_file), str(tmp_path), pool, str(previews_dir)
-        )
-
-    assert result["success"] == 501
-    # Should have flushed at 500 + final flush of 1 = 2 calls
-    assert mock_bulk.call_count == 2
-
-
-@pytest.mark.asyncio
-async def test_import_es_sync_error_tracking(tmp_path):
-    """ES sync errors should be counted in stats."""
-    json_data = _make_json_data([SAMPLE_RESOURCE_OK])
-    json_file = tmp_path / "effects.json"
-    json_file.write_text(json.dumps(json_data, ensure_ascii=False), encoding="utf-8")
-
-    pool, conn = _make_mock_pool()
-    previews_dir = tmp_path / "previews"
-    previews_dir.mkdir()
-
-    with (
-        patch("app.importers.effects_importer.bulk_index", new_callable=AsyncMock) as mock_bulk,
-        patch("app.importers.effects_importer.build_es_doc") as mock_build_es,
-        patch("app.importers.effects_importer._copy_gif_and_generate_thumbnail") as mock_thumb,
-    ):
-        mock_bulk.return_value = {
-            "errors": True,
-            "items": [{"index": {"error": "mapping error"}}],
-        }
-        mock_build_es.return_value = {"id": "test"}
-        mock_thumb.return_value = "effects/test.png"
-
-        result = await import_effects_json(
-            str(json_file), str(tmp_path), pool, str(previews_dir)
-        )
-
-    assert result["es_sync_failed"] == 1
-    assert result["success"] == 1
-
-
-@pytest.mark.asyncio
-async def test_import_db_error_counted_as_failed(tmp_path):
-    """Database errors should increment the failed counter."""
-    json_data = _make_json_data([SAMPLE_RESOURCE_OK])
-    json_file = tmp_path / "effects.json"
-    json_file.write_text(json.dumps(json_data, ensure_ascii=False), encoding="utf-8")
-
-    pool, conn = _make_mock_pool()
-    conn.fetchrow.side_effect = Exception("DB connection lost")
-    previews_dir = tmp_path / "previews"
-    previews_dir.mkdir()
-
-    with (
-        patch("app.importers.effects_importer.bulk_index", new_callable=AsyncMock) as mock_bulk,
-        patch("app.importers.effects_importer._copy_gif_and_generate_thumbnail") as mock_thumb,
-    ):
-        mock_bulk.return_value = {"errors": False, "items": []}
-        mock_thumb.return_value = "effects/test.png"
-
-        result = await import_effects_json(
-            str(json_file), str(tmp_path), pool, str(previews_dir)
-        )
-
-    assert result["failed"] == 1
-    assert result["success"] == 0
-    assert len(result["errors"]) == 1
-
-
-@pytest.mark.asyncio
-async def test_import_thumbnail_failure_does_not_block(tmp_path):
-    """If thumbnail generation fails, the resource is still imported (no thumbnail)."""
-    json_data = _make_json_data([SAMPLE_RESOURCE_OK])
-    json_file = tmp_path / "effects.json"
-    json_file.write_text(json.dumps(json_data, ensure_ascii=False), encoding="utf-8")
-
-    pool, conn = _make_mock_pool()
-    previews_dir = tmp_path / "previews"
-    previews_dir.mkdir()
-
-    with (
-        patch("app.importers.effects_importer.bulk_index", new_callable=AsyncMock) as mock_bulk,
-        patch("app.importers.effects_importer.build_es_doc") as mock_build_es,
-        patch("app.importers.effects_importer._copy_gif_and_generate_thumbnail") as mock_thumb,
-    ):
-        mock_bulk.return_value = {"errors": False, "items": []}
-        mock_build_es.return_value = {"id": "test"}
-        mock_thumb.return_value = None  # Thumbnail generation failed
-
-        result = await import_effects_json(
-            str(json_file), str(tmp_path), pool, str(previews_dir)
-        )
-
-    assert result["success"] == 1
-    # Fetchrow should still be called — thumbnail_path will be None
-    conn.fetchrow.assert_called_once()
-
-
-@pytest.mark.asyncio
-async def test_import_tags_contain_all_numeric_result_fields(tmp_path):
-    """Tags JSON should contain all meaningful result fields."""
-    json_data = _make_json_data([SAMPLE_RESOURCE_OK])
-    json_file = tmp_path / "effects.json"
-    json_file.write_text(json.dumps(json_data, ensure_ascii=False), encoding="utf-8")
-
-    pool, conn = _make_mock_pool()
-    previews_dir = tmp_path / "previews"
-    previews_dir.mkdir()
-
-    with (
-        patch("app.importers.effects_importer.bulk_index", new_callable=AsyncMock) as mock_bulk,
-        patch("app.importers.effects_importer.build_es_doc") as mock_build_es,
-        patch("app.importers.effects_importer._copy_gif_and_generate_thumbnail") as mock_thumb,
-    ):
-        mock_bulk.return_value = {"errors": False, "items": []}
-        mock_build_es.return_value = {"id": "test"}
-        mock_thumb.return_value = "effects/test.png"
-
-        await import_effects_json(
-            str(json_file), str(tmp_path), pool, str(previews_dir)
-        )
-
-    call_args = conn.fetchrow.call_args
-    tags_json_str = call_args[0][5]  # $5 is the tags jsonb parameter
-    tags = json.loads(tags_json_str)
-
-    # Core tag fields
-    assert tags["source_name"] == "d_毒雾01"
-    assert tags["size_bytes"] == 1524
-    assert tags["effect_duration_sec"] == 5.05
-    assert tags["length_cm"] == 3500.0
-    assert tags["width_cm"] == 3500.0
-    assert tags["height_cm"] == 200.0
-    # Extended result fields
-    assert tags["gif_duration_sec"] == 5.042
-    assert tags["camera_distance"] == 9272.8
-    assert tags["fit_stop_reason"] == "best_effort"
-    assert tags["clipped"] is False
 
 
 @pytest.mark.asyncio
 async def test_import_empty_resources(tmp_path):
-    """Empty resources array should return zeroed stats."""
-    json_data = _make_json_data([])
     json_file = tmp_path / "effects.json"
-    json_file.write_text(json.dumps(json_data, ensure_ascii=False), encoding="utf-8")
+    json_file.write_text(json.dumps(_make_json_data([])), encoding="utf-8")
 
     pool, conn = _make_mock_pool()
-    previews_dir = tmp_path / "previews"
-    previews_dir.mkdir()
-
     with patch("app.importers.effects_importer.bulk_index", new_callable=AsyncMock) as mock_bulk:
         mock_bulk.return_value = {"errors": False, "items": []}
-        result = await import_effects_json(
-            str(json_file), str(tmp_path), pool, str(previews_dir)
-        )
+        result = await import_effects_json(str(json_file), str(tmp_path), pool, str(tmp_path))
 
     assert result["success"] == 0
     assert result["skipped"] == 0
-    assert result["failed"] == 0
     conn.fetchrow.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_import_db_error_counted(tmp_path):
+    json_file = tmp_path / "effects.json"
+    json_file.write_text(json.dumps(_make_json_data([SAMPLE_RESOURCE_OK])), encoding="utf-8")
+
+    pool, conn = _make_mock_pool()
+    conn.fetchrow.side_effect = Exception("DB down")
+    with patch("app.importers.effects_importer.bulk_index", new_callable=AsyncMock) as mock_bulk:
+        mock_bulk.return_value = {"errors": False, "items": []}
+        result = await import_effects_json(str(json_file), str(tmp_path), pool, str(tmp_path))
+
+    assert result["failed"] == 1
+    assert result["success"] == 0

@@ -53,4 +53,5 @@ def test_dynamic_function_score():
     )
     functions = q["query"]["function_score"]["functions"]
     filter_funcs = [f for f in functions if "filter" in f]
-    assert len(filter_funcs) == 2
+    # 2 filter boosts (gender, profession) + 1 thumbnail_path exists boost
+    assert len(filter_funcs) == 3

@@ -103,6 +103,9 @@ const TAG_GROUPS: Record<string, { label: string; fields: string[]; unit?: strin
 
 const GROUPED_FIELDS = new Set(Object.values(TAG_GROUPS).flatMap(g => g.fields))
 
+/** Fields hidden from detail view (internal / not useful to display) */
+const HIDDEN_FIELDS = new Set(['gif_duration_sec', 'focus_offset', 'center_x', 'center_y', 'clipped', 'fit_attempts', 'fit_stop_reason', 'source_name', 'size_bytes'])
+
 const FIELD_SHORT_LABELS: Record<string, string> = {
   length_cm: '长', width_cm: '宽', height_cm: '高',
   camera_distance: '距离', camera_scale: '缩放',
@@ -111,7 +114,7 @@ const FIELD_SHORT_LABELS: Record<string, string> = {
 
 /** Tag entries excluding grouped fields and hidden internal fields */
 const visibleTagEntries = computed(() =>
-  tagEntries.value.filter(([key]) => !GROUPED_FIELDS.has(key))
+  tagEntries.value.filter(([key]) => !GROUPED_FIELDS.has(key) && !HIDDEN_FIELDS.has(key))
 )
 
 /** Grouped numeric entries that exist in this item's tags */

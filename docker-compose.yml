@@ -64,6 +64,9 @@ services:
       - DATABASE_URL=postgresql://biaoqiao:biaoqiao_dev@postgres:5432/biaoqiao
       - ES_URL=http://elasticsearch:9200
       - ADMIN_API_KEY=${ADMIN_API_KEY:-dev-admin-key-change-in-prod}
+      - LLM_API_KEY=${LLM_API_KEY:-}
+      - LLM_BASE_URL=${LLM_BASE_URL:-}
+      - LLM_MODEL=${LLM_MODEL:-deepseek}
     depends_on:
       postgres:
         condition: service_healthy

@@ -10,6 +10,8 @@ const props = defineProps<{
 const store = useSearchStore()
 const collapsed = ref(false)
 const searchText = ref('')
+const textInput = ref('')
+let textTimer: ReturnType<typeof setTimeout> | null = null
 
 const filteredValues = computed(() => {
   const vals = props.definition.values
@@ -80,6 +82,18 @@ const hasMany = computed(
   () => props.definition.values && props.definition.values.length > 8,
 )
 
+const facetMap = computed(() => {
+  const buckets = store.facets[field.value] ?? []
+  const map: Record<string, number> = {}
+  for (const b of buckets) map[b.value] = b.count
+  return map
+})
+
+function getFacetCount(val: string): number | null {
+  const c = facetMap.value[val]
+  return c !== undefined ? c : null
+}
+
 function toggleOption(val: string) {
   const current = Array.isArray(selected.value) ? [...selected.value] : []
   const idx = current.indexOf(val)
@@ -94,10 +108,24 @@ function toggleOption(val: string) {
 function isSelected(val: string) {
   return Array.isArray(selected.value) && selected.value.includes(val)
 }
+
+function onTextInput() {
+  if (textTimer) clearTimeout(textTimer)
+  textTimer = setTimeout(() => {
+    store.setFilter(field.value, textInput.value || null)
+    store.doSearch()
+  }, 500)
+}
+
+function clearTextFilter() {
+  textInput.value = ''
+  store.setFilter(field.value, null)
+  store.doSearch()
+}
 </script>
 
 <template>
-  <div v-if="!isText" class="filter-group" :class="{ collapsed, 'has-active': activeCount > 0 }">
+  <div class="filter-group" :class="{ collapsed, 'has-active': activeCount > 0 }">
     <!-- Group header -->
     <button class="group-header" @click="collapsed = !collapsed">
       <span class="header-label">{{ definition.display_name }}</span>
@@ -140,6 +168,7 @@ function isSelected(val: string) {
             >
               <span class="pill-dot" v-if="isSelected(opt.value)"></span>
               {{ opt.display_name || opt.value }}
+              <span v-if="getFacetCount(opt.value) !== null" class="pill-count">{{ getFacetCount(opt.value) }}</span>
             </button>
           </div>
           <span v-if="filteredValues && filteredValues.length === 0" class="no-match">
@@ -162,6 +191,23 @@ function isSelected(val: string) {
       <!-- Boolean switch -->
       <div v-else-if="isBool" class="bool-wrap">
         <el-switch v-model="boolValue" />
+      </div>
+
+      <!-- Text search input -->
+      <div v-else-if="isText" class="text-filter-wrap">
+        <div class="search-wrap">
+          <svg class="search-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input
+            v-model="textInput"
+            class="search-input"
+            :placeholder="`搜索${definition.display_name}…`"
+            @input="onTextInput"
+            @keyup.enter="onTextInput"
+          />
+          <button v-if="textInput" class="text-clear" @click="clearTextFilter">×</button>
+        </div>
       </div>
     </div>
   </div>
@@ -406,6 +452,19 @@ function isSelected(val: string) {
   flex-shrink: 0;
 }
 
+.pill-count {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  opacity: 0.7;
+  margin-left: 2px;
+}
+
+.tag-pill.active .pill-count {
+  color: var(--accent);
+  opacity: 1;
+}
+
 .no-match {
   font-size: 12px;
   color: var(--text-muted);
@@ -420,5 +479,24 @@ function isSelected(val: string) {
 
 .bool-wrap {
   padding: 2px 0;
+}
+
+.text-filter-wrap {
+  padding: 0;
+}
+
+.text-clear {
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0 2px;
+  flex-shrink: 0;
+}
+
+.text-clear:hover {
+  color: var(--accent);
 }
 </style>

@@ -49,6 +49,7 @@ async def search(req: SearchRequest, pool) -> SearchResponse:
     valid_values = {}
     number_fields = set()
     boolean_fields = set()
+    text_fields = set()
     for d in tag_defs:
         if d["field_type"] in ("enum_single", "enum_multi") and d.get("values"):
             valid_values[d["field_name"]] = set(d["values"])
@@ -56,6 +57,8 @@ async def search(req: SearchRequest, pool) -> SearchResponse:
             number_fields.add(d["field_name"])
         elif d["field_type"] == "boolean":
             boolean_fields.add(d["field_name"])
+        elif d["field_type"] == "text":
+            text_fields.add(d["field_name"])
 
     parse_info = None
     effective_filters = dict(req.filters)
@@ -106,6 +109,7 @@ async def search(req: SearchRequest, pool) -> SearchResponse:
         page_size=req.page_size,
         filterable_fields=filterable,
         agg_fields=agg_fields,
+        text_fields=text_fields,
     )
 
     es = await get_es()
@@ -130,9 +134,10 @@ async def search(req: SearchRequest, pool) -> SearchResponse:
 
     facets = {}
     for field, agg_data in es_resp.get("aggregations", {}).items():
+        buckets = agg_data.get("buckets") or agg_data.get("values", {}).get("buckets", [])
         facets[field] = [
             FacetValue(value=bucket["key"], count=bucket["doc_count"])
-            for bucket in agg_data.get("buckets", [])
+            for bucket in buckets
         ]
 
     elapsed = int((time.monotonic() - start) * 1000)

@@ -3,6 +3,21 @@ from app.config import settings
 OP_MAP = {">": "gt", "<": "lt", ">=": "gte", "<=": "lte", "==": "gte"}
 
 
+def _build_filter_clause(field: str, value, text_fields: set) -> dict:
+    if isinstance(value, list):
+        return {"terms": {f"tags.{field}": value}}
+    elif isinstance(value, dict) and "op" in value:
+        es_op = OP_MAP.get(value["op"], "gte")
+        range_q: dict = {f"tags.{field}": {es_op: value["value"]}}
+        if value["op"] == "==":
+            range_q[f"tags.{field}"]["lte"] = value["value"]
+        return {"range": range_q}
+    elif isinstance(value, str) and field in text_fields:
+        return {"wildcard": {f"tags.{field}": {"value": f"*{value}*"}}}
+    else:
+        return {"term": {f"tags.{field}": value}}
+
+
 def build_search_query(
     module_type: int,
     filters: dict | None = None,
@@ -13,27 +28,26 @@ def build_search_query(
     page_size: int = 20,
     filterable_fields: list[str] | None = None,
     agg_fields: list[str] | None = None,
+    text_fields: set[str] | None = None,
 ) -> dict:
     filters = filters or {}
     conditions = conditions or []
     filterable_fields = filterable_fields or []
     agg_fields = agg_fields or []
+    text_fields = text_fields or set()
+    agg_fields_set = set(agg_fields)
 
-    bool_filter: list[dict] = [{"term": {"module_type": str(module_type)}}]
+    base_filters: list[dict] = [{"term": {"module_type": str(module_type)}}]
+    facet_clauses: dict[str, dict] = {}
     bool_must: list[dict] = []
 
-    # --- filters (from faceted UI selections) ---
+    # --- filters: separate facet (enum agg) vs non-facet ---
     for field, value in filters.items():
-        if isinstance(value, list):
-            bool_filter.append({"terms": {f"tags.{field}": value}})
-        elif isinstance(value, dict) and "op" in value:
-            es_op = OP_MAP.get(value["op"], "gte")
-            range_q: dict = {f"tags.{field}": {es_op: value["value"]}}
-            if value["op"] == "==":
-                range_q[f"tags.{field}"]["lte"] = value["value"]
-            bool_filter.append({"range": range_q})
+        clause = _build_filter_clause(field, value, text_fields)
+        if field in agg_fields_set:
+            facet_clauses[field] = clause
         else:
-            bool_filter.append({"term": {f"tags.{field}": value}})
+            base_filters.append(clause)
 
     # --- conditions (explicit range / comparison rules) ---
     for cond in conditions:
@@ -41,7 +55,7 @@ def build_search_query(
         range_q = {f"tags.{cond['field']}": {es_op: cond["value"]}}
         if cond["op"] == "==":
             range_q[f"tags.{cond['field']}"]["lte"] = cond["value"]
-        bool_filter.append({"range": range_q})
+        base_filters.append({"range": range_q})
 
     # --- keyword full-text search ---
     if keyword:
@@ -56,7 +70,7 @@ def build_search_query(
             }
         )
 
-    bool_query: dict = {"filter": bool_filter}
+    bool_query: dict = {"filter": base_filters}
     if bool_must:
         bool_query["must"] = bool_must
 
@@ -107,11 +121,23 @@ def build_search_query(
         },
     }
 
-    # --- aggregations for sidebar facet counts ---
+    # --- post_filter: facet filters applied to hits only (not aggs) ---
+    if facet_clauses:
+        query["post_filter"] = {"bool": {"filter": list(facet_clauses.values())}}
+
+    # --- aggregations: each field excludes its own filter ---
     if agg_fields:
         aggs: dict = {}
-        for field in agg_fields:
-            aggs[field] = {"terms": {"field": f"tags.{field}", "size": 50}}
+        for agg_field in agg_fields:
+            other_facet = [c for f, c in facet_clauses.items() if f != agg_field]
+            inner = {"terms": {"field": f"tags.{agg_field}", "size": 500}}
+            if other_facet:
+                aggs[agg_field] = {
+                    "filter": {"bool": {"filter": other_facet}},
+                    "aggs": {"values": inner},
+                }
+            else:
+                aggs[agg_field] = inner
         query["aggs"] = aggs
 
     return query

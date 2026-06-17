@@ -47,7 +47,7 @@ function filterEntries(info: ParseInfo) {
         v-model="localQuery"
         type="text"
         class="search-input"
-        placeholder="搜索资源... 例如「写实风格 女性 红色衣着」"
+        placeholder="蒙面男青年"
         @input="onInput"
         @keyup.enter="onSearch"
       />

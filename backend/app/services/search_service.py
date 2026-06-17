@@ -110,6 +110,7 @@ async def search(req: SearchRequest, pool) -> SearchResponse:
         filterable_fields=filterable,
         agg_fields=agg_fields,
         text_fields=text_fields,
+        number_fields=number_fields,
     )
 
     es = await get_es()

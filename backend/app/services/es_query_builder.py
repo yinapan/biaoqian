@@ -3,8 +3,11 @@ from app.config import settings
 OP_MAP = {">": "gt", "<": "lt", ">=": "gte", "<=": "lte", "==": "gte"}
 
 
-def _build_filter_clause(field: str, value, text_fields: set) -> dict:
-    if isinstance(value, list):
+def _build_filter_clause(field: str, value, text_fields: set, number_fields: set | None = None) -> dict:
+    number_fields = number_fields or set()
+    if isinstance(value, list) and field in number_fields and len(value) == 2:
+        return {"range": {f"tags.{field}": {"gte": value[0], "lte": value[1]}}}
+    elif isinstance(value, list):
         return {"terms": {f"tags.{field}": value}}
     elif isinstance(value, dict) and "op" in value:
         es_op = OP_MAP.get(value["op"], "gte")
@@ -29,12 +32,14 @@ def build_search_query(
     filterable_fields: list[str] | None = None,
     agg_fields: list[str] | None = None,
     text_fields: set[str] | None = None,
+    number_fields: set[str] | None = None,
 ) -> dict:
     filters = filters or {}
     conditions = conditions or []
     filterable_fields = filterable_fields or []
     agg_fields = agg_fields or []
     text_fields = text_fields or set()
+    number_fields = number_fields or set()
     agg_fields_set = set(agg_fields)
 
     base_filters: list[dict] = [{"term": {"module_type": str(module_type)}}]
@@ -43,7 +48,7 @@ def build_search_query(
 
     # --- filters: separate facet (enum agg) vs non-facet ---
     for field, value in filters.items():
-        clause = _build_filter_clause(field, value, text_fields)
+        clause = _build_filter_clause(field, value, text_fields, number_fields)
         if field in agg_fields_set:
             facet_clauses[field] = clause
         else:

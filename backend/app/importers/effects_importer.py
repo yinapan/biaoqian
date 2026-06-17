@@ -13,8 +13,6 @@ from __future__ import annotations
 
 import json
 import logging
-import os
-import shutil
 import uuid
 from pathlib import Path
 
@@ -93,26 +91,15 @@ def build_effect_tags(resource: dict) -> dict:
     return tags
 
 
-def _copy_gif(
-    gif_rel_path: str,
-    gifs_source_dir: str,
-    target_gifs_dir: str,
-) -> str | None:
-    """Copy a GIF to the target gifs directory.
+def _resolve_gif_filename(gif_rel_path: str) -> str | None:
+    """Extract the GIF filename from a relative path like 'gifs/xxx.gif'.
 
-    Returns the GIF filename or ``None`` if the source doesn't exist.
+    The GIF files are served directly from the mounted /data/gifs/ volume,
+    so no copying is needed — just return the filename.
     """
-    src = Path(gifs_source_dir) / gif_rel_path
-    if not src.exists():
+    if not gif_rel_path:
         return None
-
-    os.makedirs(target_gifs_dir, exist_ok=True)
-    gif_filename = Path(gif_rel_path).name
-    dst = Path(target_gifs_dir) / gif_filename
-    if not dst.exists():
-        shutil.copy2(str(src), str(dst))
-
-    return gif_filename
+    return Path(gif_rel_path).name
 
 
 # ---------------------------------------------------------------------------
@@ -158,9 +145,6 @@ async def import_effects_json(
     errors: list[dict] = []
     es_batch: list[dict] = []
 
-    # Target gifs directory (served via nginx at /data/gifs/)
-    target_gifs_dir = "/data/gifs"
-
     for idx, resource in enumerate(resources):
         try:
             result = resource.get("result", {})
@@ -174,15 +158,9 @@ async def import_effects_json(
             name = extract_name_from_path(resource_path)
             tags = build_effect_tags(resource)
 
-            # Copy GIF to serving directory and set thumbnail_path
+            # Resolve GIF filename (files are already in the mounted volume)
             gif_rel_path = result.get("gif_rel_path")
-            thumbnail_path = None
-            if gif_rel_path:
-                gif_filename = _copy_gif(
-                    gif_rel_path, gifs_source_dir, target_gifs_dir
-                )
-                if gif_filename:
-                    thumbnail_path = gif_filename
+            thumbnail_path = _resolve_gif_filename(gif_rel_path)
 
             async with pool.acquire() as conn:
                 row_result = await conn.fetchrow(

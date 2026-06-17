@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.models.database import close_pool, get_pool
-from app.routers import admin, assets, filter, search
+from app.routers import admin, assets, filter, health, search
 from app.services.es_mapping import build_index_settings_and_mappings
 from app.services.es_sync_service import close_es, get_es
 from app.services.parse_service import init_matcher
@@ -46,8 +46,4 @@ app.include_router(search.router)
 app.include_router(filter.router)
 app.include_router(assets.router)
 app.include_router(admin.router)
-
-
-@app.get("/api/v1/health")
-async def health():
-    return {"status": "ok"}
+app.include_router(health.router)

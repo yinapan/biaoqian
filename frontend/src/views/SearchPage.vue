@@ -21,14 +21,7 @@ onMounted(async () => {
     <header class="topbar">
       <div class="topbar-left">
         <div class="brand">
-          <span class="brand-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2L2 7l10 5 10-5-10-5z" fill="var(--accent)" opacity="0.8"/>
-              <path d="M2 17l10 5 10-5" stroke="var(--accent)" stroke-width="1.5" fill="none" opacity="0.5"/>
-              <path d="M2 12l10 5 10-5" stroke="var(--accent)" stroke-width="1.5" fill="none" opacity="0.7"/>
-            </svg>
-          </span>
-          <h1 class="brand-text">美术资源</h1>
+          <img src="/logo.png" alt="Logo" class="brand-logo" />
         </div>
         <ModuleTabs />
       </div>
@@ -93,23 +86,11 @@ onMounted(async () => {
   gap: 10px;
 }
 
-.brand-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: var(--accent-soft);
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(232, 168, 56, 0.15);
+.brand-logo {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
 }
-
-.brand-text {
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--text-primary);
-  white-space: nowrap;
 }
 
 /* --- Main Area --- */

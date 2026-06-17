@@ -158,6 +158,17 @@ async def import_excel(
         headers = [c.value for c in next(ws.iter_rows(min_row=1, max_row=1))]
         col_map = ACTION_COLUMN_MAP if module_type == 3 else COLUMN_MAP
 
+        # Some model sheets have a resource path value in col 0 instead of
+        # the header "资源完整路径".  Detect and fix.
+        if (
+            module_type == 1
+            and headers
+            and headers[0]
+            and headers[0] not in col_map
+            and ("/" in headers[0] or "\\" in headers[0])
+        ):
+            headers[0] = "资源完整路径"
+
         for row_idx, row in enumerate(
             ws.iter_rows(min_row=3, values_only=True), start=3
         ):

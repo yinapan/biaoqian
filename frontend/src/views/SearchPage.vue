@@ -19,7 +19,7 @@ onMounted(async () => {
   <el-container class="search-page">
     <!-- Header -->
     <el-header class="search-header" height="auto">
-      <h1 class="logo">标巧资源搜索</h1>
+      <h1 class="logo">美术标签搜索</h1>
       <ModuleTabs />
       <SearchBar />
     </el-header>

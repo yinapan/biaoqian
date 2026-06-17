@@ -90,8 +90,9 @@ const facetMap = computed(() => {
 })
 
 function getFacetCount(val: string): number | null {
-  const c = facetMap.value[val]
-  return c !== undefined ? c : null
+  const buckets = store.facets[field.value]
+  if (!buckets || !buckets.length) return null
+  return facetMap.value[val] ?? 0
 }
 
 function toggleOption(val: string) {

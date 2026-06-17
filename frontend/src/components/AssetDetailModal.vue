@@ -94,6 +94,44 @@ const TAG_LABELS: Record<string, string> = {
   effect_duration_sec: '特效时长',
 }
 
+/** Group definitions for detail view: fields in the same group are merged into one row */
+const TAG_GROUPS: Record<string, { label: string; fields: string[]; unit?: string }> = {
+  dimensions: { label: '尺寸 (cm)', fields: ['length_cm', 'width_cm', 'height_cm'], unit: 'cm' },
+  camera: { label: '相机参数', fields: ['camera_distance', 'camera_scale'] },
+  coverage: { label: '画面占比', fields: ['area_ratio', 'span_max'] },
+}
+
+const GROUPED_FIELDS = new Set(Object.values(TAG_GROUPS).flatMap(g => g.fields))
+
+const FIELD_SHORT_LABELS: Record<string, string> = {
+  length_cm: '长', width_cm: '宽', height_cm: '高',
+  camera_distance: '距离', camera_scale: '缩放',
+  area_ratio: '面积', span_max: '跨度',
+}
+
+/** Tag entries excluding grouped fields and hidden internal fields */
+const visibleTagEntries = computed(() =>
+  tagEntries.value.filter(([key]) => !GROUPED_FIELDS.has(key))
+)
+
+/** Grouped numeric entries that exist in this item's tags */
+const activeGroups = computed(() => {
+  const result: Array<{ label: string; items: Array<{ short: string; value: any }> }> = []
+  for (const g of Object.values(TAG_GROUPS)) {
+    const items: Array<{ short: string; value: any }> = []
+    for (const f of g.fields) {
+      const val = props.item.tags[f]
+      if (val !== undefined && val !== null) {
+        items.push({ short: FIELD_SHORT_LABELS[f] || f, value: val })
+      }
+    }
+    if (items.length > 0) {
+      result.push({ label: g.label, items })
+    }
+  }
+  return result
+})
+
 function getLabel(key: string) {
   return TAG_LABELS[key] || key
 }
@@ -130,13 +168,24 @@ function getLabel(key: string) {
         <!-- Tags grid -->
         <div class="meta-grid">
           <div
-            v-for="[key, val] in tagEntries"
+            v-for="[key, val] in visibleTagEntries"
             :key="key"
             class="meta-item"
           >
             <span class="meta-label">{{ getLabel(key) }}</span>
             <span class="meta-value">
               {{ Array.isArray(val) ? val.join(' · ') : val }}
+            </span>
+          </div>
+          <!-- Grouped numeric fields -->
+          <div
+            v-for="group in activeGroups"
+            :key="group.label"
+            class="meta-item"
+          >
+            <span class="meta-label">{{ group.label }}</span>
+            <span class="meta-value">
+              {{ group.items.map(i => `${i.short}: ${i.value}`).join(' / ') }}
             </span>
           </div>
         </div>

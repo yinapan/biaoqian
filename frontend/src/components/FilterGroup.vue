@@ -5,6 +5,8 @@ import type { TagDefinition } from '@/types'
 
 const props = defineProps<{
   definition: TagDefinition
+  groupedDefinitions?: TagDefinition[]
+  groupLabel?: string
 }>()
 
 const store = useSearchStore()
@@ -123,15 +125,47 @@ function clearTextFilter() {
   store.setFilter(field.value, null)
   store.doSearch()
 }
+
+const isGrouped = computed(() => !!props.groupedDefinitions && props.groupedDefinitions.length > 1)
+
+const displayLabel = computed(() => props.groupLabel || props.definition.display_name)
+
+const groupActiveCount = computed(() => {
+  if (!isGrouped.value) return activeCount.value
+  let count = 0
+  for (const d of props.groupedDefinitions!) {
+    if (store.filters[d.field_name] != null) count++
+  }
+  return count
+})
+
+function getGroupRangeValue(def: TagDefinition): [number, number] {
+  const min = (def.config as any)?.min ?? 0
+  const max = (def.config as any)?.max ?? 100
+  const v = store.filters[def.field_name]
+  if (Array.isArray(v) && v.length === 2) return v as [number, number]
+  return [min, max]
+}
+
+function setGroupRangeValue(def: TagDefinition, val: [number, number]) {
+  const min = (def.config as any)?.min ?? 0
+  const max = (def.config as any)?.max ?? 100
+  if (val[0] === min && val[1] === max) {
+    store.setFilter(def.field_name, null)
+  } else {
+    store.setFilter(def.field_name, val)
+  }
+  store.doSearch()
+}
 </script>
 
 <template>
-  <div class="filter-group" :class="{ collapsed, 'has-active': activeCount > 0 }">
+  <div class="filter-group" :class="{ collapsed, 'has-active': groupActiveCount > 0 }">
     <!-- Group header -->
     <button class="group-header" @click="collapsed = !collapsed">
-      <span class="header-label">{{ definition.display_name }}</span>
+      <span class="header-label">{{ displayLabel }}</span>
       <span class="header-right">
-        <span v-if="activeCount > 0" class="active-badge">{{ activeCount }}</span>
+        <span v-if="groupActiveCount > 0" class="active-badge">{{ groupActiveCount }}</span>
         <span class="chevron-icon" :class="{ rotated: collapsed }">
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
             <path d="M2.5 3.5L5 6L7.5 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
@@ -178,16 +212,31 @@ function clearTextFilter() {
         </div>
       </template>
 
-      <!-- Number range slider -->
-      <div v-else-if="isRange" class="range-wrap">
-        <el-slider
-          v-model="rangeValue"
-          range
-          :min="rangeMin"
-          :max="rangeMax"
-          :step="rangeStep"
-        />
-      </div>
+      <!-- Number range slider (grouped or single) -->
+      <template v-else-if="isRange">
+        <div v-if="isGrouped" class="grouped-ranges">
+          <div v-for="gd in groupedDefinitions" :key="gd.field_name" class="grouped-range-item">
+            <span class="range-label">{{ gd.display_name }}</span>
+            <el-slider
+              :model-value="getGroupRangeValue(gd)"
+              @update:model-value="(v: any) => setGroupRangeValue(gd, v)"
+              range
+              :min="(gd.config as any)?.min ?? 0"
+              :max="(gd.config as any)?.max ?? 100"
+              :step="(gd.config as any)?.step ?? 1"
+            />
+          </div>
+        </div>
+        <div v-else class="range-wrap">
+          <el-slider
+            v-model="rangeValue"
+            range
+            :min="rangeMin"
+            :max="rangeMax"
+            :step="rangeStep"
+          />
+        </div>
+      </template>
 
       <!-- Boolean switch -->
       <div v-else-if="isBool" class="bool-wrap">
@@ -476,6 +525,23 @@ function clearTextFilter() {
 /* --- Range / Bool wrappers --- */
 .range-wrap {
   padding: 4px 4px 0;
+}
+
+.grouped-ranges {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.grouped-range-item {
+  padding: 0 4px;
+}
+
+.range-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+  display: block;
 }
 
 .bool-wrap {

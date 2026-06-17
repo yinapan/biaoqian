@@ -84,7 +84,7 @@ def build_effect_tags(resource: dict) -> dict:
 
     # Numeric fields
     _NUMERIC_FIELDS = (
-        "effect_duration_sec", "gif_duration_sec",
+        "effect_duration_sec",
         "length_cm", "width_cm", "height_cm",
         "camera_distance", "camera_scale",
         "area_ratio", "span_max",

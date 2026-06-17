@@ -9,6 +9,26 @@ const filterableDefs = computed(() =>
   store.tagDefinitions.filter((d) => d.is_filterable),
 )
 
+/** Group consecutive definitions that share the same config.group into one entry */
+const groupedDefs = computed(() => {
+  const defs = filterableDefs.value
+  const result: Array<{ key: string; group?: string; items: typeof defs }> = []
+  for (const d of defs) {
+    const grp = (d.config as any)?.group as string | undefined
+    if (grp) {
+      const last = result[result.length - 1]
+      if (last && last.group === grp) {
+        last.items.push(d)
+        continue
+      }
+      result.push({ key: `grp-${grp}`, group: grp, items: [d] })
+    } else {
+      result.push({ key: d.field_name, items: [d] })
+    }
+  }
+  return result
+})
+
 const activeFilterCount = computed(() => {
   let count = 0
   for (const key in store.filters) {
@@ -50,13 +70,23 @@ function clearAll() {
 
     <!-- Filter groups -->
     <div class="panel-scroll">
-      <template v-if="filterableDefs.length">
-        <FilterGroup
-          v-for="(def, idx) in filterableDefs"
-          :key="def.field_name"
-          :definition="def"
-          :style="{ animationDelay: `${idx * 30}ms` }"
-        />
+      <template v-if="groupedDefs.length">
+        <template v-for="(entry, idx) in groupedDefs" :key="entry.key">
+          <!-- Grouped filters (e.g. 尺寸, 相机参数) -->
+          <FilterGroup
+            v-if="entry.group"
+            :definition="entry.items[0]"
+            :grouped-definitions="entry.items"
+            :group-label="entry.group"
+            :style="{ animationDelay: `${idx * 30}ms` }"
+          />
+          <!-- Single filter -->
+          <FilterGroup
+            v-else
+            :definition="entry.items[0]"
+            :style="{ animationDelay: `${idx * 30}ms` }"
+          />
+        </template>
       </template>
       <div v-else class="panel-empty">
         <span class="empty-icon">◇</span>

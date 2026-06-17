@@ -14,7 +14,6 @@ services:
         -c effective_cache_size=4GB
         -c work_mem=64MB
         -c max_connections=200
-    ports: ["5432:5432"]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U biaoqiao"]
       interval: 5s
@@ -32,7 +31,6 @@ services:
       - discovery.type=single-node
       - ES_JAVA_OPTS=-Xms2g -Xmx2g
       - xpack.security.enabled=false
-    ports: ["9200:9200"]
     volumes:
       - es_data:/usr/share/elasticsearch/data
     healthcheck:
@@ -55,7 +53,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://biaoqiao:biaoqiao_dev@postgres:5432/biaoqiao
       - ES_URL=http://elasticsearch:9200
-      - ADMIN_API_KEY=dev-admin-key-change-in-prod
+      - ADMIN_API_KEY=${ADMIN_API_KEY:-dev-admin-key-change-in-prod}
     depends_on:
       postgres:
         condition: service_healthy
@@ -69,6 +67,7 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - ./frontend/dist:/usr/share/nginx/html:ro
       - ./previews:/data/previews:ro
+      - ./特效/merged/gifs:/data/gifs:ro
     depends_on: [backend]
 
 volumes:

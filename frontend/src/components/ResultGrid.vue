@@ -96,10 +96,19 @@ const store = useSearchStore()
 
 /* --- Grid --- */
 .grid {
+  --cols: 5;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  gap: 12px;
 }
+
+@media (min-width: 1400px) { .grid { --cols: 6; } }
+@media (min-width: 1700px) { .grid { --cols: 7; } }
+@media (min-width: 2000px) { .grid { --cols: 8; } }
+@media (min-width: 2400px) { .grid { --cols: 9; } }
+@media (min-width: 2800px) { .grid { --cols: 10; } }
+@media (max-width: 1100px) { .grid { --cols: 4; } }
+@media (max-width: 800px)  { .grid { --cols: 3; } }
 
 /* --- Skeleton loading --- */
 .skeleton-card {

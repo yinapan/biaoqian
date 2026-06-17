@@ -9,7 +9,7 @@ export const useSearchStore = defineStore('search', () => {
   const query = ref('')
   const filters = ref<Record<string, any>>({})
   const page = ref(1)
-  const pageSize = ref(20)
+  const pageSize = ref(60)
   const loading = ref(false)
 
   const response = ref<SearchResponse | null>(null)

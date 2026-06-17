@@ -1,0 +1,6 @@
+ARG ELASTICSEARCH_BASE_IMAGE=biaoqiao/elasticsearch-base:8.15.0
+FROM ${ELASTICSEARCH_BASE_IMAGE}
+
+COPY analysis-ik-8.15.0.zip /tmp/analysis-ik-8.15.0.zip
+RUN elasticsearch-plugin install --batch file:///tmp/analysis-ik-8.15.0.zip \
+    && rm -f /tmp/analysis-ik-8.15.0.zip

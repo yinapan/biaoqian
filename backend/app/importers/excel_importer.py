@@ -12,8 +12,10 @@ Known non-data sheets (rules, statistics, etc.) are skipped.
 from __future__ import annotations
 
 import json
+import os
 import re
 import uuid
+import zipfile
 
 import asyncpg
 import openpyxl
@@ -136,9 +138,14 @@ async def import_excel(
     """
     batch_id = str(uuid.uuid4())[:8]
     wb = openpyxl.load_workbook(filepath, read_only=True, data_only=True)
-    wps_images = extract_wps_images(filepath)  # noqa: F841 – reserved for thumbnail extraction
+    wps_images = extract_wps_images(filepath)
 
-    stats = {"success": 0, "skipped": 0, "failed": 0, "es_sync_failed": 0}
+    os.makedirs(previews_dir, exist_ok=True)
+
+    # Pre-open the xlsx as a zip for image extraction
+    xlsx_zip = zipfile.ZipFile(filepath)
+
+    stats = {"success": 0, "skipped": 0, "failed": 0, "es_sync_failed": 0, "images_extracted": 0}
     errors: list[dict] = []
     es_batch: list[dict] = []
 
@@ -194,18 +201,40 @@ async def import_excel(
                     else resource_path
                 )
                 tags = {k: v for k, v in mapped.items() if v}
+                tags["source_sheet"] = sheet_name
+
+                # Extract thumbnail from WPS embedded images
+                thumbnail_path = None
+                sheet_images = wps_images.get(sheet_name, {})
+                media_path = sheet_images.get(row_idx)
+                if media_path:
+                    ext = os.path.splitext(media_path)[1] or ".png"
+                    thumb_filename = f"{os.path.splitext(name)[0]}{ext}"
+                    thumb_full_path = os.path.join(previews_dir, thumb_filename)
+                    if not os.path.exists(thumb_full_path):
+                        try:
+                            img_data = xlsx_zip.read(media_path)
+                            with open(thumb_full_path, "wb") as f:
+                                f.write(img_data)
+                            stats["images_extracted"] += 1
+                        except (KeyError, OSError):
+                            thumb_filename = None
+                    thumbnail_path = thumb_filename
 
                 async with pool.acquire() as conn:
                     row_result = await conn.fetchrow(
-                        """INSERT INTO assets (module_type, name, resource_path, tags)
-                           VALUES ($1, $2, $3, $4::jsonb)
+                        """INSERT INTO assets (module_type, name, resource_path,
+                                              thumbnail_path, tags)
+                           VALUES ($1, $2, $3, $4, $5::jsonb)
                            ON CONFLICT (module_type, resource_path)
-                           DO UPDATE SET tags = $4::jsonb, updated_at = NOW()
+                           DO UPDATE SET thumbnail_path = COALESCE($4, assets.thumbnail_path),
+                                         tags = $5::jsonb, updated_at = NOW()
                            RETURNING id, module_type, name, resource_path,
                                      thumbnail_path, tags, created_at, updated_at""",
                         module_type,
                         name,
                         resource_path,
+                        thumbnail_path,
                         json.dumps(tags, ensure_ascii=False),
                     )
                     es_batch.append(build_es_doc(dict(row_result)))
@@ -234,4 +263,5 @@ async def import_excel(
                     stats["es_sync_failed"] += 1
 
     wb.close()
+    xlsx_zip.close()
     return {"batch_id": batch_id, **stats, "errors": errors[:50]}

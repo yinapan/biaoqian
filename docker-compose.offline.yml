@@ -1,0 +1,13 @@
+services:
+  elasticsearch:
+    build:
+      context: ./docker/elasticsearch
+      dockerfile: Dockerfile.offline
+      args:
+        ELASTICSEARCH_BASE_IMAGE: ${ELASTICSEARCH_BASE_IMAGE:-biaoqiao/elasticsearch-base:8.15.0}
+
+  backend:
+    build:
+      args:
+        PYTHON_BASE_IMAGE: ${PYTHON_BASE_IMAGE:-biaoqiao/python-base:3.12-slim}
+        PIP_INDEX_URL: ${PIP_INDEX_URL:-}

@@ -14,9 +14,9 @@ const hovering = ref(false)
 
 const PLACEHOLDER = 'data:image/svg+xml;charset=UTF-8,' +
   encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" fill="%23e0e0e0">' +
-    '<rect width="200" height="200"/>' +
-    '<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23999" font-size="14">No Preview</text>' +
+    '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">' +
+    '<rect width="200" height="200" fill="#1a1b20"/>' +
+    '<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#5c5a54" font-size="12" font-family="sans-serif">No Preview</text>' +
     '</svg>',
   )
 
@@ -29,29 +29,32 @@ const isEffect = computed(() => store.moduleType === 2)
 
 const displaySrc = computed(() => {
   if (isEffect.value && hovering.value && props.item.thumbnail_path) {
-    // Replace extension with .gif for hover preview
     const baseName = props.item.name
     return `/static/previews/effects/${baseName}.gif`
   }
   return thumbnailSrc.value
 })
 
-// Show first 5 tag entries
 const visibleTags = computed(() => {
   const entries = Object.entries(props.item.tags)
-  return entries.slice(0, 5)
+  return entries.slice(0, 3)
+})
+
+const tagLabel = computed(() => {
+  const first = Object.values(props.item.tags)[0]
+  if (!first) return ''
+  return Array.isArray(first) ? first[0] : String(first)
 })
 </script>
 
 <template>
-  <el-card
+  <div
     class="asset-card"
-    shadow="hover"
-    :body-style="{ padding: '0' }"
     @click="showDetail = true"
     @mouseenter="hovering = true"
     @mouseleave="hovering = false"
   >
+    <!-- Thumbnail -->
     <div class="card-thumb">
       <img
         :src="displaySrc"
@@ -59,62 +62,128 @@ const visibleTags = computed(() => {
         loading="lazy"
         @error="($event.target as HTMLImageElement).src = PLACEHOLDER"
       />
+      <div class="thumb-overlay">
+        <span class="overlay-action">查看详情</span>
+      </div>
+      <!-- Floating tag badge -->
+      <span v-if="tagLabel" class="float-badge">{{ tagLabel }}</span>
     </div>
-    <div class="card-body">
+
+    <!-- Info -->
+    <div class="card-info">
       <div class="card-name" :title="item.name">{{ item.name }}</div>
       <div class="card-tags">
-        <el-tag
+        <span
           v-for="[key, val] in visibleTags"
           :key="key"
-          size="small"
-          type="info"
-          effect="plain"
-          class="tag-item"
+          class="mini-tag"
         >
           {{ Array.isArray(val) ? val.join(', ') : val }}
-        </el-tag>
+        </span>
       </div>
     </div>
-  </el-card>
+  </div>
 
   <AssetDetailModal v-model="showDetail" :item="item" />
 </template>
 
 <style scoped>
 .asset-card {
-  margin-bottom: 16px;
-  cursor: pointer;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   overflow: hidden;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: fadeInUp 0.4s ease both;
 }
 
+.asset-card:hover {
+  border-color: var(--border-light);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* --- Thumbnail --- */
 .card-thumb {
-  width: 100%;
+  position: relative;
   aspect-ratio: 1;
-  background: #f5f5f5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
+  background: var(--bg-root);
 }
 
 .card-thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.card-body {
-  padding: 10px 12px;
+.asset-card:hover .card-thumb img {
+  transform: scale(1.06);
+}
+
+/* Hover overlay */
+.thumb-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(12, 13, 16, 0.8) 0%,
+    transparent 50%
+  );
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 16px;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.asset-card:hover .thumb-overlay {
+  opacity: 1;
+}
+
+.overlay-action {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent-text);
+  padding: 4px 14px;
+  border-radius: 20px;
+  background: rgba(232, 168, 56, 0.15);
+  border: 1px solid rgba(232, 168, 56, 0.3);
+  backdrop-filter: blur(8px);
+}
+
+/* Floating badge */
+.float-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 4px;
+  background: rgba(12, 13, 16, 0.7);
+  color: var(--text-secondary);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-subtle);
+}
+
+/* --- Info section --- */
+.card-info {
+  padding: 10px 12px 12px;
 }
 
 .card-name {
   font-size: 13px;
   font-weight: 500;
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   margin-bottom: 6px;
+  letter-spacing: -0.01em;
 }
 
 .card-tags {
@@ -123,9 +192,15 @@ const visibleTags = computed(() => {
   gap: 4px;
 }
 
-.tag-item {
-  max-width: 120px;
+.mini-tag {
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 1px 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 3px;
+  max-width: 100px;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>

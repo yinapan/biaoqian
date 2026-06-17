@@ -16,64 +16,125 @@ onMounted(async () => {
 </script>
 
 <template>
-  <el-container class="search-page">
-    <!-- Header -->
-    <el-header class="search-header" height="auto">
-      <h1 class="logo">美术标签搜索</h1>
-      <ModuleTabs />
-      <SearchBar />
-    </el-header>
+  <div class="app-shell">
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="brand">
+          <span class="brand-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" fill="var(--accent)" opacity="0.8"/>
+              <path d="M2 17l10 5 10-5" stroke="var(--accent)" stroke-width="1.5" fill="none" opacity="0.5"/>
+              <path d="M2 12l10 5 10-5" stroke="var(--accent)" stroke-width="1.5" fill="none" opacity="0.7"/>
+            </svg>
+          </span>
+          <h1 class="brand-text">美术资源</h1>
+        </div>
+        <ModuleTabs />
+      </div>
+      <div class="topbar-right">
+        <SearchBar />
+      </div>
+    </header>
 
-    <!-- Body -->
-    <el-container class="search-body">
-      <!-- Sidebar filters -->
-      <el-aside class="filter-aside" width="280px">
+    <!-- Main content area -->
+    <div class="main-area">
+      <!-- Sidebar -->
+      <aside class="sidebar">
         <FilterPanel />
-      </el-aside>
+      </aside>
 
-      <!-- Main content -->
-      <el-main class="result-main">
+      <!-- Content -->
+      <main class="content">
         <ResultGrid />
         <PaginationBar />
-      </el-main>
-    </el-container>
-  </el-container>
+      </main>
+    </div>
+  </div>
 </template>
 
 <style scoped>
-.search-page {
+.app-shell {
   height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-root);
+  overflow: hidden;
+}
+
+/* --- Top Bar --- */
+.topbar {
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.topbar-right {
+  flex: 1;
+  max-width: 560px;
+  margin-left: 40px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--accent-soft);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(232, 168, 56, 0.15);
+}
+
+.brand-text {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+/* --- Main Area --- */
+.main-area {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* --- Sidebar --- */
+.sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  background: var(--bg-elevated);
+  border-right: 1px solid var(--border-subtle);
+  overflow: hidden;
+  padding: 16px 12px;
   display: flex;
   flex-direction: column;
 }
 
-.search-header {
-  padding: 16px 24px 12px;
-  border-bottom: 1px solid var(--el-border-color-light);
-  background: #fff;
-}
-
-.logo {
-  margin: 0 0 12px;
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--el-color-primary);
-}
-
-.search-body {
+/* --- Content --- */
+.content {
   flex: 1;
-  overflow: hidden;
-}
-
-.filter-aside {
-  border-right: 1px solid var(--el-border-color-light);
   overflow-y: auto;
-  background: #fafafa;
-  padding: 16px;
-}
-
-.result-main {
-  overflow-y: auto;
-  padding: 16px 24px;
+  padding: 24px 28px;
 }
 </style>

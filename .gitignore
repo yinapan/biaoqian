@@ -3,3 +3,23 @@ docker-compose.override.yml
 __pycache__/
 *.py[cod]
 .pytest_cache/
+
+# Data & media (large files, generated)
+previews/
+*.png
+*.jpg
+*.gif
+*.xlsx
+
+# Frontend build artifacts
+frontend/dist/
+frontend/node_modules/
+frontend/tsconfig.*.tsbuildinfo
+
+# Test/debug scripts
+.playwright-mcp/
+check_*.py
+read_excel.py
+
+# Backups
+backups/

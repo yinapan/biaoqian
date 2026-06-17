@@ -68,6 +68,11 @@ export const useSearchStore = defineStore('search', () => {
     page.value = p
   }
 
+  function clearFilters() {
+    filters.value = {}
+    page.value = 1
+  }
+
   return {
     // state
     moduleType,
@@ -89,5 +94,6 @@ export const useSearchStore = defineStore('search', () => {
     setModuleType,
     setFilter,
     setPage,
+    clearFilters,
   }
 })

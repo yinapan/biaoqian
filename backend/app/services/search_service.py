@@ -111,9 +111,11 @@ async def search(req: SearchRequest, pool) -> SearchResponse:
     es = await get_es()
     es_resp = await es.search(index=settings.es_index_alias, body=es_query)
 
+    max_score = es_resp["hits"].get("max_score") or 1
     items = []
     for hit in es_resp["hits"]["hits"]:
         src = hit["_source"]
+        raw_score = hit.get("_score", 0) or 0
         items.append(
             AssetItem(
                 id=src["id"],
@@ -121,7 +123,7 @@ async def search(req: SearchRequest, pool) -> SearchResponse:
                 resource_path=src["resource_path"],
                 thumbnail_path=src.get("thumbnail_path"),
                 tags=src.get("tags", {}),
-                relevance_score=hit.get("_score", 0),
+                relevance_score=round(raw_score / max_score, 3) if keyword else 0,
                 highlight=hit.get("highlight", {}),
             )
         )

@@ -78,6 +78,9 @@ def build_search_query(
                 }
             )
     score_functions.append(
+        {"filter": {"exists": {"field": "thumbnail_path"}}, "weight": 1000}
+    )
+    score_functions.append(
         {
             "linear": {
                 "updated_at": {"origin": "now", "scale": "30d", "decay": 0.5}

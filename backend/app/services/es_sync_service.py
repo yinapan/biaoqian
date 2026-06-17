@@ -38,12 +38,11 @@ def build_es_doc(row: dict) -> dict:
     tags = row["tags"]
     if isinstance(tags, str):
         tags = json.loads(tags)
-    return {
+    doc = {
         "id": row["id"],
         "module_type": str(row["module_type"]),
         "name": row["name"],
         "resource_path": row["resource_path"],
-        "thumbnail_path": row.get("thumbnail_path"),
         "tags": tags,
         "version": row.get("version"),
         "file_size": row.get("file_size"),
@@ -51,6 +50,9 @@ def build_es_doc(row: dict) -> dict:
         "updated_at": row["updated_at"].isoformat() if row.get("updated_at") else None,
         "search_text": f"{row['name']} {' '.join(flatten_tag_values(tags))}",
     }
+    if row.get("thumbnail_path"):
+        doc["thumbnail_path"] = row["thumbnail_path"]
+    return doc
 
 
 async def bulk_index(docs: list[dict]) -> dict:

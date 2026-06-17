@@ -39,7 +39,7 @@ def build_index_settings_and_mappings(tag_definitions: list[dict]) -> dict:
                     "fields": {"keyword": {"type": "keyword"}},
                 },
                 "resource_path": {"type": "keyword", "index": False},
-                "thumbnail_path": {"type": "keyword", "index": False},
+                "thumbnail_path": {"type": "keyword"},
                 "tags": {"type": "object", "dynamic": True},
                 "version": {"type": "keyword"},
                 "file_size": {"type": "long"},

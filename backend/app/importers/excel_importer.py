@@ -100,6 +100,48 @@ MULTI_VALUE_FIELDS = {
 }
 
 # ---------------------------------------------------------------------------
+# Example / enum row detection
+# ---------------------------------------------------------------------------
+
+# The canonical example resource path used across all sheets' row 2 (or row 3
+# in some sheets).  Any row whose resource_path normalizes to this value is an
+# example row and must be skipped during data import.
+_EXAMPLE_PATH_NORMALIZED = "data/source/Npc_source/P080/模型/P080001_HD.mdl"
+_EXAMPLE_PATH_UPPER = _EXAMPLE_PATH_NORMALIZED.upper()
+
+# Rows whose first cell starts with notes/instructions also need skipping.
+_NOTES_PREFIXES = ("1.", "\n1.", "注意事项", "编辑器需求")
+
+
+def _is_example_or_notes_row(resource_path_raw, row_values) -> bool:
+    """Return True if this row is the example/enum row or a notes row.
+
+    Detection heuristics:
+    1. resource_path matches the canonical example path P080001_HD.mdl
+    2. First cell starts with notes/instructions text
+    3. Multiple tag cells contain newline-separated enum listings (≥3 cells
+       each with ≥3 newlines — normal data rarely has that many)
+    """
+    if resource_path_raw:
+        path = str(resource_path_raw).strip().replace("\\", "/").rstrip("\n").strip()
+        if path.upper() == _EXAMPLE_PATH_UPPER:
+            return True
+        for prefix in _NOTES_PREFIXES:
+            if path.startswith(prefix):
+                return True
+
+    # Count cells that look like enum listings (≥3 newline-separated values)
+    enum_cell_count = 0
+    for val in row_values:
+        if val and isinstance(val, str) and val.count("\n") >= 3:
+            enum_cell_count += 1
+    if enum_cell_count >= 3:
+        return True
+
+    return False
+
+
+# ---------------------------------------------------------------------------
 # Helper functions
 # ---------------------------------------------------------------------------
 
@@ -194,6 +236,11 @@ async def import_excel(
             ws.iter_rows(min_row=3, values_only=True), start=3
         ):
             try:
+                # Skip example/enum rows and notes rows
+                if _is_example_or_notes_row(row[0] if row else None, row):
+                    stats["skipped"] += 1
+                    continue
+
                 mapped: dict = {}
                 for col_idx, header in enumerate(headers):
                     if not header or header not in col_map:

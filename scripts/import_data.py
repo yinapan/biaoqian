@@ -13,16 +13,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "backend"))
 import asyncpg
 
 
-async def run_excel_import(excel_path: str, pool: asyncpg.Pool):
+async def run_excel_import(excel_path: str, pool: asyncpg.Pool, previews_dir: str):
     from app.importers.excel_importer import import_excel
-    result = await import_excel(excel_path, pool, "previews")
+    result = await import_excel(excel_path, pool, previews_dir)
     print(f"Excel import done: {result}")
     return result
 
 
-async def run_effects_import(json_path: str, pool: asyncpg.Pool):
+async def run_effects_import(json_path: str, pool: asyncpg.Pool, previews_dir: str):
     from app.importers.effects_importer import import_effects_json
-    result = await import_effects_json(json_path, "特效/merged/gifs", pool, "previews")
+    result = await import_effects_json(json_path, "特效/merged/gifs", pool, previews_dir)
     print(f"Effects import done: {result}")
     return result
 
@@ -35,10 +35,15 @@ async def call_reindex(admin_key: str, backend_url: str = "http://localhost"):
         method="POST",
         headers={"X-Admin-Key": admin_key},
     )
-    with urllib.request.urlopen(req, timeout=300) as resp:
-        result = json.loads(resp.read())
-    print(f"Reindex done: {result}")
-    return result
+    try:
+        with urllib.request.urlopen(req, timeout=300) as resp:
+            result = json.loads(resp.read())
+        print(f"Reindex done: {result}")
+        return result
+    except Exception as e:
+        print(f"Error calling reindex API: {e}", file=sys.stderr)
+        print(f"Is the backend running at {backend_url}?", file=sys.stderr)
+        sys.exit(1)
 
 
 async def call_refresh_dict(admin_key: str, backend_url: str = "http://localhost"):
@@ -49,10 +54,15 @@ async def call_refresh_dict(admin_key: str, backend_url: str = "http://localhost
         method="POST",
         headers={"X-Admin-Key": admin_key},
     )
-    with urllib.request.urlopen(req, timeout=60) as resp:
-        result = json.loads(resp.read())
-    print(f"Dictionary refresh done: {result}")
-    return result
+    try:
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            result = json.loads(resp.read())
+        print(f"Dictionary refresh done: {result}")
+        return result
+    except Exception as e:
+        print(f"Error calling refresh-dictionary API: {e}", file=sys.stderr)
+        print(f"Is the backend running at {backend_url}?", file=sys.stderr)
+        sys.exit(1)
 
 
 async def main():
@@ -79,15 +89,26 @@ async def main():
                     break
         if not admin_key:
             admin_key = "dev-admin-key-change-in-prod"
+            print("WARNING: Using default dev admin key", file=sys.stderr)
+
+    project_root = Path(__file__).resolve().parent.parent
+    previews_dir = str(project_root / "previews")
+
+    if args.excel and not Path(args.excel).exists():
+        print(f"Error: Excel file not found: {args.excel}", file=sys.stderr)
+        sys.exit(1)
+    if args.effects_json and not Path(args.effects_json).exists():
+        print(f"Error: Effects JSON file not found: {args.effects_json}", file=sys.stderr)
+        sys.exit(1)
 
     pool = None
     if args.excel or args.effects_json:
         pool = await asyncpg.create_pool(args.pg_url)
     try:
         if args.excel:
-            await run_excel_import(args.excel, pool)
+            await run_excel_import(args.excel, pool, previews_dir)
         if args.effects_json:
-            await run_effects_import(args.effects_json, pool)
+            await run_effects_import(args.effects_json, pool, previews_dir)
     finally:
         if pool:
             await pool.close()

@@ -1,3 +1,5 @@
+import json
+
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -26,7 +28,8 @@ async def test_health_all_ok():
         resp = await health_check()
 
     assert resp.status_code == 200
-    assert resp.body == b'{"status":"ok","pg":true,"es":true}'
+    data = json.loads(resp.body)
+    assert data == {"status": "ok", "pg": True, "es": True}
 
 
 @pytest.mark.asyncio
@@ -42,7 +45,8 @@ async def test_health_pg_down():
         resp = await health_check()
 
     assert resp.status_code == 503
-    assert resp.body == b'{"status":"error","pg":false,"es":true}'
+    data = json.loads(resp.body)
+    assert data == {"status": "error", "pg": False, "es": True}
 
 
 @pytest.mark.asyncio
@@ -64,4 +68,5 @@ async def test_health_es_down():
         resp = await health_check()
 
     assert resp.status_code == 503
-    assert resp.body == b'{"status":"error","pg":true,"es":false}'
+    data = json.loads(resp.body)
+    assert data == {"status": "error", "pg": True, "es": False}

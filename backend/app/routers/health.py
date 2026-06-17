@@ -4,10 +4,10 @@ from fastapi.responses import JSONResponse
 from app.models.database import get_pool
 from app.services.es_sync_service import get_es
 
-router = APIRouter(tags=["health"])
+router = APIRouter(prefix="/api/v1", tags=["health"])
 
 
-@router.get("/api/v1/health")
+@router.get("/health")
 async def health_check():
     pg_ok = False
     es_ok = False

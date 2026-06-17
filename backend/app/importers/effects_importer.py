@@ -83,7 +83,13 @@ def build_effect_tags(resource: dict) -> dict:
         tags["description"] = desc
 
     # Numeric fields
-    for num_field in ("effect_duration_sec",):
+    _NUMERIC_FIELDS = (
+        "effect_duration_sec", "gif_duration_sec",
+        "length_cm", "width_cm", "height_cm",
+        "camera_distance", "camera_scale",
+        "area_ratio", "span_max",
+    )
+    for num_field in _NUMERIC_FIELDS:
         val = result.get(num_field)
         if val is not None:
             tags[num_field] = val

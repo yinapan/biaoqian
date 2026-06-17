@@ -72,7 +72,15 @@ INSERT INTO tag_definitions (module_type, field_name, display_name, field_type, 
 (2, 'description',    '描述',     'text',       false, false, true, 14);
 
 INSERT INTO tag_definitions (module_type, field_name, display_name, field_type, is_fixed, is_filterable, is_searchable, sort_order, config) VALUES
-(2, 'effect_duration_sec', '特效时长', 'number_range', false, true, false, 15, '{"min":0,"max":60,"step":0.1,"unit":"s"}');
+(2, 'effect_duration_sec', '特效时长',   'number_range', false, true, false, 15, '{"min":0,"max":35,"step":0.5,"unit":"s"}'),
+(2, 'gif_duration_sec',    'GIF时长',    'number_range', false, true, false, 16, '{"min":0,"max":10,"step":0.5,"unit":"s"}'),
+(2, 'length_cm',           '长度(cm)',   'number_range', false, true, false, 17, '{"min":0,"max":20000,"step":100,"unit":"cm"}'),
+(2, 'width_cm',            '宽度(cm)',   'number_range', false, true, false, 18, '{"min":0,"max":20000,"step":100,"unit":"cm"}'),
+(2, 'height_cm',           '高度(cm)',   'number_range', false, true, false, 19, '{"min":0,"max":20000,"step":100,"unit":"cm"}'),
+(2, 'camera_distance',     '相机距离',   'number_range', false, true, false, 20, '{"min":0,"max":35000,"step":100}'),
+(2, 'camera_scale',        '相机缩放',   'number_range', false, true, false, 21, '{"min":0,"max":8,"step":0.1}'),
+(2, 'area_ratio',          '面积占比',   'number_range', false, true, false, 22, '{"min":0,"max":1,"step":0.05}'),
+(2, 'span_max',            '最大跨度',   'number_range', false, true, false, 23, '{"min":0,"max":1,"step":0.05}');
 
 -- ===== 常用同义词 =====
 INSERT INTO tag_synonyms (module_type, field_name, target_value, synonym, priority) VALUES

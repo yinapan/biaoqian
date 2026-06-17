@@ -44,6 +44,9 @@ if exist "特效\merged\effects_data.json" (
 
 echo [4/5] 重建 ES 索引并刷新词典...
 python scripts/import_data.py --reindex
+if errorlevel 1 (
+    echo [WARN] ES 重建索引可能失败，请检查输出。
+)
 
 echo [5/5] 关闭 PG 端口...
 del docker-compose.override.yml

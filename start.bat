@@ -13,6 +13,7 @@ if errorlevel 1 (
 )
 
 echo [1/3] 启动服务...
+del docker-compose.override.yml 2>nul
 docker compose up -d --build
 if errorlevel 1 (
     echo [ERROR] Docker Compose 启动失败。
@@ -37,13 +38,15 @@ echo [OK] 服务已就绪。
 
 :show_ip
 echo [3/3] 检测内网 IP...
-for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /c:"IPv4"') do (
-    set "IP=%%a"
-    goto :found_ip
-)
-:found_ip
-set IP=%IP: =%
 echo ================================
-echo  访问地址: http://%IP%
+echo  可用的 IPv4 地址:
+for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /c:"IPv4"') do (
+    set "ADDR=%%a"
+    call set "ADDR=%%ADDR: =%%"
+    call echo   http://%%ADDR%%
+)
+echo ================================
+echo  请使用上方局域网 IP 地址访问
+echo  (忽略 172.x 开头的虚拟网卡地址)
 echo ================================
 pause

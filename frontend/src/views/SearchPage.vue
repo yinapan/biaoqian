@@ -91,7 +91,6 @@ onMounted(async () => {
   width: auto;
   object-fit: contain;
 }
-}
 
 /* --- Main Area --- */
 .main-area {

@@ -2,8 +2,8 @@
 """Import game effect assets from a JSON manifest + GIF directory.
 
 Data source:
-- A JSON file containing a ``resources`` array with SFX metadata and
-  render results (dimensions, durations, camera params, etc.).
+- A JSON file containing a ``resources`` array with SFX metadata,
+  AI-generated semantic tags, descriptions, and render results.
 - A directory of GIF preview files referenced by relative paths in the JSON.
 
 Each resource is upserted into the ``assets`` table with module_type=2
@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import shutil
 import uuid
 from pathlib import Path
@@ -25,13 +26,25 @@ logger = logging.getLogger(__name__)
 
 MODULE_TYPE_EFFECT = 2
 
-# Result fields that are internal / not useful as searchable tags.
-_RESULT_EXCLUDE_KEYS = frozenset({
-    "status",
-    "run_id",
-    "gif_rel_path",
-    "gif_grid_rel_path",
-})
+# ---------------------------------------------------------------------------
+# Chinese tag key → English field_name mapping
+# ---------------------------------------------------------------------------
+
+TAG_KEY_MAP = {
+    "颜色": "color",
+    "形态结构": "form_structure",
+    "时间动态": "time_dynamic",
+    "元素属性": "element",
+    "战斗技能": "combat_skill",
+    "场景环境": "scene_env",
+    "范围大小": "scope_size",
+    "状态Buff": "status_buff",
+    "法阵地面": "magic_circle",
+    "UI提示": "ui_hint",
+    "业务用途": "biz_usage",
+    "角色动作": "char_action",
+    "道具物品": "item_prop",
+}
 
 
 # ---------------------------------------------------------------------------
@@ -39,13 +52,13 @@ _RESULT_EXCLUDE_KEYS = frozenset({
 # ---------------------------------------------------------------------------
 
 
-def extract_name_from_resource_id(resource_id: str) -> str:
-    """Extract a human-readable name from the resource_id path.
+def extract_name_from_path(path: str) -> str:
+    """Extract a human-readable name from a resource path.
 
     Takes the last path segment and strips the file extension.
-    E.g. ``"data/source/other/.../d_毒雾01.sfx"`` -> ``"d_毒雾01"``.
+    E.g. ``"data/source/other/.../d_毒雾01.pss"`` -> ``"d_毒雾01"``.
     """
-    filename = resource_id.rsplit("/", 1)[-1] if "/" in resource_id else resource_id
+    filename = path.rsplit("/", 1)[-1] if "/" in path else path
     stem, _, _ext = filename.rpartition(".")
     return stem if stem else filename
 
@@ -53,67 +66,53 @@ def extract_name_from_resource_id(resource_id: str) -> str:
 def build_effect_tags(resource: dict) -> dict:
     """Build a tags dict from a single resource entry.
 
-    Includes:
-    - ``source_name``: extracted from resource_id
-    - ``size_bytes``: from the top-level field
-    - All meaningful fields from ``result`` (numeric, boolean, string)
-      excluding internal/path fields.
+    Maps Chinese tag keys from ``result.tags`` to English field names,
+    includes the AI description, and keeps useful numeric fields.
     """
     tags: dict = {}
-    tags["source_name"] = extract_name_from_resource_id(resource["resource_id"])
-    tags["size_bytes"] = resource.get("size_bytes")
-
     result = resource.get("result", {})
-    for key, value in result.items():
-        if key in _RESULT_EXCLUDE_KEYS:
-            continue
-        if value is None:
-            continue
-        tags[key] = value
+
+    # Semantic tags: map Chinese keys to English field_names
+    raw_tags = result.get("tags", {})
+    for cn_key, en_field in TAG_KEY_MAP.items():
+        values = raw_tags.get(cn_key)
+        if values:
+            tags[en_field] = values if isinstance(values, list) else [values]
+
+    # AI-generated description
+    desc = result.get("description")
+    if desc:
+        tags["description"] = desc
+
+    # Numeric fields
+    for num_field in ("effect_duration_sec",):
+        val = result.get(num_field)
+        if val is not None:
+            tags[num_field] = val
 
     return tags
 
 
-def _copy_gif_and_generate_thumbnail(
+def _copy_gif(
     gif_rel_path: str,
     gifs_source_dir: str,
-    previews_dir: str,
+    target_gifs_dir: str,
 ) -> str | None:
-    """Copy a GIF to the previews directory and generate a PNG thumbnail.
+    """Copy a GIF to the target gifs directory.
 
-    Returns the relative thumbnail path (e.g. ``"effects/xxx.png"``)
-    or ``None`` if the source GIF does not exist.
+    Returns the GIF filename or ``None`` if the source doesn't exist.
     """
     src = Path(gifs_source_dir) / gif_rel_path
     if not src.exists():
-        logger.warning("GIF not found, skipping thumbnail: %s", src)
         return None
 
-    effects_dir = Path(previews_dir) / "effects"
-    effects_dir.mkdir(parents=True, exist_ok=True)
-
+    os.makedirs(target_gifs_dir, exist_ok=True)
     gif_filename = Path(gif_rel_path).name
-    dst_gif = effects_dir / gif_filename
-    shutil.copy2(str(src), str(dst_gif))
+    dst = Path(target_gifs_dir) / gif_filename
+    if not dst.exists():
+        shutil.copy2(str(src), str(dst))
 
-    # Generate PNG thumbnail from the first frame
-    png_filename = Path(gif_filename).stem + ".png"
-    dst_png = effects_dir / png_filename
-
-    try:
-        from PIL import Image
-
-        with Image.open(str(dst_gif)) as im:
-            # Seek to first frame (default)
-            im.seek(0)
-            # Convert to RGB (GIFs may have palette mode)
-            frame = im.convert("RGBA")
-            frame.save(str(dst_png), "PNG")
-    except Exception:
-        logger.warning("Failed to generate PNG thumbnail for %s", gif_filename, exc_info=True)
-        return None
-
-    return f"effects/{png_filename}"
+    return gif_filename
 
 
 # ---------------------------------------------------------------------------
@@ -139,7 +138,8 @@ async def import_effects_json(
     pool:
         asyncpg connection pool.
     previews_dir:
-        Target directory for preview assets (GIF copies + PNG thumbnails).
+        Target directory for preview assets (unused for effects, kept for
+        API compatibility).
 
     Returns
     -------
@@ -158,6 +158,9 @@ async def import_effects_json(
     errors: list[dict] = []
     es_batch: list[dict] = []
 
+    # Target gifs directory (served via nginx at /data/gifs/)
+    target_gifs_dir = "/data/gifs"
+
     for idx, resource in enumerate(resources):
         try:
             result = resource.get("result", {})
@@ -168,16 +171,18 @@ async def import_effects_json(
                 continue
 
             resource_path = resource["resource_id"]
-            name = extract_name_from_resource_id(resource_path)
+            name = extract_name_from_path(resource_path)
             tags = build_effect_tags(resource)
 
-            # Generate thumbnail
+            # Copy GIF to serving directory and set thumbnail_path
             gif_rel_path = result.get("gif_rel_path")
             thumbnail_path = None
             if gif_rel_path:
-                thumbnail_path = _copy_gif_and_generate_thumbnail(
-                    gif_rel_path, gifs_source_dir, previews_dir
+                gif_filename = _copy_gif(
+                    gif_rel_path, gifs_source_dir, target_gifs_dir
                 )
+                if gif_filename:
+                    thumbnail_path = gif_filename
 
             async with pool.acquire() as conn:
                 row_result = await conn.fetchrow(
@@ -186,7 +191,7 @@ async def import_effects_json(
                        VALUES ($1, $2, $3, $4, $5::jsonb)
                        ON CONFLICT (module_type, resource_path)
                        DO UPDATE SET tags = $5::jsonb,
-                                     thumbnail_path = $4,
+                                     thumbnail_path = COALESCE($4, assets.thumbnail_path),
                                      updated_at = NOW()
                        RETURNING id, module_type, name, resource_path,
                                  thumbnail_path, tags, created_at, updated_at""",

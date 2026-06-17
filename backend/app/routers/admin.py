@@ -6,7 +6,7 @@ from fastapi import APIRouter, File, Header, HTTPException, UploadFile
 from app.config import settings
 from app.importers.effects_importer import import_effects_json
 from app.importers.excel_importer import import_excel
-from app.importers.tag_initializer import extract_enum_values_from_excel
+from app.importers.tag_initializer import extract_enum_values_from_excel, sync_effect_tag_values
 from app.models.database import get_pool
 from app.services.cache import clear_all_caches
 from app.services.es_mapping import build_index_settings_and_mappings
@@ -85,6 +85,8 @@ async def admin_import_effects_json(
         result = await import_effects_json(
             tmp_path, "/data/gifs", pool, "/data/previews"
         )
+        await sync_effect_tag_values(pool)
+        clear_all_caches()
         await init_matcher(pool)
         return result
     finally:

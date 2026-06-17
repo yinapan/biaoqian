@@ -23,11 +23,76 @@ def _clean_values(raw: set[str]) -> set[str]:
         v = v.strip()
         if not v or v in _JUNK_VALUES:
             continue
-        # A value containing newlines is a composite enum listing, not real data
         if "\n" in v:
             continue
         clean.add(v)
     return clean
+
+
+async def _sync_tag_values_from_db(
+    pool: asyncpg.Pool,
+    module_type: int,
+    all_values: dict[str, set[str]] | None = None,
+) -> dict[str, list[str]]:
+    """Extract actual tag values from assets table and write into tag_values.
+
+    Works for any module_type. Scans all enum_single/enum_multi definitions,
+    queries distinct values from assets.tags JSONB, and upserts into tag_values.
+    """
+    if all_values is None:
+        all_values = {}
+
+    async with pool.acquire() as conn:
+        defs = await conn.fetch(
+            "SELECT id, field_name, field_type FROM tag_definitions WHERE module_type=$1",
+            module_type,
+        )
+        for d in defs:
+            fn = d["field_name"]
+            ft = d["field_type"]
+            if ft not in ("enum_single", "enum_multi"):
+                continue
+            if ft == "enum_multi":
+                rows = await conn.fetch(
+                    """SELECT DISTINCT val FROM assets,
+                       jsonb_array_elements_text(tags->$1) AS val
+                       WHERE module_type=$2 AND tags ? $1""",
+                    fn, module_type,
+                )
+            else:
+                rows = await conn.fetch(
+                    """SELECT DISTINCT tags->>$1 AS val FROM assets
+                       WHERE module_type=$2 AND tags ? $1
+                         AND tags->>$1 IS NOT NULL AND tags->>$1 != ''""",
+                    fn, module_type,
+                )
+            db_values = {r["val"] for r in rows if r["val"]}
+            all_values.setdefault(fn, set()).update(db_values)
+
+        # Clean all values
+        for field_name in list(all_values.keys()):
+            all_values[field_name] = _clean_values(all_values[field_name])
+
+        # Clear old and re-insert
+        for field_name, values in all_values.items():
+            def_id = await conn.fetchval(
+                "SELECT id FROM tag_definitions WHERE module_type=$1 AND field_name=$2",
+                module_type, field_name,
+            )
+            if not def_id:
+                continue
+            await conn.execute(
+                "DELETE FROM tag_values WHERE definition_id=$1", def_id,
+            )
+            for i, val in enumerate(sorted(values)):
+                await conn.execute(
+                    """INSERT INTO tag_values (definition_id, value, sort_order)
+                       VALUES ($1, $2, $3)
+                       ON CONFLICT (definition_id, value) DO NOTHING""",
+                    def_id, val, i,
+                )
+
+    return {k: sorted(v) for k, v in all_values.items()}
 
 
 async def extract_enum_values_from_excel(
@@ -56,54 +121,9 @@ async def extract_enum_values_from_excel(
 
     wb.close()
 
-    # Also extract actual tag values from asset data already in the database
-    async with pool.acquire() as conn:
-        defs = await conn.fetch(
-            "SELECT id, field_name, field_type FROM tag_definitions WHERE module_type=1"
-        )
-        for d in defs:
-            fn = d["field_name"]
-            ft = d["field_type"]
-            if ft in ("enum_single", "enum_multi"):
-                if ft == "enum_multi":
-                    rows = await conn.fetch(
-                        """SELECT DISTINCT val FROM assets,
-                           jsonb_array_elements_text(tags->$1) AS val
-                           WHERE module_type=1 AND tags ? $1""",
-                        fn,
-                    )
-                else:
-                    rows = await conn.fetch(
-                        """SELECT DISTINCT tags->>$1 AS val FROM assets
-                           WHERE module_type=1 AND tags ? $1
-                             AND tags->>$1 IS NOT NULL AND tags->>$1 != ''""",
-                        fn,
-                    )
-                db_values = {r["val"] for r in rows if r["val"]}
-                all_values.setdefault(fn, set()).update(db_values)
+    return await _sync_tag_values_from_db(pool, module_type=1, all_values=all_values)
 
-        # Clean all values: remove junk and composite newline strings
-        for field_name in list(all_values.keys()):
-            all_values[field_name] = _clean_values(all_values[field_name])
 
-        # Clear old tag_values and re-insert clean ones
-        for field_name, values in all_values.items():
-            def_id = await conn.fetchval(
-                "SELECT id FROM tag_definitions WHERE module_type=1 AND field_name=$1",
-                field_name,
-            )
-            if not def_id:
-                continue
-            # Remove stale values that no longer exist
-            await conn.execute(
-                "DELETE FROM tag_values WHERE definition_id=$1", def_id,
-            )
-            for i, val in enumerate(sorted(values)):
-                await conn.execute(
-                    """INSERT INTO tag_values (definition_id, value, sort_order)
-                       VALUES ($1, $2, $3)
-                       ON CONFLICT (definition_id, value) DO NOTHING""",
-                    def_id, val, i,
-                )
-
-    return {k: sorted(v) for k, v in all_values.items()}
+async def sync_effect_tag_values(pool: asyncpg.Pool) -> dict[str, list[str]]:
+    """从已导入的特效资产中提取标签值，写入 tag_values（module_type=2）"""
+    return await _sync_tag_values_from_db(pool, module_type=2)

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useSearchStore } from '@/stores/searchStore'
 import type { AssetItem } from '@/types'
 
 const props = defineProps<{
@@ -10,6 +11,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'update:modelValue', val: boolean): void
 }>()
+
+const store = useSearchStore()
 
 const visible = computed({
   get: () => props.modelValue,
@@ -40,9 +43,20 @@ function fallbackCopy(text: string) {
   document.body.removeChild(ta)
 }
 
+const isEffect = computed(() => store.moduleType === 2)
+
 const previewSrc = computed(() => {
   if (!props.item.thumbnail_path) return ''
+  if (isEffect.value) {
+    return `/data/gifs/${props.item.thumbnail_path}`
+  }
   return `/static/previews/${props.item.thumbnail_path}`
+})
+
+const effectGridSrc = computed(() => {
+  if (!isEffect.value || !props.item.thumbnail_path) return ''
+  const gridName = props.item.thumbnail_path.replace('.gif', '_grid.gif')
+  return `/data/gifs/${gridName}`
 })
 
 const tagEntries = computed(() => Object.entries(props.item.tags))
@@ -63,6 +77,21 @@ const TAG_LABELS: Record<string, string> = {
   action_type: '动作类型',
   slot_name: '插槽',
   source_sheet: '来源表',
+  color: '颜色',
+  form_structure: '形态结构',
+  time_dynamic: '时间动态',
+  element: '元素属性',
+  combat_skill: '战斗技能',
+  scene_env: '场景环境',
+  scope_size: '范围大小',
+  status_buff: '状态Buff',
+  magic_circle: '法阵地面',
+  ui_hint: 'UI提示',
+  biz_usage: '业务用途',
+  char_action: '角色动作',
+  item_prop: '道具物品',
+  description: '描述',
+  effect_duration_sec: '特效时长',
 }
 
 function getLabel(key: string) {
@@ -81,7 +110,17 @@ function getLabel(key: string) {
     <div class="detail-layout">
       <!-- Preview -->
       <div v-if="previewSrc" class="detail-preview">
-        <div class="preview-frame">
+        <div v-if="isEffect" class="effect-previews">
+          <div class="preview-frame">
+            <div class="preview-label">普通视角</div>
+            <img :src="previewSrc" :alt="item.name" />
+          </div>
+          <div v-if="effectGridSrc" class="preview-frame">
+            <div class="preview-label">网格视角</div>
+            <img :src="effectGridSrc" :alt="item.name + ' grid'" />
+          </div>
+        </div>
+        <div v-else class="preview-frame">
           <img :src="previewSrc" :alt="item.name" />
         </div>
       </div>
@@ -141,6 +180,29 @@ function getLabel(key: string) {
 .detail-preview {
   display: flex;
   justify-content: center;
+}
+
+.effect-previews {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.effect-previews .preview-frame {
+  flex: 1;
+  min-width: 200px;
+  max-width: 320px;
+}
+
+.preview-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 6px;
 }
 
 .preview-frame {

@@ -53,13 +53,26 @@ INSERT INTO tag_definitions (module_type, field_name, display_name, field_type, 
 (3, 'effect_path',   '特效资源', 'text',         false, false, false, 8);
 
 -- ===== 特效模块 (module_type=2) 标签维度 =====
--- 当前只有 JSON 中的量化字段，语义标签后续由用户手工加到 JSON 后再补充 tag_definitions
+-- 13 个语义标签维度（来自 AI 自动标注） + 描述 + 量化字段
+-- 语义标签值由 tag_initializer 从实际数据中动态提取
+INSERT INTO tag_definitions (module_type, field_name, display_name, field_type, is_fixed, is_filterable, is_searchable, sort_order) VALUES
+(2, 'color',          '颜色',     'enum_multi', false, true, true,  1),
+(2, 'form_structure', '形态结构', 'enum_multi', false, true, true,  2),
+(2, 'time_dynamic',   '时间动态', 'enum_multi', false, true, true,  3),
+(2, 'element',        '元素属性', 'enum_multi', false, true, true,  4),
+(2, 'combat_skill',   '战斗技能', 'enum_multi', false, true, true,  5),
+(2, 'scene_env',      '场景环境', 'enum_multi', false, true, true,  6),
+(2, 'scope_size',     '范围大小', 'enum_multi', false, true, true,  7),
+(2, 'status_buff',    '状态Buff', 'enum_multi', false, true, true,  8),
+(2, 'magic_circle',   '法阵地面', 'enum_multi', false, true, true,  9),
+(2, 'ui_hint',        'UI提示',   'enum_multi', false, true, true,  10),
+(2, 'biz_usage',      '业务用途', 'enum_multi', false, true, true,  11),
+(2, 'char_action',    '角色动作', 'enum_multi', false, true, true,  12),
+(2, 'item_prop',      '道具物品', 'enum_multi', false, true, true,  13),
+(2, 'description',    '描述',     'text',       false, false, true, 14);
+
 INSERT INTO tag_definitions (module_type, field_name, display_name, field_type, is_fixed, is_filterable, is_searchable, sort_order, config) VALUES
-(2, 'effect_duration_sec', '特效时长',   'number_range', false, true,  false, 1, '{"min":0,"max":60,"step":0.1,"unit":"s"}'),
-(2, 'length_cm',           '长度(cm)',   'number_range', false, true,  false, 2, '{"min":0,"max":50000,"step":100,"unit":"cm"}'),
-(2, 'width_cm',            '宽度(cm)',   'number_range', false, true,  false, 3, '{"min":0,"max":50000,"step":100,"unit":"cm"}'),
-(2, 'height_cm',           '高度(cm)',   'number_range', false, true,  false, 4, '{"min":0,"max":50000,"step":100,"unit":"cm"}'),
-(2, 'source_name',         '资源名',     'text',        false, false, true,  5, '{}');
+(2, 'effect_duration_sec', '特效时长', 'number_range', false, true, false, 15, '{"min":0,"max":60,"step":0.1,"unit":"s"}');
 
 -- ===== 常用同义词 =====
 INSERT INTO tag_synonyms (module_type, field_name, target_value, synonym, priority) VALUES

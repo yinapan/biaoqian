@@ -22,6 +22,12 @@ const PLACEHOLDER = 'data:image/svg+xml;charset=UTF-8,' +
 
 const thumbnailSrc = computed(() => {
   if (!props.item.thumbnail_path) return PLACEHOLDER
+  if (isEffect.value) {
+    // Effects: thumbnail_path is the GIF filename, show grid version by default
+    const gifName = props.item.thumbnail_path
+    const gridName = gifName.replace('.gif', '_grid.gif')
+    return `/data/gifs/${gridName}`
+  }
   return `/static/previews/${props.item.thumbnail_path}`
 })
 
@@ -29,8 +35,8 @@ const isEffect = computed(() => store.moduleType === 2)
 
 const displaySrc = computed(() => {
   if (isEffect.value && hovering.value && props.item.thumbnail_path) {
-    const baseName = props.item.name
-    return `/static/previews/effects/${baseName}.gif`
+    // Hover: switch to normal (non-grid) GIF
+    return `/data/gifs/${props.item.thumbnail_path}`
   }
   return thumbnailSrc.value
 })

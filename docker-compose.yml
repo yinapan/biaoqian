@@ -60,6 +60,7 @@ services:
       - ./backend:/app
       - ./previews:/data/previews
       - ./特效/merged/gifs:/data/gifs:ro
+      - ./特效/data:/data/effects-data:ro
     environment:
       - DATABASE_URL=postgresql://biaoqiao:biaoqiao_dev@postgres:5432/biaoqiao
       - ES_URL=http://elasticsearch:9200
@@ -92,6 +93,7 @@ services:
       - ./frontend/dist:/usr/share/nginx/html:ro
       - ./previews:/data/previews:ro
       - ./特效/merged/gifs:/data/gifs:ro
+      - ./特效/data:/data/effects-data:ro
     depends_on:
       backend:
         condition: service_healthy

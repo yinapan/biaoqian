@@ -1,5 +1,7 @@
 import time
 
+from fastapi import HTTPException
+
 from app.services.es_sync_service import get_es
 from app.services.es_query_builder import build_search_query
 from app.services.parse_service import parse_query
@@ -59,6 +61,21 @@ async def search(req: SearchRequest, pool) -> SearchResponse:
             boolean_fields.add(d["field_name"])
         elif d["field_type"] == "text":
             text_fields.add(d["field_name"])
+
+    # --- Whitelist validation for user-supplied fields ---
+    all_known_fields = {d["field_name"] for d in tag_defs}
+
+    unknown_filter_fields = set(req.filters.keys()) - all_known_fields
+    unknown_condition_fields = {
+        c.field for c in req.conditions
+    } - all_known_fields
+
+    unknown_fields = unknown_filter_fields | unknown_condition_fields
+    if unknown_fields:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Unknown field(s): {', '.join(sorted(unknown_fields))}",
+        )
 
     parse_info = None
     effective_filters = dict(req.filters)

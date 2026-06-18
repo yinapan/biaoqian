@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # ============================================================
-#  美术标签搜索平台 — 一键部署脚本
+#  美术资产检索工作台 — 一键部署脚本
 #
 #  用法:
 #    1. git clone https://github.com/yinapan/biaoqian.git

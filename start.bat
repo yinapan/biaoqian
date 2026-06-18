@@ -1,7 +1,7 @@
 ﻿@echo off
 chcp 65001 >nul
 echo ================================
-echo  美术标签搜索平台 - 启动
+echo  美术资产检索工作台 - 启动
 echo ================================
 
 REM Check Docker Desktop is running

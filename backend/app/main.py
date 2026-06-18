@@ -41,7 +41,7 @@ async def lifespan(app: FastAPI):
     await close_es()
 
 
-app = FastAPI(title="美术标签搜索平台", lifespan=lifespan)
+app = FastAPI(title="美术资产检索工作台", lifespan=lifespan)
 app.include_router(search.router)
 app.include_router(filter.router)
 app.include_router(assets.router)

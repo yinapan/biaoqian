@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 chcp 65001 >nul
 echo ================================
-echo  美术标签搜索平台 - 数据库备份
+echo  美术资产检索工作台 - 数据库备份
 echo ================================
 
 REM Check Docker is running

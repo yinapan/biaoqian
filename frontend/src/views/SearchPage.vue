@@ -23,7 +23,7 @@ onMounted(async () => {
       <div class="brand-block">
         <img src="/logo.png" alt="Logo" class="brand-logo" />
         <div class="brand-text">
-          <h1>美术标签搜索平台</h1>
+          <h1>美术资产检索工作台</h1>
           <span>美术资产检索工作台</span>
         </div>
       </div>

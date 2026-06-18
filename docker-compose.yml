@@ -87,9 +87,12 @@ services:
   nginx:
     image: nginx:alpine
     restart: unless-stopped
-    ports: ["80:80"]
+    ports:
+      - "80:80"
+      - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
       - ./frontend/dist:/usr/share/nginx/html:ro
       - ./previews:/data/previews:ro
       - ./特效/merged/gifs:/data/gifs:ro

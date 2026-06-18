@@ -1,20 +1,31 @@
+import logging
 import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from app.config import settings
 from app.models.database import close_pool, get_pool
 from app.routers import admin, assets, filter, health, search
 from app.services.es_mapping import build_index_settings_and_mappings
 from app.services.es_sync_service import close_es, get_es
 from app.services.parse_service import init_matcher
 
+logger = logging.getLogger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    if not settings.admin_api_key or settings.admin_api_key == "dev-admin-key-change-in-prod":
+        logger.warning(
+            "ADMIN_API_KEY is using default value! "
+            "Set a secure key in .env for shared deployments."
+        )
     try:
         pool = await get_pool()
+        logger.info("Database pool initialized")
     except Exception:
+        logger.error("Failed to connect to database", exc_info=True)
         yield
         return
     try:
@@ -33,9 +44,11 @@ async def lifespan(app: FastAPI):
             idx_name = f"assets_v{int(time.time())}"
             await es.indices.create(index=idx_name, body=body)
             await es.indices.put_alias(index=idx_name, name="assets")
+        logger.info("Elasticsearch ready")
         await init_matcher(pool)
+        logger.info("Dictionary matcher initialized")
     except Exception:
-        pass
+        logger.exception("Failed to initialize ES/dictionary matcher — search may not work")
     yield
     await close_pool()
     await close_es()

@@ -158,6 +158,9 @@ async def main():
                 break
     if not admin_key:
         admin_key = "dev-admin-key-change-in-prod"
+    if not admin_key or admin_key == "dev-admin-key-change-in-prod":
+        print("WARNING: ADMIN_API_KEY is using default value! "
+              "Set a secure key in .env for shared deployments.", file=sys.stderr)
 
     import urllib.request
     import json

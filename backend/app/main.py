@@ -1,17 +1,26 @@
+import logging
 import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from app.config import settings
 from app.models.database import close_pool, get_pool
 from app.routers import admin, assets, filter, health, search
 from app.services.es_mapping import build_index_settings_and_mappings
 from app.services.es_sync_service import close_es, get_es
 from app.services.parse_service import init_matcher
 
+logger = logging.getLogger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    if not settings.admin_api_key or settings.admin_api_key == "dev-admin-key-change-in-prod":
+        logger.warning(
+            "ADMIN_API_KEY is using default value! "
+            "Set a secure key in .env for shared deployments."
+        )
     try:
         pool = await get_pool()
     except Exception:

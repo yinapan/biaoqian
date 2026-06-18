@@ -50,6 +50,9 @@ const previewSrc = computed(() => {
   if (isEffect.value) {
     return `/data/gifs/${props.item.thumbnail_path}`
   }
+  if (store.moduleType === 4) {
+    return `/data/icons/${props.item.thumbnail_path}`
+  }
   return `/static/previews/${props.item.thumbnail_path}`
 })
 
@@ -92,6 +95,8 @@ const TAG_LABELS: Record<string, string> = {
   item_prop: '道具物品',
   description: '描述',
   effect_duration_sec: '特效时长',
+  predefined: '类别',
+  semantic: '语义',
 }
 
 /** Group definitions for detail view: fields in the same group are merged into one row */

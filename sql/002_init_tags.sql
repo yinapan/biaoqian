@@ -80,6 +80,14 @@ INSERT INTO tag_definitions (module_type, field_name, display_name, field_type, 
 (2, 'area_ratio',          '面积占比',   'number_range', false, true, false, 22, '{"min":0,"max":1,"step":0.05,"group":"画面占比"}'),
 (2, 'span_max',            '最大跨度',   'number_range', false, true, false, 23, '{"min":0,"max":1,"step":0.05,"group":"画面占比"}');
 
+-- ===== 图标模块 (module_type=4) 标签维度 =====
+-- 语义标签值由 tag_initializer 从实际数据中动态提取
+INSERT INTO tag_definitions (module_type, field_name, display_name, field_type, is_fixed, is_filterable, is_searchable, sort_order) VALUES
+(4, 'predefined',   '类别',   'enum_multi', false, true, true,  1),
+(4, 'color',         '颜色',   'enum_multi', false, true, true,  2),
+(4, 'semantic',      '语义',   'enum_multi', false, true, true,  3),
+(4, 'description',   '描述',   'text',       false, false, true, 4);
+
 -- ===== 常用同义词 =====
 INSERT INTO tag_synonyms (module_type, field_name, target_value, synonym, priority) VALUES
 (1, 'profession', '僧侣', '和尚', 10),

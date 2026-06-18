@@ -6,7 +6,8 @@ from fastapi import APIRouter, File, Header, HTTPException, UploadFile
 from app.config import settings
 from app.importers.effects_importer import import_effects_json
 from app.importers.excel_importer import import_excel
-from app.importers.tag_initializer import extract_enum_values_from_excel, sync_effect_tag_values
+from app.importers.icon_importer import import_icons_json
+from app.importers.tag_initializer import extract_enum_values_from_excel, sync_effect_tag_values, _sync_tag_values_from_db
 from app.models.database import get_pool
 from app.services.cache import clear_all_caches
 from app.services.es_mapping import build_index_settings_and_mappings
@@ -27,7 +28,7 @@ async def reindex_es(x_admin_key: str = Header(...)):
     verify_admin(x_admin_key)
     pool = await get_pool()
     all_defs = []
-    for mod in [1, 2, 3]:
+    for mod in [1, 2, 3, 4]:
         defs = await get_tag_definitions(pool, mod)
         all_defs.extend(defs)
     index_body = build_index_settings_and_mappings(all_defs)
@@ -86,6 +87,26 @@ async def admin_import_effects_json(
             tmp_path, "/data/gifs", pool, "/data/previews"
         )
         await sync_effect_tag_values(pool)
+        clear_all_caches()
+        await init_matcher(pool)
+        return result
+    finally:
+        os.unlink(tmp_path)
+
+
+@router.post("/import-icons-json")
+async def admin_import_icons_json(
+    file: UploadFile = File(...),
+    x_admin_key: str = Header(...),
+):
+    verify_admin(x_admin_key)
+    pool = await get_pool()
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".json") as tmp:
+        tmp.write(await file.read())
+        tmp_path = tmp.name
+    try:
+        result = await import_icons_json(tmp_path, pool)
+        await _sync_tag_values_from_db(pool, module_type=4)
         clear_all_caches()
         await init_matcher(pool)
         return result

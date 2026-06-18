@@ -53,7 +53,21 @@ fi
 
 source .env
 
-# ------ 3. 构建前端 ------
+# ------ 3. SSL 证书检查 ------
+info "检查 SSL 证书..."
+mkdir -p ssl
+if [ ! -f ssl/cert.pem ] || [ ! -f ssl/key.pem ]; then
+    warn "未找到 SSL 证书文件"
+    warn "请将证书放到 ${PROJECT_DIR}/ssl/ 目录:"
+    warn "  ssl/cert.pem  — 证书文件（含中间证书链）"
+    warn "  ssl/key.pem   — 私钥文件"
+    warn ""
+    warn "域名申请后，从证书颁发方下载 Nginx 格式的证书即可"
+    error "SSL 证书缺失，无法继续部署"
+fi
+info "SSL 证书就绪"
+
+# ------ 4. 构建前端 ------
 info "构建前端..."
 cd frontend
 if [ ! -d node_modules ]; then
@@ -67,7 +81,7 @@ if [ ! -d frontend/dist ] || [ ! -f frontend/dist/index.html ]; then
 fi
 info "前端构建完成"
 
-# ------ 4. 检查 previews 目录 ------
+# ------ 5. 检查 previews 目录 ------
 if [ ! -d previews ] || [ -z "$(ls -A previews/ 2>/dev/null)" ]; then
     warn "previews/ 目录为空或不存在"
     warn "请将预览图片拷贝到 ${PROJECT_DIR}/previews/ 目录"
@@ -75,14 +89,14 @@ if [ ! -d previews ] || [ -z "$(ls -A previews/ 2>/dev/null)" ]; then
     mkdir -p previews
 fi
 
-# ------ 5. 启动 Docker 服务 ------
+# ------ 6. 启动 Docker 服务 ------
 info "启动 Docker 服务 (PostgreSQL + Elasticsearch + Backend + Nginx)..."
 docker compose up -d --build
 
 info "等待服务健康启动..."
 MAX_WAIT=120
 WAITED=0
-until curl -sf http://localhost/api/v1/health >/dev/null 2>&1; do
+until curl -sf -k https://localhost/api/v1/health >/dev/null 2>&1; do
     sleep 3
     WAITED=$((WAITED + 3))
     if [ $WAITED -ge $MAX_WAIT ]; then
@@ -93,14 +107,14 @@ done
 echo ""
 info "服务已启动"
 
-# ------ 6. 导入数据 ------
+# ------ 7. 导入数据 ------
 ADMIN_KEY="${ADMIN_API_KEY:-dev-admin-key-change-in-prod}"
-API_BASE="http://localhost/api/v1/admin"
+API_BASE="https://localhost/api/v1/admin"
 
 import_excel() {
     local file="$1"
     info "导入 Excel: $(basename "$file")"
-    HTTP_CODE=$(curl -s -o /tmp/import_result.json -w "%{http_code}" \
+    HTTP_CODE=$(curl -s -k -o /tmp/import_result.json -w "%{http_code}" \
         -X POST "${API_BASE}/import-excel" \
         -H "X-Admin-Key: ${ADMIN_KEY}" \
         -F "file=@${file}" \
@@ -115,7 +129,7 @@ import_excel() {
 import_effects() {
     local file="$1"
     info "导入特效 JSON: $(basename "$file")"
-    HTTP_CODE=$(curl -s -o /tmp/import_result.json -w "%{http_code}" \
+    HTTP_CODE=$(curl -s -k -o /tmp/import_result.json -w "%{http_code}" \
         -X POST "${API_BASE}/import-effects-json" \
         -H "X-Admin-Key: ${ADMIN_KEY}" \
         -F "file=@${file}" \
@@ -142,24 +156,25 @@ fi
 if [ $EXCEL_COUNT -eq 0 ]; then
     warn "未找到 Excel 数据文件"
     warn "请将 .xlsx 文件放到项目根目录，然后手动导入:"
-    warn "  curl -X POST http://localhost/api/v1/admin/import-excel \\"
+    warn "  curl -X POST https://artsearch.testplus.cn/api/v1/admin/import-excel \\"
     warn "    -H 'X-Admin-Key: ${ADMIN_KEY}' \\"
     warn "    -F 'file=@你的文件.xlsx'"
 fi
 
-# ------ 7. 重建索引 ------
+# ------ 8. 重建索引 ------
 info "重建 Elasticsearch 索引..."
-curl -sf -X POST "${API_BASE}/reindex-es" \
+curl -sf -k -X POST "${API_BASE}/reindex-es" \
     -H "X-Admin-Key: ${ADMIN_KEY}" \
     -o /dev/null || warn "索引重建失败，可手动执行"
 
-# ------ 8. 完成 ------
+# ------ 9. 完成 ------
 echo ""
 echo "============================================"
 info "部署完成!"
 echo "============================================"
 echo ""
-echo "  访问地址:  http://localhost"
+echo "  域名:      https://artsearch.testplus.cn"
+echo "  IP:        10.11.11.191"
 echo "  管理密钥:  ${ADMIN_KEY}"
 echo ""
 echo "  常用命令:"

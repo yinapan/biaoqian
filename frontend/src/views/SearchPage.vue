@@ -24,7 +24,7 @@ onMounted(async () => {
         <img src="/logo.png" alt="Logo" class="brand-logo" />
         <div class="brand-text">
           <h1>美术标签搜索平台</h1>
-          <span>模型与特效资产检索工作台</span>
+          <span>美术资产检索工作台</span>
         </div>
       </div>
 
@@ -113,9 +113,10 @@ onMounted(async () => {
 }
 
 .brand-logo {
-  width: 34px;
-  height: 34px;
+  height: 28px;
+  width: auto;
   object-fit: contain;
+  image-rendering: -webkit-optimize-contrast;
 }
 
 .brand-text {

@@ -104,7 +104,7 @@ const TAG_GROUPS: Record<string, { label: string; fields: string[]; unit?: strin
 const GROUPED_FIELDS = new Set(Object.values(TAG_GROUPS).flatMap(g => g.fields))
 
 /** Fields hidden from detail view (internal / not useful to display) */
-const HIDDEN_FIELDS = new Set(['gif_duration_sec', 'focus_offset', 'center_x', 'center_y', 'clipped', 'fit_attempts', 'fit_stop_reason', 'source_name', 'size_bytes'])
+const HIDDEN_FIELDS = new Set(['gif_duration_sec', 'focus_offset', 'center_x', 'center_y', 'clipped', 'fit_attempts', 'fit_stop_reason', 'source_name', 'size_bytes', 'scope_size'])
 
 const FIELD_SHORT_LABELS: Record<string, string> = {
   length_cm: '长', width_cm: '宽', height_cm: '高',

@@ -35,7 +35,6 @@ TAG_KEY_MAP = {
     "元素属性": "element",
     "战斗技能": "combat_skill",
     "场景环境": "scene_env",
-    "范围大小": "scope_size",
     "状态Buff": "status_buff",
     "法阵地面": "magic_circle",
     "UI提示": "ui_hint",

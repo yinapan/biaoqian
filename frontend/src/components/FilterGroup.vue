@@ -265,9 +265,9 @@ function setGroupRangeValue(def: TagDefinition, val: [number, number]) {
 
 <style scoped>
 .filter-group {
-  margin-bottom: 4px;
+  margin-bottom: 8px;
   border-radius: var(--radius-sm);
-  background: var(--bg-surface);
+  background: var(--bg-elevated);
   border: 1px solid var(--border-subtle);
   overflow: hidden;
 }
@@ -281,7 +281,7 @@ function setGroupRangeValue(def: TagDefinition, val: [number, number]) {
 }
 
 .filter-group.collapsed {
-  background: transparent;
+  background: var(--bg-surface);
   border-color: var(--border-subtle);
 }
 
@@ -295,7 +295,7 @@ function setGroupRangeValue(def: TagDefinition, val: [number, number]) {
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 10px 12px;
+  padding: 10px 11px;
   border: none;
   background: none;
   cursor: pointer;
@@ -303,13 +303,13 @@ function setGroupRangeValue(def: TagDefinition, val: [number, number]) {
 }
 
 .group-header:hover {
-  background: var(--bg-surface-hover);
+  background: var(--bg-surface);
 }
 
 .header-label {
   font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0;
   color: var(--text-secondary);
   transition: color 0.15s ease;
 }
@@ -336,7 +336,7 @@ function setGroupRangeValue(def: TagDefinition, val: [number, number]) {
   height: 18px;
   line-height: 18px;
   text-align: center;
-  border-radius: 4px;
+  border-radius: 999px;
   background: var(--accent);
   color: var(--text-on-accent);
 }
@@ -354,7 +354,7 @@ function setGroupRangeValue(def: TagDefinition, val: [number, number]) {
 
 /* --- Group body --- */
 .group-body {
-  padding: 0 12px 10px;
+  padding: 0 11px 11px;
 }
 
 /* --- Search input --- */
@@ -362,7 +362,7 @@ function setGroupRangeValue(def: TagDefinition, val: [number, number]) {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: var(--bg-root);
+  background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: 4px;
   padding: 0 8px;
@@ -372,7 +372,7 @@ function setGroupRangeValue(def: TagDefinition, val: [number, number]) {
 
 .search-wrap:focus-within {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent-soft);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 .search-icon {
@@ -446,10 +446,10 @@ function setGroupRangeValue(def: TagDefinition, val: [number, number]) {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 3px 10px;
-  border: 1px solid transparent;
-  border-radius: 3px;
-  background: var(--bg-root);
+  padding: 4px 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  background: #ffffff;
   color: var(--text-secondary);
   font-family: var(--font-sans);
   font-size: 11.5px;
@@ -520,7 +520,7 @@ function setGroupRangeValue(def: TagDefinition, val: [number, number]) {
 
 .range-label {
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   margin-bottom: 2px;
   display: block;
 }

@@ -47,7 +47,7 @@ function filterEntries(info: ParseInfo) {
         v-model="localQuery"
         type="text"
         class="search-input"
-        placeholder="蒙面男青年"
+        placeholder="搜索名称、标签或自然语言描述"
         @input="onInput"
         @keyup.enter="onSearch"
       />
@@ -99,6 +99,9 @@ function filterEntries(info: ParseInfo) {
   position: relative;
   display: flex;
   align-items: center;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
 }
 
 .search-icon {
@@ -115,11 +118,11 @@ function filterEntries(info: ParseInfo) {
 
 .search-input {
   width: 100%;
-  height: 40px;
+  height: 44px;
   padding: 0 40px 0 42px;
-  background: var(--bg-surface);
+  background: transparent;
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: 14px;
@@ -137,6 +140,7 @@ function filterEntries(info: ParseInfo) {
 
 .search-input:focus {
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 .search-clear {
@@ -148,7 +152,7 @@ function filterEntries(info: ParseInfo) {
   align-items: center;
   justify-content: center;
   border: none;
-  background: var(--bg-surface-hover);
+  background: var(--bg-surface);
   color: var(--text-muted);
   border-radius: 50%;
   cursor: pointer;
@@ -175,26 +179,26 @@ function filterEntries(info: ParseInfo) {
   align-items: center;
   gap: 4px;
   padding: 2px 10px;
-  border-radius: 20px;
+  border-radius: 4px;
   font-size: 12px;
   font-weight: 500;
   line-height: 20px;
 }
 
 .pill--match {
-  background: rgba(74, 222, 128, 0.12);
-  color: #6ee7a0;
-  border: 1px solid rgba(74, 222, 128, 0.2);
+  background: #eaf7ef;
+  color: #1f6d3f;
+  border: 1px solid #c9ead5;
 }
 
 .pill--keyword {
   background: var(--accent-soft);
   color: var(--accent-text);
-  border: 1px solid rgba(232, 168, 56, 0.2);
+  border: 1px solid var(--border-accent);
 }
 
 .pill--ignored {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--bg-surface);
   color: var(--text-muted);
   border: 1px solid var(--border-subtle);
 }

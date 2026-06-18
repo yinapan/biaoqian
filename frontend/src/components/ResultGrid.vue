@@ -62,7 +62,9 @@ const store = useSearchStore()
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .result-stats {
@@ -73,7 +75,7 @@ const store = useSearchStore()
 }
 
 .stat-total {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -93,8 +95,8 @@ const store = useSearchStore()
 /* --- Grid --- */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 14px;
 }
 
 /* --- Skeleton loading --- */
@@ -139,7 +141,7 @@ const store = useSearchStore()
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 80px 0;
+  padding: 72px 0;
   gap: 12px;
 }
 
@@ -152,6 +154,12 @@ const store = useSearchStore()
   font-size: 16px;
   font-weight: 500;
   color: var(--text-secondary);
+}
+
+@media (max-width: 720px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
 }
 
 .empty-hint {

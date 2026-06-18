@@ -101,6 +101,11 @@ function clearAll() {
   display: flex;
   flex-direction: column;
   height: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  box-shadow: var(--shadow-card);
 }
 
 /* --- Header --- */
@@ -108,7 +113,7 @@ function clearAll() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 0 16px;
+  padding: 0 0 14px;
   margin-bottom: 4px;
   position: relative;
 }
@@ -137,10 +142,9 @@ function clearAll() {
 }
 
 .header-title {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--text-primary);
 }
 
@@ -160,8 +164,8 @@ function clearAll() {
   color: var(--accent-text);
   background: var(--accent-soft);
   border: 1px solid var(--border-accent);
-  border-radius: var(--radius-sm);
-  padding: 2px 8px;
+  border-radius: 4px;
+  padding: 4px 8px;
   cursor: pointer;
   transition: background 0.15s ease;
 }

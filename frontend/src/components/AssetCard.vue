@@ -43,7 +43,9 @@ const displaySrc = computed(() => {
 
 const visibleTags = computed(() => {
   const entries = Object.entries(props.item.tags)
-  return entries.slice(0, 3)
+  return entries
+    .filter(([key]) => !['description', 'gif_duration_sec'].includes(key))
+    .slice(0, 4)
 })
 
 const tagLabel = computed(() => {
@@ -100,17 +102,20 @@ const tagLabel = computed(() => {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   cursor: pointer;
-  transition: border-color 0.15s ease;
+  box-shadow: var(--shadow-card);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
 }
 
 .asset-card:hover {
   border-color: var(--border-light);
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-1px);
 }
 
 /* --- Thumbnail --- */
 .card-thumb {
   position: relative;
-  aspect-ratio: 1;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
   background: var(--bg-root);
 }
@@ -119,6 +124,7 @@ const tagLabel = computed(() => {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  padding: 8px;
 }
 
 .asset-card:hover .card-thumb img {
@@ -131,7 +137,7 @@ const tagLabel = computed(() => {
   inset: 0;
   background: linear-gradient(
     to top,
-    rgba(12, 13, 16, 0.6) 0%,
+    rgba(17, 24, 39, 0.52) 0%,
     transparent 40%
   );
   opacity: 0;
@@ -151,22 +157,25 @@ const tagLabel = computed(() => {
   position: absolute;
   top: 6px;
   left: 6px;
-  padding: 1px 6px;
-  font-size: 10px;
-  font-weight: 500;
+  padding: 2px 7px;
+  font-size: 11px;
+  font-weight: 600;
   border-radius: 3px;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(255, 255, 255, 0.92);
   color: var(--text-secondary);
+  border: 1px solid rgba(223, 228, 234, 0.9);
 }
 
 /* --- Info section --- */
 .card-info {
-  padding: 10px 12px 12px;
+  padding: 11px 12px 12px;
+  background: var(--bg-elevated);
+  border-top: 1px solid var(--border-subtle);
 }
 
 .card-name {
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 650;
   color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
@@ -178,16 +187,17 @@ const tagLabel = computed(() => {
 .card-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 5px;
 }
 
 .mini-tag {
   font-size: 11px;
-  color: var(--text-muted);
-  padding: 1px 6px;
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 3px;
-  max-width: 100px;
+  color: var(--text-secondary);
+  padding: 2px 6px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  max-width: 120px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

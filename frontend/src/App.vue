@@ -8,32 +8,31 @@ import SearchPage from './views/SearchPage.vue'
 
 <style>
 :root {
-  /* --- Surface palette: slightly warm neutral, not sci-fi black --- */
-  --bg-root: #111214;
-  --bg-elevated: #191a1e;
-  --bg-surface: #1f2024;
-  --bg-surface-hover: #27282d;
-  --bg-overlay: rgba(10, 10, 14, 0.85);
+  --bg-root: #eef1f5;
+  --bg-elevated: #ffffff;
+  --bg-surface: #f7f8fa;
+  --bg-surface-hover: #eef2f6;
+  --bg-overlay: rgba(17, 24, 39, 0.42);
 
-  /* --- Accent: muted warm tone, not neon gold --- */
-  --accent: #c49a5c;
-  --accent-soft: rgba(196, 154, 92, 0.10);
-  --accent-text: #d4b07a;
+  --accent: #2f6f7e;
+  --accent-strong: #1f5562;
+  --accent-soft: rgba(47, 111, 126, 0.10);
+  --accent-text: #1f5562;
+  --warn-soft: #fff6e6;
+  --warn-text: #8a5a00;
 
-  /* --- Text: warm off-white for long sessions --- */
-  --text-primary: #d8d6d0;
-  --text-secondary: #8a877f;
-  --text-muted: #555349;
-  --text-on-accent: #111214;
+  --text-primary: #1f2933;
+  --text-secondary: #56616f;
+  --text-muted: #8792a0;
+  --text-on-accent: #ffffff;
 
-  /* --- Border: structural only --- */
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-light: rgba(255, 255, 255, 0.10);
-  --border-accent: rgba(196, 154, 92, 0.25);
+  --border-subtle: #dfe4ea;
+  --border-light: #c9d2dc;
+  --border-accent: rgba(47, 111, 126, 0.28);
 
   /* --- Spacing --- */
-  --header-height: 56px;
-  --sidebar-width: 264px;
+  --header-height: 72px;
+  --sidebar-width: 304px;
 
   /* --- Type --- */
   --font-sans: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif;
@@ -42,13 +41,13 @@ import SearchPage from './views/SearchPage.vue'
   /* --- Radius: tight, not bubbly --- */
   --radius-sm: 4px;
   --radius-md: 6px;
-  --radius-lg: 10px;
+  --radius-lg: 8px;
 
   /* --- Shadows: no glow --- */
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-card-hover: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 1px 2px rgba(18, 32, 47, 0.05);
+  --shadow-card-hover: 0 8px 20px rgba(18, 32, 47, 0.10);
 
-  /* --- Element Plus dark overrides --- */
+  /* --- Element Plus theme overrides --- */
   --el-color-primary: var(--accent);
   --el-bg-color: var(--bg-surface);
   --el-bg-color-overlay: var(--bg-elevated);
@@ -95,14 +94,14 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(31, 41, 51, 0.16);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(31, 41, 51, 0.26);
 }
 
-/* --- Element Plus overrides for dark theme --- */
+/* --- Element Plus overrides --- */
 .el-dialog {
   --el-dialog-bg-color: var(--bg-elevated) !important;
   --el-dialog-border-radius: var(--radius-lg) !important;
@@ -114,6 +113,13 @@ body {
 }
 .el-dialog__title {
   color: var(--text-primary) !important;
+}
+
+.el-button--primary {
+  --el-button-bg-color: var(--accent);
+  --el-button-border-color: var(--accent);
+  --el-button-hover-bg-color: var(--accent-strong);
+  --el-button-hover-border-color: var(--accent-strong);
 }
 
 .el-descriptions {
@@ -174,7 +180,7 @@ body {
 }
 
 .el-slider__runway {
-  background: var(--bg-surface-hover) !important;
+  background: #d8e0e8 !important;
 }
 
 .el-switch.is-checked .el-switch__core {

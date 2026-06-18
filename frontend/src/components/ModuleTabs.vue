@@ -58,7 +58,7 @@ function selectModule(mod: number) {
 
 .module-btn:hover {
   color: var(--text-primary);
-  background: #ffffff;
+  background: var(--bg-surface-hover);
 }
 
 .module-btn.active {

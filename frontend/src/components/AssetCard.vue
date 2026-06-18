@@ -161,9 +161,9 @@ const tagLabel = computed(() => {
   font-size: 11px;
   font-weight: 600;
   border-radius: 3px;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(16, 20, 24, 0.84);
   color: var(--text-secondary);
-  border: 1px solid rgba(223, 228, 234, 0.9);
+  border: 1px solid var(--border-light);
 }
 
 /* --- Info section --- */

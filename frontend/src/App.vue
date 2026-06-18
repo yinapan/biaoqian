@@ -8,27 +8,27 @@ import SearchPage from './views/SearchPage.vue'
 
 <style>
 :root {
-  --bg-root: #eef1f5;
-  --bg-elevated: #ffffff;
-  --bg-surface: #f7f8fa;
-  --bg-surface-hover: #eef2f6;
-  --bg-overlay: rgba(17, 24, 39, 0.42);
+  --bg-root: #101418;
+  --bg-elevated: #171c22;
+  --bg-surface: #1d232b;
+  --bg-surface-hover: #26303a;
+  --bg-overlay: rgba(5, 8, 12, 0.72);
 
-  --accent: #2f6f7e;
-  --accent-strong: #1f5562;
-  --accent-soft: rgba(47, 111, 126, 0.10);
-  --accent-text: #1f5562;
-  --warn-soft: #fff6e6;
-  --warn-text: #8a5a00;
+  --accent: #4f9caf;
+  --accent-strong: #66b6c8;
+  --accent-soft: rgba(79, 156, 175, 0.14);
+  --accent-text: #8fcddd;
+  --warn-soft: rgba(202, 138, 4, 0.14);
+  --warn-text: #e0b45e;
 
-  --text-primary: #1f2933;
-  --text-secondary: #56616f;
-  --text-muted: #8792a0;
+  --text-primary: #e4e9ee;
+  --text-secondary: #a7b1bd;
+  --text-muted: #6f7a86;
   --text-on-accent: #ffffff;
 
-  --border-subtle: #dfe4ea;
-  --border-light: #c9d2dc;
-  --border-accent: rgba(47, 111, 126, 0.28);
+  --border-subtle: rgba(226, 232, 240, 0.08);
+  --border-light: rgba(226, 232, 240, 0.16);
+  --border-accent: rgba(79, 156, 175, 0.34);
 
   /* --- Spacing --- */
   --header-height: 72px;
@@ -44,8 +44,8 @@ import SearchPage from './views/SearchPage.vue'
   --radius-lg: 8px;
 
   /* --- Shadows: no glow --- */
-  --shadow-card: 0 1px 2px rgba(18, 32, 47, 0.05);
-  --shadow-card-hover: 0 8px 20px rgba(18, 32, 47, 0.10);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.28);
+  --shadow-card-hover: 0 10px 24px rgba(0, 0, 0, 0.36);
 
   /* --- Element Plus theme overrides --- */
   --el-color-primary: var(--accent);
@@ -94,11 +94,11 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(31, 41, 51, 0.16);
+  background: rgba(226, 232, 240, 0.14);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(31, 41, 51, 0.26);
+  background: rgba(226, 232, 240, 0.24);
 }
 
 /* --- Element Plus overrides --- */
@@ -180,7 +180,7 @@ body {
 }
 
 .el-slider__runway {
-  background: #d8e0e8 !important;
+  background: #2a3440 !important;
 }
 
 .el-switch.is-checked .el-switch__core {

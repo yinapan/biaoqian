@@ -149,7 +149,7 @@ onMounted(async () => {
 .sidebar {
   width: var(--sidebar-width);
   flex-shrink: 0;
-  background: #f8fafc;
+  background: #12171d;
   border-right: 1px solid var(--border-subtle);
   overflow: hidden;
   padding: 16px 14px;

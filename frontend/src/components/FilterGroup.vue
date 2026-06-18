@@ -449,7 +449,7 @@ function setGroupRangeValue(def: TagDefinition, val: [number, number]) {
   padding: 4px 8px;
   border: 1px solid var(--border-subtle);
   border-radius: 4px;
-  background: #ffffff;
+  background: var(--bg-root);
   color: var(--text-secondary);
   font-family: var(--font-sans);
   font-size: 11.5px;

@@ -186,9 +186,9 @@ function filterEntries(info: ParseInfo) {
 }
 
 .pill--match {
-  background: #eaf7ef;
-  color: #1f6d3f;
-  border: 1px solid #c9ead5;
+  background: rgba(34, 197, 94, 0.14);
+  color: #86efac;
+  border: 1px solid rgba(34, 197, 94, 0.24);
 }
 
 .pill--keyword {

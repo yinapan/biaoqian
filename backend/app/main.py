@@ -23,7 +23,9 @@ async def lifespan(app: FastAPI):
         )
     try:
         pool = await get_pool()
+        logger.info("Database pool initialized")
     except Exception:
+        logger.error("Failed to connect to database", exc_info=True)
         yield
         return
     try:
@@ -42,9 +44,11 @@ async def lifespan(app: FastAPI):
             idx_name = f"assets_v{int(time.time())}"
             await es.indices.create(index=idx_name, body=body)
             await es.indices.put_alias(index=idx_name, name="assets")
+        logger.info("Elasticsearch ready")
         await init_matcher(pool)
+        logger.info("Dictionary matcher initialized")
     except Exception:
-        pass
+        logger.exception("Failed to initialize ES/dictionary matcher — search may not work")
     yield
     await close_pool()
     await close_es()

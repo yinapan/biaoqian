@@ -120,7 +120,7 @@ function clearAll() {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, var(--accent) 0%, var(--border-subtle) 60%, transparent 100%);
+  background: var(--border-subtle);
 }
 
 .header-left {
@@ -156,19 +156,18 @@ function clearAll() {
 
 .clear-btn {
   font-size: 11px;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   color: var(--accent-text);
   background: var(--accent-soft);
-  border: 1px solid rgba(232, 168, 56, 0.2);
-  border-radius: 4px;
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-sm);
   padding: 2px 8px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background 0.15s ease;
 }
 
 .clear-btn:hover {
-  background: rgba(232, 168, 56, 0.2);
-  border-color: rgba(232, 168, 56, 0.35);
+  background: rgba(196, 154, 92, 0.15);
 }
 
 /* --- Scroll area --- */

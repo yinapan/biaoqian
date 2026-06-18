@@ -4,9 +4,8 @@ import { useSearchStore } from '@/stores/searchStore'
 const store = useSearchStore()
 
 const modules = [
-  { type: 1, label: '模型', icon: '◆' },
-  { type: 2, label: '特效', icon: '✦' },
-  { type: 3, label: '动作', icon: '▸' },
+  { type: 1, label: '模型' },
+  { type: 2, label: '特效' },
 ]
 
 function selectModule(mod: number) {
@@ -24,8 +23,7 @@ function selectModule(mod: number) {
       :class="{ active: store.moduleType === m.type }"
       @click="selectModule(m.type)"
     >
-      <span class="module-icon">{{ m.icon }}</span>
-      <span class="module-label">{{ m.label }}</span>
+      {{ m.label }}
     </button>
   </nav>
 </template>
@@ -65,15 +63,5 @@ function selectModule(mod: number) {
 .module-btn.active {
   background: var(--accent);
   color: var(--text-on-accent);
-  box-shadow: 0 1px 4px rgba(232, 168, 56, 0.3);
-}
-
-.module-icon {
-  font-size: 10px;
-  line-height: 1;
-}
-
-.module-btn.active .module-icon {
-  opacity: 0.7;
 }
 </style>

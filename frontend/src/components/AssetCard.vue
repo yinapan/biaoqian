@@ -100,14 +100,11 @@ const tagLabel = computed(() => {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-  animation: fadeInUp 0.4s ease both;
+  transition: border-color 0.15s ease;
 }
 
 .asset-card:hover {
   border-color: var(--border-light);
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-card-hover);
 }
 
 /* --- Thumbnail --- */
@@ -122,11 +119,10 @@ const tagLabel = computed(() => {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .asset-card:hover .card-thumb img {
-  transform: scale(1.06);
+  /* no zoom effect */
 }
 
 /* Hover overlay */
@@ -135,15 +131,11 @@ const tagLabel = computed(() => {
   inset: 0;
   background: linear-gradient(
     to top,
-    rgba(12, 13, 16, 0.8) 0%,
-    transparent 50%
+    rgba(12, 13, 16, 0.6) 0%,
+    transparent 40%
   );
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding-bottom: 16px;
   opacity: 0;
-  transition: opacity 0.25s ease;
+  transition: opacity 0.15s ease;
 }
 
 .asset-card:hover .thumb-overlay {
@@ -151,29 +143,20 @@ const tagLabel = computed(() => {
 }
 
 .overlay-action {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--accent-text);
-  padding: 4px 14px;
-  border-radius: 20px;
-  background: rgba(232, 168, 56, 0.15);
-  border: 1px solid rgba(232, 168, 56, 0.3);
-  backdrop-filter: blur(8px);
+  display: none;
 }
 
 /* Floating badge */
 .float-badge {
   position: absolute;
-  top: 8px;
-  left: 8px;
-  padding: 2px 8px;
+  top: 6px;
+  left: 6px;
+  padding: 1px 6px;
   font-size: 10px;
-  font-weight: 600;
-  border-radius: 4px;
-  background: rgba(12, 13, 16, 0.7);
+  font-weight: 500;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.6);
   color: var(--text-secondary);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--border-subtle);
 }
 
 /* --- Info section --- */

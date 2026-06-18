@@ -8,52 +8,45 @@ import SearchPage from './views/SearchPage.vue'
 
 <style>
 :root {
-  /* --- Surface palette --- */
-  --bg-root: #0c0d10;
-  --bg-elevated: #141518;
-  --bg-surface: #1a1b20;
-  --bg-surface-hover: #22232a;
+  /* --- Surface palette: slightly warm neutral, not sci-fi black --- */
+  --bg-root: #111214;
+  --bg-elevated: #191a1e;
+  --bg-surface: #1f2024;
+  --bg-surface-hover: #27282d;
   --bg-overlay: rgba(10, 10, 14, 0.85);
 
-  /* --- Accent --- */
-  --accent: #e8a838;
-  --accent-soft: rgba(232, 168, 56, 0.12);
-  --accent-glow: rgba(232, 168, 56, 0.25);
-  --accent-text: #f0c060;
+  /* --- Accent: muted warm tone, not neon gold --- */
+  --accent: #c49a5c;
+  --accent-soft: rgba(196, 154, 92, 0.10);
+  --accent-text: #d4b07a;
 
-  /* --- Text --- */
-  --text-primary: #e8e6e1;
-  --text-secondary: #908d85;
-  --text-muted: #5c5a54;
-  --text-on-accent: #0c0d10;
+  /* --- Text: warm off-white for long sessions --- */
+  --text-primary: #d8d6d0;
+  --text-secondary: #8a877f;
+  --text-muted: #555349;
+  --text-on-accent: #111214;
 
-  /* --- Border --- */
+  /* --- Border: structural only --- */
   --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-light: rgba(255, 255, 255, 0.1);
-  --border-accent: rgba(232, 168, 56, 0.3);
-
-  /* --- Glass --- */
-  --glass-bg: rgba(26, 27, 32, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-blur: 20px;
+  --border-light: rgba(255, 255, 255, 0.10);
+  --border-accent: rgba(196, 154, 92, 0.25);
 
   /* --- Spacing --- */
-  --header-height: 72px;
-  --sidebar-width: 280px;
+  --header-height: 56px;
+  --sidebar-width: 264px;
 
   /* --- Type --- */
-  --font-sans: 'Noto Sans SC', system-ui, -apple-system, sans-serif;
-  --font-mono: 'Space Mono', 'SF Mono', monospace;
+  --font-sans: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif;
+  --font-mono: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
 
-  /* --- Radius --- */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
+  /* --- Radius: tight, not bubbly --- */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
 
-  /* --- Shadows --- */
-  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--border-subtle);
-  --shadow-card-hover: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border-light);
-  --shadow-glow: 0 0 20px var(--accent-glow);
+  /* --- Shadows: no glow --- */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 2px 8px rgba(0, 0, 0, 0.4);
 
   /* --- Element Plus dark overrides --- */
   --el-color-primary: var(--accent);
@@ -143,7 +136,7 @@ body {
   box-shadow: 0 0 0 1px var(--border-light) inset !important;
 }
 .el-input__wrapper.is-focus {
-  box-shadow: 0 0 0 1px var(--accent) inset, var(--shadow-glow) !important;
+  box-shadow: 0 0 0 1px var(--accent) inset !important;
 }
 .el-input__inner {
   color: var(--text-primary) !important;
@@ -191,23 +184,12 @@ body {
 
 /* --- Keyframes --- */
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
-}
-
-@keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
-  50% { box-shadow: 0 0 16px 4px var(--accent-glow); }
 }
 </style>

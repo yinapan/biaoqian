@@ -106,7 +106,7 @@ onMounted(async () => {
   background: var(--bg-elevated);
   border-right: 1px solid var(--border-subtle);
   overflow: hidden;
-  padding: 16px 12px;
+  padding: 14px 10px;
   display: flex;
   flex-direction: column;
 }
@@ -115,6 +115,6 @@ onMounted(async () => {
 .content {
   flex: 1;
   overflow-y: auto;
-  padding: 24px 28px;
+  padding: 20px 24px;
 }
 </style>

@@ -137,7 +137,6 @@ function filterEntries(info: ParseInfo) {
 
 .search-input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-soft), 0 0 20px var(--accent-glow);
 }
 
 .search-clear {

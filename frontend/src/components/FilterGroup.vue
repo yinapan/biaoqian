@@ -265,13 +265,11 @@ function setGroupRangeValue(def: TagDefinition, val: [number, number]) {
 
 <style scoped>
 .filter-group {
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   border-radius: var(--radius-sm);
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   overflow: hidden;
-  animation: groupReveal 0.3s ease both;
-  transition: border-color 0.2s ease;
 }
 
 .filter-group:hover {
@@ -279,12 +277,7 @@ function setGroupRangeValue(def: TagDefinition, val: [number, number]) {
 }
 
 .filter-group.has-active {
-  border-color: rgba(232, 168, 56, 0.15);
-  background: linear-gradient(
-    180deg,
-    rgba(232, 168, 56, 0.03) 0%,
-    var(--bg-surface) 100%
-  );
+  border-color: var(--border-accent);
 }
 
 .filter-group.collapsed {
@@ -294,17 +287,6 @@ function setGroupRangeValue(def: TagDefinition, val: [number, number]) {
 
 .filter-group.collapsed:hover {
   background: var(--bg-surface);
-}
-
-@keyframes groupReveal {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 /* --- Header --- */
@@ -485,13 +467,12 @@ function setGroupRangeValue(def: TagDefinition, val: [number, number]) {
 
 .tag-pill.active {
   background: var(--accent-soft);
-  border-color: rgba(232, 168, 56, 0.25);
+  border-color: var(--border-accent);
   color: var(--accent-text);
 }
 
 .tag-pill.active:hover {
-  background: rgba(232, 168, 56, 0.18);
-  border-color: rgba(232, 168, 56, 0.4);
+  background: rgba(196, 154, 92, 0.15);
 }
 
 .pill-dot {

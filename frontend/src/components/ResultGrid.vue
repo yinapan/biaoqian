@@ -32,10 +32,9 @@ const store = useSearchStore()
     <!-- Results grid -->
     <div v-else-if="store.items.length" class="grid">
       <AssetCard
-        v-for="(item, idx) in store.items"
+        v-for="item in store.items"
         :key="item.id"
         :item="item"
-        :style="{ animationDelay: `${idx * 30}ms` }"
       />
     </div>
 
@@ -88,10 +87,7 @@ const store = useSearchStore()
 .stat-time {
   font-size: 11px;
   color: var(--text-muted);
-  padding: 2px 8px;
-  background: var(--bg-surface);
-  border-radius: 20px;
-  border: 1px solid var(--border-subtle);
+  margin-left: 4px;
 }
 
 /* --- Grid --- */

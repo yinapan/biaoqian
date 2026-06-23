@@ -26,6 +26,7 @@ def build_search_query(
     filters: dict | None = None,
     excludes: dict | None = None,
     keyword: str = "",
+    keyword_excludes: list[str] | None = None,
     conditions: list[dict] | None = None,
     sort: dict | None = None,
     page: int = 1,
@@ -38,6 +39,7 @@ def build_search_query(
     filters = filters or {}
     excludes = excludes or {}
     conditions = conditions or []
+    keyword_excludes = keyword_excludes or []
     filterable_fields = filterable_fields or []
     agg_fields = agg_fields or []
     text_fields = text_fields or set()
@@ -65,6 +67,10 @@ def build_search_query(
             must_not_clauses.append({"wildcard": {f"tags.{field}": {"value": f"*{value}*"}}})
         else:
             must_not_clauses.append({"term": {f"tags.{field}": value}})
+
+    # --- keyword excludes: must_not against search_text ---
+    for kw in keyword_excludes:
+        must_not_clauses.append({"match": {"search_text": {"query": kw, "analyzer": "ik_smart"}}})
 
     # --- conditions (explicit range / comparison rules) ---
     for cond in conditions:

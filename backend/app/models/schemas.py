@@ -46,6 +46,7 @@ class ParseInfo(BaseModel):
     parsed_excludes: dict[str, Any] = Field(default_factory=dict)
     effective_filters: dict[str, Any] = Field(default_factory=dict)
     effective_excludes: dict[str, Any] = Field(default_factory=dict)
+    excluded_keywords: list[str] = Field(default_factory=list)
     ignored_tags: list[IgnoredTag] = Field(default_factory=list)
     keyword: str = ""
     confidence: float = 0.0

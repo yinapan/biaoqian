@@ -127,3 +127,24 @@ async def extract_enum_values_from_excel(
 async def sync_effect_tag_values(pool: asyncpg.Pool) -> dict[str, list[str]]:
     """从已导入的特效资产中提取标签值，写入 tag_values（module_type=2）"""
     return await _sync_tag_values_from_db(pool, module_type=2)
+
+
+async def sync_icon_tag_values(pool: asyncpg.Pool) -> dict[str, list[str]]:
+    """从已导入的图标资产中提取标签值，写入 tag_values（module_type=4）"""
+    return await _sync_tag_values_from_db(pool, module_type=4)
+
+
+async def sync_all_tag_values(pool: asyncpg.Pool) -> dict[int, dict[str, list[str]]]:
+    """同步所有模块的标签值 — 用于启动时和批量操作"""
+    result: dict[int, dict[str, list[str]]] = {}
+    async with pool.acquire() as conn:
+        modules = await conn.fetch(
+            "SELECT DISTINCT module_type FROM tag_definitions ORDER BY module_type"
+        )
+        for row in modules:
+            mod = row["module_type"]
+            try:
+                result[mod] = await _sync_tag_values_from_db(pool, module_type=mod)
+            except Exception:
+                result[mod] = {}
+    return result

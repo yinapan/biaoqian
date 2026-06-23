@@ -58,6 +58,7 @@ class MatchResult:
 
     matched: dict[str, Any] = field(default_factory=dict)
     excluded: dict[str, Any] = field(default_factory=dict)
+    excluded_keywords: list[str] = field(default_factory=list)
     remaining: str = ""
 
 
@@ -200,7 +201,7 @@ class DictionaryMatcher:
 
             if not seg_matched and negated:
                 if seg_remaining:
-                    remaining_parts.append(seg_remaining)
+                    result.excluded_keywords.append(seg_remaining)
                 continue
 
             target = excluded if negated else matched
@@ -227,6 +228,7 @@ class DictionaryMatcher:
         return MatchResult(
             matched=matched,
             excluded=excluded,
+            excluded_keywords=result.excluded_keywords,
             remaining=" ".join(remaining_parts),
         )
 

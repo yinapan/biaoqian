@@ -7,7 +7,7 @@ from app.config import settings
 from app.importers.effects_importer import import_effects_json
 from app.importers.excel_importer import import_excel
 from app.importers.icon_importer import import_icons_json
-from app.importers.tag_initializer import extract_enum_values_from_excel, sync_effect_tag_values, _sync_tag_values_from_db
+from app.importers.tag_initializer import extract_enum_values_from_excel, sync_effect_tag_values, sync_icon_tag_values
 from app.models.database import get_pool
 from app.services.cache import clear_all_caches
 from app.services.es_mapping import build_index_settings_and_mappings
@@ -106,7 +106,7 @@ async def admin_import_icons_json(
         tmp_path = tmp.name
     try:
         result = await import_icons_json(tmp_path, pool)
-        await _sync_tag_values_from_db(pool, module_type=4)
+        await sync_icon_tag_values(pool)
         clear_all_caches()
         await init_matcher(pool)
         return result

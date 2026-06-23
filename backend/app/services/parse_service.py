@@ -117,6 +117,7 @@ async def parse_query(
     result = {
         "parsed_filters": merged,
         "parsed_excludes": merged_excludes,
+        "excluded_keywords": dict_result.excluded_keywords,
         "keyword": llm_keyword,
         "confidence": confidence,
         "parse_source": source,

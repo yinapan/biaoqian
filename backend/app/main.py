@@ -6,6 +6,7 @@ from fastapi import FastAPI
 
 from app.config import settings
 from app.models.database import close_pool, get_pool
+from app.importers.tag_initializer import sync_all_tag_values
 from app.routers import admin, assets, filter, health, search
 from app.services.es_mapping import build_index_settings_and_mappings
 from app.services.es_sync_service import close_es, get_es
@@ -32,19 +33,24 @@ async def lifespan(app: FastAPI):
         es = await get_es()
         if not await es.indices.exists_alias(name="assets"):
             all_defs = []
-            for mod in [1, 2, 3]:
-                async with pool.acquire() as conn:
+            async with pool.acquire() as conn:
+                modules = await conn.fetch(
+                    "SELECT DISTINCT module_type FROM tag_definitions ORDER BY module_type"
+                )
+                for row in modules:
                     defs = await conn.fetch(
                         "SELECT field_name, field_type FROM tag_definitions"
                         " WHERE module_type=$1",
-                        mod,
+                        row["module_type"],
                     )
-                all_defs.extend([dict(d) for d in defs])
+                    all_defs.extend([dict(d) for d in defs])
             body = build_index_settings_and_mappings(all_defs)
             idx_name = f"assets_v{int(time.time())}"
             await es.indices.create(index=idx_name, body=body)
             await es.indices.put_alias(index=idx_name, name="assets")
         logger.info("Elasticsearch ready")
+        # Sync tag values for all modules before loading the dictionary matcher
+        await sync_all_tag_values(pool)
         await init_matcher(pool)
         logger.info("Dictionary matcher initialized")
     except Exception:

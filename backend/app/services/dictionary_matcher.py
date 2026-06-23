@@ -25,6 +25,9 @@ MULTI_VALUE_FIELDS = frozenset(
 )
 
 
+NEGATION_PREFIXES = ("不要", "不含", "排除", "去掉", "没有", "无", "非", "不是")
+
+
 @dataclass
 class MatchResult:
     """Result of dictionary matching against a query string.
@@ -32,10 +35,12 @@ class MatchResult:
     Attributes:
         matched: Mapping of field_name -> value (str for single-value fields,
                  list[str] for multi-value fields).
+        excluded: Mapping of field_name -> value for negated terms.
         remaining: Characters from the query that were *not* matched.
     """
 
     matched: dict[str, Any] = field(default_factory=dict)
+    excluded: dict[str, Any] = field(default_factory=dict)
     remaining: str = ""
 
 
@@ -127,6 +132,9 @@ class DictionaryMatcher:
         resolved to their canonical ``target_value``; when multiple synonyms
         match the same position, the one with the highest ``priority`` wins.
 
+        Segments prefixed with negation words (不要, 排除, etc.) produce
+        ``excluded`` entries instead of ``matched``.
+
         Multi-value fields always produce a ``list``; single-value fields
         produce a plain ``str``.
         """
@@ -139,33 +147,48 @@ class DictionaryMatcher:
             return MatchResult()
 
         matched: dict[str, Any] = {}
+        excluded: dict[str, Any] = {}
         remaining_parts: list[str] = []
 
         for segment in segments:
-            seg_matched, seg_remaining = self._match_segment(segment, tokens)
+            negated = False
+            clean = segment
+            for prefix in NEGATION_PREFIXES:
+                if clean.startswith(prefix) and len(clean) > len(prefix):
+                    clean = clean[len(prefix):]
+                    negated = True
+                    break
 
+            seg_matched, seg_remaining = self._match_segment(clean, tokens)
+
+            if not seg_matched and negated:
+                remaining_parts.append(segment)
+                continue
+
+            target = excluded if negated else matched
             for field_name, value in seg_matched.items():
-                if field_name in matched:
-                    existing = matched[field_name]
+                if field_name in target:
+                    existing = target[field_name]
                     if isinstance(existing, list):
                         if value not in existing:
                             existing.append(value)
                     else:
                         if existing != value:
-                            matched[field_name] = [existing, value]
+                            target[field_name] = [existing, value]
                 else:
-                    matched[field_name] = value
+                    target[field_name] = value
 
             if seg_remaining:
                 remaining_parts.append(seg_remaining)
 
-        # Normalise multi-value fields to always be lists.
-        for k, v in matched.items():
-            if k in MULTI_VALUE_FIELDS and not isinstance(v, list):
-                matched[k] = [v]
+        for collection in (matched, excluded):
+            for k, v in collection.items():
+                if k in MULTI_VALUE_FIELDS and not isinstance(v, list):
+                    collection[k] = [v]
 
         return MatchResult(
             matched=matched,
+            excluded=excluded,
             remaining=" ".join(remaining_parts),
         )
 

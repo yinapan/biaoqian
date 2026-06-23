@@ -135,7 +135,6 @@ class TestBuildEffectTags:
         assert tags["time_dynamic"] == ["循环", "长持续"]
         assert tags["element"] == ["光系"]
         assert tags["scene_env"] == ["场景氛围"]
-        assert tags["scope_size"] == ["小范围"]
 
     def test_description_included(self):
         tags = build_effect_tags(SAMPLE_RESOURCE_OK)

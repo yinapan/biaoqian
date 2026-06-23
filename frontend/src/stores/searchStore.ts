@@ -8,6 +8,7 @@ export const useSearchStore = defineStore('search', () => {
   const moduleType = ref(1)
   const query = ref('')
   const filters = ref<Record<string, any>>({})
+  const dismissedFields = ref<Set<string>>(new Set())
   const page = ref(1)
   const pageSize = ref(60)
   const loading = ref(false)
@@ -31,6 +32,9 @@ export const useSearchStore = defineStore('search', () => {
         filters: Object.keys(filters.value).length
           ? filters.value
           : undefined,
+        dismissed_fields: dismissedFields.value.size
+          ? [...dismissedFields.value]
+          : undefined,
         page: page.value,
         page_size: pageSize.value,
       })
@@ -46,6 +50,7 @@ export const useSearchStore = defineStore('search', () => {
   function setModuleType(mod: number) {
     moduleType.value = mod
     filters.value = {}
+    dismissedFields.value = new Set()
     query.value = ''
     page.value = 1
     response.value = null
@@ -70,6 +75,12 @@ export const useSearchStore = defineStore('search', () => {
 
   function clearFilters() {
     filters.value = {}
+    dismissedFields.value = new Set()
+    page.value = 1
+  }
+
+  function dismissParsedFilter(field: string) {
+    dismissedFields.value.add(field)
     page.value = 1
   }
 
@@ -78,6 +89,7 @@ export const useSearchStore = defineStore('search', () => {
     moduleType,
     query,
     filters,
+    dismissedFields,
     page,
     pageSize,
     loading,
@@ -95,5 +107,6 @@ export const useSearchStore = defineStore('search', () => {
     setFilter,
     setPage,
     clearFilters,
+    dismissParsedFilter,
   }
 })

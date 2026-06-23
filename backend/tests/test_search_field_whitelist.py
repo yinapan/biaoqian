@@ -127,3 +127,20 @@ async def test_valid_filter_fields_pass_validation():
 
     assert resp.total == 0
     assert resp.items == []
+
+
+@pytest.mark.asyncio
+async def test_unknown_exclude_filter_field_returns_422():
+    """Passing an unknown key in exclude_filters should raise HTTP 422."""
+    req = SearchRequest(
+        module_type=1,
+        exclude_filters={"nonexistent_field": ["value"]},
+    )
+    with patch(
+        "app.services.search_service.get_tag_definitions",
+        return_value=FAKE_TAG_DEFS,
+    ):
+        with pytest.raises(HTTPException) as exc_info:
+            await search(req, pool=AsyncMock())
+        assert exc_info.value.status_code == 422
+        assert "nonexistent_field" in exc_info.value.detail

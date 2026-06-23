@@ -19,6 +19,8 @@ class SearchRequest(BaseModel):
     module_type: int = Field(ge=1, le=4)
     query: str | None = None
     filters: dict[str, Any] = Field(default_factory=dict)
+    exclude_filters: dict[str, Any] = Field(default_factory=dict)
+    dismissed_fields: list[str] = Field(default_factory=list)
     conditions: list[Condition] = Field(default_factory=list)
     sort: SortOption = Field(default_factory=SortOption)
     page: int = Field(default=1, ge=1)
@@ -41,7 +43,9 @@ class IgnoredTag(BaseModel):
 
 class ParseInfo(BaseModel):
     parsed_filters: dict[str, Any] = Field(default_factory=dict)
+    parsed_excludes: dict[str, Any] = Field(default_factory=dict)
     effective_filters: dict[str, Any] = Field(default_factory=dict)
+    effective_excludes: dict[str, Any] = Field(default_factory=dict)
     ignored_tags: list[IgnoredTag] = Field(default_factory=list)
     keyword: str = ""
     confidence: float = 0.0

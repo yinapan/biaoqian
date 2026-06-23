@@ -69,6 +69,7 @@ async def parse_query(
     source = "dict"
 
     llm_filter: dict = {}
+    llm_exclude: dict = {}
     llm_keyword = ""
     confidence = 1.0
 
@@ -79,7 +80,9 @@ async def parse_query(
         unmatched_dims = [
             d
             for d in tag_definitions
-            if d["field_name"] not in dict_result.matched and d["is_searchable"]
+            if d["field_name"] not in dict_result.matched
+            and d["field_name"] not in dict_result.excluded
+            and d["is_searchable"]
         ]
 
         llm_result = await call_llm(remaining, dict_result.matched, unmatched_dims)
@@ -93,6 +96,7 @@ async def parse_query(
                 boolean_fields,
             )
             llm_filter = validated["filter"]
+            llm_exclude = validated.get("exclude", {})
             llm_keyword = validated["keyword"]
             confidence = validated["confidence"]
             source = "dict+llm"
@@ -107,10 +111,12 @@ async def parse_query(
 
     # 5. Merge
     merged = {**dict_result.matched, **llm_filter}
+    merged_excludes = {**dict_result.excluded, **llm_exclude}
     elapsed_ms = int((time.monotonic() - start) * 1000)
 
     result = {
         "parsed_filters": merged,
+        "parsed_excludes": merged_excludes,
         "keyword": llm_keyword,
         "confidence": confidence,
         "parse_source": source,

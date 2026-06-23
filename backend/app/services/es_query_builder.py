@@ -24,6 +24,7 @@ def _build_filter_clause(field: str, value, text_fields: set, number_fields: set
 def build_search_query(
     module_type: int,
     filters: dict | None = None,
+    excludes: dict | None = None,
     keyword: str = "",
     conditions: list[dict] | None = None,
     sort: dict | None = None,
@@ -35,6 +36,7 @@ def build_search_query(
     number_fields: set[str] | None = None,
 ) -> dict:
     filters = filters or {}
+    excludes = excludes or {}
     conditions = conditions or []
     filterable_fields = filterable_fields or []
     agg_fields = agg_fields or []
@@ -43,6 +45,7 @@ def build_search_query(
     agg_fields_set = set(agg_fields)
 
     base_filters: list[dict] = [{"term": {"module_type": str(module_type)}}]
+    must_not_clauses: list[dict] = []
     facet_clauses: dict[str, dict] = {}
     bool_must: list[dict] = []
 
@@ -54,6 +57,15 @@ def build_search_query(
         else:
             base_filters.append(clause)
 
+    # --- excludes: build must_not clauses ---
+    for field, value in excludes.items():
+        if isinstance(value, list):
+            must_not_clauses.append({"terms": {f"tags.{field}": value}})
+        elif isinstance(value, str) and field in text_fields:
+            must_not_clauses.append({"wildcard": {f"tags.{field}": {"value": f"*{value}*"}}})
+        else:
+            must_not_clauses.append({"term": {f"tags.{field}": value}})
+
     # --- conditions (explicit range / comparison rules) ---
     for cond in conditions:
         es_op = OP_MAP.get(cond["op"], "gte")
@@ -63,21 +75,30 @@ def build_search_query(
         base_filters.append({"range": range_q})
 
     # --- keyword full-text search ---
+    has_filters = len(filters) > 0
     if keyword:
-        bool_must.append(
-            {
-                "match": {
-                    "search_text": {
-                        "query": keyword,
-                        "analyzer": "ik_smart",
-                    }
+        keyword_clause = {
+            "match": {
+                "search_text": {
+                    "query": keyword,
+                    "analyzer": "ik_smart",
                 }
             }
-        )
+        }
+        if has_filters:
+            bool_must.append(keyword_clause)
+        else:
+            bool_must.append(keyword_clause)
 
     bool_query: dict = {"filter": base_filters}
+    if must_not_clauses:
+        bool_query["must_not"] = must_not_clauses
     if bool_must:
-        bool_query["must"] = bool_must
+        if has_filters and keyword:
+            bool_query["should"] = bool_must
+            bool_query["minimum_should_match"] = 0
+        else:
+            bool_query["must"] = bool_must
 
     # --- function_score: boost matched filters + time decay ---
     score_functions: list[dict] = []

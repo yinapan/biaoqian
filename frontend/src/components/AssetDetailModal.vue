@@ -20,6 +20,9 @@ const visible = computed({
 })
 
 const copied = ref(false)
+const iconIdCopied = ref(false)
+
+const isIcon = computed(() => store.moduleType === 4)
 
 function copyPath() {
   const text = props.item.resource_path
@@ -30,6 +33,17 @@ function copyPath() {
   }
   copied.value = true
   setTimeout(() => (copied.value = false), 1500)
+}
+
+function copyIconId() {
+  const text = props.item.name
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).catch(() => fallbackCopy(text))
+  } else {
+    fallbackCopy(text)
+  }
+  iconIdCopied.value = true
+  setTimeout(() => (iconIdCopied.value = false), 1500)
 }
 
 function fallbackCopy(text: string) {
@@ -195,6 +209,18 @@ function getLabel(key: string) {
             <span class="meta-value">
               {{ group.items.map(i => `${i.short}: ${i.value}`).join(' / ') }}
             </span>
+          </div>
+        </div>
+
+        <!-- Icon ID -->
+        <div v-if="isIcon" class="meta-path">
+          <span class="path-label">Icon ID</span>
+          <div class="path-row">
+            <code class="path-value icon-id-mono">{{ item.name }}</code>
+            <button class="copy-btn" :class="{ copied: iconIdCopied }" @click="copyIconId">
+              <svg v-if="!iconIdCopied" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              <span v-else class="copied-check">&#10003;</span>
+            </button>
           </div>
         </div>
 
@@ -364,6 +390,12 @@ function getLabel(key: string) {
 
 .copy-btn.copied {
   color: #4ade80;
+}
+
+.icon-id-mono {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent-text);
 }
 
 .copied-check {

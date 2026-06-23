@@ -66,19 +66,23 @@ async def search(req: SearchRequest, pool) -> SearchResponse:
     all_known_fields = {d["field_name"] for d in tag_defs}
 
     unknown_filter_fields = set(req.filters.keys()) - all_known_fields
+    unknown_exclude_fields = set(req.exclude_filters.keys()) - all_known_fields
     unknown_condition_fields = {
         c.field for c in req.conditions
     } - all_known_fields
 
-    unknown_fields = unknown_filter_fields | unknown_condition_fields
+    unknown_fields = unknown_filter_fields | unknown_exclude_fields | unknown_condition_fields
     if unknown_fields:
         raise HTTPException(
             status_code=422,
             detail=f"Unknown field(s): {', '.join(sorted(unknown_fields))}",
         )
 
+    dismissed = set(req.dismissed_fields)
+
     parse_info = None
     effective_filters = dict(req.filters)
+    effective_excludes: dict = dict(req.exclude_filters)
     keyword = ""
     ignored_tags = []
 
@@ -102,12 +106,25 @@ async def search(req: SearchRequest, pool) -> SearchResponse:
                         reason="overridden_by_manual_filter",
                     )
                 )
+            elif field in dismissed:
+                ignored_tags.append(
+                    IgnoredTag(
+                        field=field,
+                        value=str(value),
+                        reason="dismissed_by_user",
+                    )
+                )
             else:
                 effective_filters[field] = value
 
+        for field, value in parsed.get("parsed_excludes", {}).items():
+            effective_excludes[field] = value
+
         parse_info = ParseInfo(
             parsed_filters=parsed["parsed_filters"],
+            parsed_excludes=parsed.get("parsed_excludes", {}),
             effective_filters=effective_filters,
+            effective_excludes=effective_excludes,
             ignored_tags=ignored_tags,
             keyword=keyword,
             confidence=parsed.get("confidence", 0.0),
@@ -119,6 +136,7 @@ async def search(req: SearchRequest, pool) -> SearchResponse:
     es_query = build_search_query(
         module_type=req.module_type,
         filters=effective_filters,
+        excludes=effective_excludes,
         keyword=keyword,
         conditions=[c.model_dump() for c in req.conditions],
         sort=req.sort.model_dump() if req.sort else None,

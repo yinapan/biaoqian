@@ -16,6 +16,8 @@ export interface SearchRequest {
   module_type: number
   query?: string
   filters?: Record<string, any>
+  exclude_filters?: Record<string, any>
+  dismissed_fields?: string[]
   conditions?: Condition[]
   sort?: SortOption
   page?: number
@@ -32,7 +34,9 @@ export interface IgnoredTag {
 /** Metadata about how the query was parsed */
 export interface ParseInfo {
   parsed_filters: Record<string, any>
+  parsed_excludes: Record<string, any>
   effective_filters: Record<string, any>
+  effective_excludes: Record<string, any>
   ignored_tags: IgnoredTag[]
   keyword: string
   confidence: number

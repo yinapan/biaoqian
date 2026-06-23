@@ -9,7 +9,8 @@ import PaginationBar from '@/components/PaginationBar.vue'
 
 const store = useSearchStore()
 
-const moduleName = computed(() => (store.moduleType === 2 ? '特效资源' : '模型资源'))
+const MODULE_NAMES: Record<number, string> = { 1: '模型资源', 2: '特效资源', 4: '图标资源' }
+const moduleName = computed(() => MODULE_NAMES[store.moduleType] ?? '资源')
 
 onMounted(async () => {
   await store.loadDefinitions()

@@ -107,17 +107,20 @@ function fallbackCopy(text: string) {
       </div>
       <!-- Floating tag badge -->
       <span v-if="tagLabel" class="float-badge">{{ tagLabel }}</span>
-      <!-- Icon copy button - appears on hover -->
+      <!-- ID copy chip - appears on hover -->
       <Transition name="copy-fade">
         <button
           v-if="isIcon && hovering"
-          class="icon-copy-btn"
+          class="id-copy-chip"
           :class="{ copied: iconIdCopied }"
           @click="copyIconId"
-          :title="iconIdCopied ? '已复制' : '复制 icon_id'"
         >
-          <svg v-if="!iconIdCopied" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          <svg v-else width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <span class="chip-label">ID</span>
+          <span class="chip-value">{{ iconId }}</span>
+          <span class="chip-action">
+            <svg v-if="!iconIdCopied" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="14" height="14" rx="2.5"/><path d="M4 16H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v1"/></svg>
+            <svg v-else width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </span>
         </button>
       </Transition>
     </div>
@@ -126,11 +129,16 @@ function fallbackCopy(text: string) {
     <div class="card-info">
       <div class="card-name" :title="item.name">{{ item.name }}</div>
 
-      <!-- Icon ID row for icon module -->
+      <!-- Icon ID row -->
       <div v-if="isIcon" class="card-icon-id" @click.stop="copyIconId($event)">
-        <span class="icon-id-label">ID</span>
-        <code class="icon-id-value">{{ iconId }}</code>
-        <span v-if="iconIdCopied" class="icon-id-copied">已复制</span>
+        <div class="id-pill">
+          <span class="id-pill-label">ID</span>
+          <code class="id-pill-value">{{ iconId }}</code>
+        </div>
+        <span class="id-pill-hint" :class="{ show: iconIdCopied }">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          已复制
+        </span>
       </div>
 
       <div class="card-tags">
@@ -217,35 +225,91 @@ function fallbackCopy(text: string) {
   border: 1px solid var(--border-light);
 }
 
-/* Icon copy button (top-right overlay) */
-.icon-copy-btn {
+/* ID copy chip (top-right overlay) */
+.id-copy-chip {
   position: absolute;
   top: 6px;
   right: 6px;
-  width: 26px;
-  height: 26px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 4px 0 10px;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  background: rgba(13, 17, 23, 0.92);
+  backdrop-filter: blur(8px);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+.id-copy-chip:hover {
+  background: rgba(23, 32, 42, 0.95);
+  border-color: rgba(79, 156, 175, 0.45);
+  box-shadow: 0 0 12px rgba(79, 156, 175, 0.12);
+}
+
+.id-copy-chip.copied {
+  background: rgba(22, 163, 74, 0.18);
+  border-color: rgba(34, 197, 94, 0.4);
+  box-shadow: 0 0 16px rgba(34, 197, 94, 0.14);
+}
+
+.chip-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+
+.id-copy-chip:hover .chip-label {
+  color: var(--accent-text);
+}
+
+.id-copy-chip.copied .chip-label {
+  color: #4ade80;
+}
+
+.chip-value {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+
+.id-copy-chip:hover .chip-value {
+  color: var(--text-primary);
+}
+
+.chip-action {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--border-light);
+  width: 22px;
+  height: 22px;
   border-radius: 5px;
-  background: rgba(16, 20, 24, 0.88);
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.15s;
-  backdrop-filter: blur(4px);
+  background: rgba(226, 232, 240, 0.06);
+  color: var(--text-muted);
+  transition: all 0.2s;
 }
 
-.icon-copy-btn:hover {
+.id-copy-chip:hover .chip-action {
   background: var(--accent);
   color: var(--text-on-accent);
-  border-color: var(--accent);
 }
 
-.icon-copy-btn.copied {
-  background: rgba(34, 197, 94, 0.9);
-  color: white;
-  border-color: rgba(34, 197, 94, 0.9);
+.id-copy-chip.copied .chip-action {
+  background: rgba(34, 197, 94, 0.25);
+  color: #4ade80;
 }
 
 .copy-fade-enter-active,
@@ -281,58 +345,83 @@ function fallbackCopy(text: string) {
 .card-icon-id {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 6px;
-  padding: 3px 8px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: 4px;
+  justify-content: space-between;
+  margin-bottom: 7px;
   cursor: pointer;
-  transition: all 0.15s;
+  user-select: none;
 }
 
-.card-icon-id:hover {
-  border-color: var(--accent);
-  background: var(--accent-soft);
+.id-pill {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  transition: all 0.2s ease;
 }
 
-.icon-id-label {
+.card-icon-id:hover .id-pill {
+  border-color: rgba(79, 156, 175, 0.35);
+  box-shadow: 0 0 0 1px rgba(79, 156, 175, 0.08);
+}
+
+.id-pill-label {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
   font-size: 9px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--accent);
+  letter-spacing: 0.1em;
+  color: var(--accent-text);
   background: var(--accent-soft);
-  padding: 1px 4px;
-  border-radius: 2px;
+  border-right: 1px solid var(--border-subtle);
   flex-shrink: 0;
+  transition: all 0.2s;
 }
 
-.icon-id-value {
+.card-icon-id:hover .id-pill-label {
+  background: rgba(79, 156, 175, 0.22);
+}
+
+.id-pill-value {
   font-family: var(--font-mono);
   font-size: 11px;
+  font-weight: 450;
   color: var(--text-secondary);
+  padding: 4px 10px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   flex: 1;
+  transition: color 0.2s;
 }
 
-.card-icon-id:hover .icon-id-value {
-  color: var(--accent-text);
+.card-icon-id:hover .id-pill-value {
+  color: var(--text-primary);
 }
 
-.icon-id-copied {
-  font-size: 10px;
-  font-weight: 600;
-  color: #4ade80;
+.id-pill-hint {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   flex-shrink: 0;
-  animation: copied-pop 0.2s ease;
+  margin-left: 8px;
+  font-size: 11px;
+  font-weight: 550;
+  color: #4ade80;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
 }
 
-@keyframes copied-pop {
-  0% { transform: scale(0.8); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
+.id-pill-hint.show {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 .card-tags {

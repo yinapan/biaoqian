@@ -213,13 +213,17 @@ function getLabel(key: string) {
         </div>
 
         <!-- Icon ID -->
-        <div v-if="isIcon" class="meta-path">
+        <div v-if="isIcon" class="meta-path icon-id-section">
           <span class="path-label">Icon ID</span>
-          <div class="path-row">
-            <code class="path-value icon-id-mono">{{ item.name }}</code>
-            <button class="copy-btn" :class="{ copied: iconIdCopied }" @click="copyIconId">
-              <svg v-if="!iconIdCopied" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-              <span v-else class="copied-check">&#10003;</span>
+          <div class="icon-id-row">
+            <div class="icon-id-display">
+              <span class="icon-id-badge">ID</span>
+              <code class="icon-id-code">{{ item.name }}</code>
+            </div>
+            <button class="id-copy-action" :class="{ copied: iconIdCopied }" @click="copyIconId">
+              <svg v-if="!iconIdCopied" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="14" height="14" rx="2.5"/><path d="M4 16H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v1"/></svg>
+              <svg v-else width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <span class="id-copy-text" :class="{ visible: iconIdCopied }">已复制</span>
             </button>
           </div>
         </div>
@@ -392,15 +396,102 @@ function getLabel(key: string) {
   color: #4ade80;
 }
 
-.icon-id-mono {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--accent-text);
+/* --- Icon ID section --- */
+.icon-id-section {
+  padding: 14px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
 }
 
-.copied-check {
-  font-size: 14px;
+.icon-id-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+
+.icon-id-display {
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  overflow: hidden;
+  background: var(--bg-root);
+}
+
+.icon-id-badge {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  font-size: 10px;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent-text);
+  background: var(--accent-soft);
+  border-right: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.icon-id-code {
+  display: flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  padding: 8px 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.id-copy-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--border-subtle);
+  border-left: none;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.id-copy-action:hover {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  border-color: var(--accent);
+}
+
+.id-copy-action.copied {
+  background: rgba(22, 163, 74, 0.16);
+  color: #4ade80;
+  border-color: rgba(34, 197, 94, 0.3);
+  min-width: 72px;
+}
+
+.id-copy-text {
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.id-copy-text.visible {
+  opacity: 1;
+  width: 32px;
 }
 
 /* --- Score bar --- */

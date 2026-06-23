@@ -158,10 +158,9 @@ function onBlur() {
         class="pill pill--match"
       >
         <svg class="pill-icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-        {{ field }}:
-        {{ Array.isArray(value) ? value.join(', ') : value }}
+        <span class="pill-label">{{ field }}: {{ Array.isArray(value) ? value.join(', ') : value }}</span>
         <button class="pill-dismiss" @click="dismissFilter(field)" title="移除此标签">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/></svg>
         </button>
       </span>
 
@@ -170,8 +169,13 @@ function onBlur() {
         :key="'ex-' + field"
         class="pill pill--exclude"
       >
-        <svg class="pill-icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        排除 {{ field }}: {{ Array.isArray(value) ? value.join(', ') : value }}
+        <svg class="pill-icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="9"/><line x1="5.5" y1="5.5" x2="18.5" y2="18.5"/>
+        </svg>
+        <span class="pill-label">{{ field }}: {{ Array.isArray(value) ? value.join(', ') : value }}</span>
+        <button class="pill-dismiss" @click="dismissFilter(field)" title="取消排除">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/></svg>
+        </button>
       </span>
 
       <span
@@ -420,10 +424,19 @@ function onBlur() {
 
 /* --- Parse pills --- */
 .parse-pills {
-  margin-top: 8px;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 50;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  padding: 8px 10px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
 .pill {

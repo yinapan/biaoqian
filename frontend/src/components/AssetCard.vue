@@ -99,6 +99,7 @@ function fallbackCopy(text: string) {
         :src="displaySrc"
         :alt="item.name"
         loading="lazy"
+        decoding="async"
         @error="($event.target as HTMLImageElement).src = PLACEHOLDER"
       />
       <div class="thumb-overlay">
@@ -156,6 +157,8 @@ function fallbackCopy(text: string) {
   cursor: pointer;
   box-shadow: var(--shadow-card);
   transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  content-visibility: auto;
+  contain-intrinsic-size: 0 280px;
 }
 
 .asset-card:hover {

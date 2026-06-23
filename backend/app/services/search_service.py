@@ -118,7 +118,16 @@ async def search(req: SearchRequest, pool) -> SearchResponse:
                 effective_filters[field] = value
 
         for field, value in parsed.get("parsed_excludes", {}).items():
-            effective_excludes[field] = value
+            if field in dismissed:
+                ignored_tags.append(
+                    IgnoredTag(
+                        field=field,
+                        value=str(value),
+                        reason="dismissed_by_user",
+                    )
+                )
+            else:
+                effective_excludes[field] = value
 
         parse_info = ParseInfo(
             parsed_filters=parsed["parsed_filters"],

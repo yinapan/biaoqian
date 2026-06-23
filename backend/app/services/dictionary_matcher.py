@@ -27,6 +27,23 @@ MULTI_VALUE_FIELDS = frozenset(
 
 NEGATION_PREFIXES = ("不要", "不含", "排除", "去掉", "没有", "无", "非", "不是")
 
+STOPWORDS = frozenset({
+    "我", "你", "他", "她", "它", "的", "了", "在", "是", "有",
+    "和", "与", "或", "也", "都", "要", "想", "能", "会", "可",
+    "个", "一", "这", "那", "就", "把", "被", "让", "给",
+    "很", "更", "最", "太", "再", "又", "还", "才",
+    "吗", "呢", "吧", "啊", "哦", "嗯",
+    "带", "着", "穿", "用", "找", "看", "来", "去", "到",
+    "做", "些", "种", "样", "比", "像", "跟", "对", "从",
+    "得", "地", "之", "而", "但", "所", "以", "于", "不",
+})
+
+import re
+_PUNCT_RE = re.compile(r'[，。！？；：、,.!?;:\s]+')
+_NEGATION_SPLIT_RE = re.compile(
+    r'(' + '|'.join(re.escape(p) for p in sorted(NEGATION_PREFIXES, key=len, reverse=True)) + r')'
+)
+
 
 @dataclass
 class MatchResult:
@@ -142,9 +159,26 @@ class DictionaryMatcher:
         if not tokens:
             return MatchResult(remaining=query)
 
-        segments = query.split()
+        segments = _PUNCT_RE.split(query)
+        segments = [s for s in segments if s]
         if not segments:
             return MatchResult()
+
+        # Split segments on negation prefixes so "天策不要中原" → ["天策", "不要中原"]
+        expanded: list[str] = []
+        for seg in segments:
+            parts = _NEGATION_SPLIT_RE.split(seg)
+            i = 0
+            while i < len(parts):
+                part = parts[i]
+                if part in NEGATION_PREFIXES and i + 1 < len(parts):
+                    expanded.append(part + parts[i + 1])
+                    i += 2
+                else:
+                    if part:
+                        expanded.append(part)
+                    i += 1
+        segments = expanded
 
         matched: dict[str, Any] = {}
         excluded: dict[str, Any] = {}
@@ -159,10 +193,14 @@ class DictionaryMatcher:
                     negated = True
                     break
 
+            if clean in STOPWORDS:
+                continue
+
             seg_matched, seg_remaining = self._match_segment(clean, tokens)
 
             if not seg_matched and negated:
-                remaining_parts.append(segment)
+                if seg_remaining:
+                    remaining_parts.append(seg_remaining)
                 continue
 
             target = excluded if negated else matched
@@ -238,6 +276,8 @@ class DictionaryMatcher:
             # Try lengths from longest (max 10) down to 1.
             for length in range(min(len(text) - i, 10), 0, -1):
                 candidate = text[i : i + length]
+                if candidate in STOPWORDS:
+                    continue
                 entries = tokens.get(candidate)
                 if entries:
                     top = max(entries, key=lambda e: e[2])
@@ -250,7 +290,8 @@ class DictionaryMatcher:
                 matched[best_field] = best_value  # type: ignore[index]
                 i += best_len
             else:
-                remaining.append(text[i])
+                if text[i] not in STOPWORDS:
+                    remaining.append(text[i])
                 i += 1
 
         return matched, "".join(remaining)

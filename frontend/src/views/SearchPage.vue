@@ -93,7 +93,8 @@ onMounted(async () => {
   background: var(--bg-elevated);
   border-bottom: 1px solid var(--border-subtle);
   flex-shrink: 0;
-  z-index: 10;
+  z-index: 100;
+  overflow: visible;
 }
 
 .brand-block {
@@ -111,6 +112,9 @@ onMounted(async () => {
   flex: 1;
   max-width: 640px;
   min-width: 280px;
+  position: relative;
+  overflow: visible;
+  z-index: 200;
 }
 
 .brand-logo {

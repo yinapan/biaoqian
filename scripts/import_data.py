@@ -16,7 +16,7 @@ import asyncpg
 async def run_excel_import(excel_path: str, pool: asyncpg.Pool, previews_dir: str):
     from app.importers.excel_importer import import_excel
     from app.importers.tag_initializer import extract_enum_values_from_excel
-    result = await import_excel(excel_path, pool, previews_dir)
+    result = await import_excel(excel_path, pool, previews_dir, sync_es=False)
     await extract_enum_values_from_excel(excel_path, pool)
     print_import_summary("Excel", excel_path, result)
     return result

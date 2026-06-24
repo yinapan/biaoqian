@@ -228,6 +228,7 @@ async def _flush_asset_batch(
     pool: asyncpg.Pool,
     rows: Sequence[tuple[int, str, str, str | None, str]],
     es_batch: list[dict],
+    sync_es: bool = True,
 ) -> dict:
     """Upsert a batch of assets and append returned ES docs to *es_batch*."""
     if not rows:
@@ -250,8 +251,9 @@ async def _flush_asset_batch(
             tags_json,
         )
 
-    for row_result in result_rows:
-        es_batch.append(build_es_doc(dict(row_result)))
+    if sync_es:
+        for row_result in result_rows:
+            es_batch.append(build_es_doc(dict(row_result)))
 
     return {"success": len(result_rows)}
 
@@ -262,6 +264,7 @@ async def import_excel(
     previews_dir: str,
     batch_size: int = 1000,
     progress_interval: int = 5000,
+    sync_es: bool = True,
 ) -> dict:
     """Parse an Excel workbook and upsert rows into the *assets* table.
 
@@ -292,7 +295,7 @@ async def import_excel(
 
     async def flush_assets() -> None:
         nonlocal asset_batch
-        result = await _flush_asset_batch(pool, asset_batch, es_batch)
+        result = await _flush_asset_batch(pool, asset_batch, es_batch, sync_es=sync_es)
         stats["success"] += result["success"]
         asset_batch = []
 
@@ -418,7 +421,7 @@ async def import_excel(
                 if len(asset_batch) >= batch_size:
                     await flush_assets()
 
-                if len(es_batch) >= batch_size:
+                if sync_es and len(es_batch) >= batch_size:
                     await flush_es()
 
                 if processed % progress_interval == 0:
@@ -431,7 +434,8 @@ async def import_excel(
                 )
 
     await flush_assets()
-    await flush_es()
+    if sync_es:
+        await flush_es()
     print_progress("done")
 
     wb.close()

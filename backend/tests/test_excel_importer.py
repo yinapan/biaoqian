@@ -152,3 +152,42 @@ async def test_import_excel_uses_batch_upsert_and_prints_progress(tmp_path, caps
     output = capsys.readouterr().out
     assert "Excel progress:" in output
     assert "success=2" in output
+
+
+@pytest.mark.asyncio
+async def test_import_excel_can_skip_realtime_es_sync(tmp_path):
+    excel_file = tmp_path / "assets.xlsx"
+    _create_excel(
+        excel_file,
+        [["data/source/NPC/P080001.mdl", "人", "女", "中原"]],
+    )
+
+    pool, conn = _make_mock_pool()
+    conn.fetch.return_value = [
+        {
+            "id": 1,
+            "module_type": 1,
+            "name": "P080001.mdl",
+            "resource_path": "data/source/NPC/P080001.mdl",
+            "thumbnail_path": None,
+            "tags": {"species": "人"},
+            "created_at": datetime(2026, 6, 24, 12, 0, 0),
+            "updated_at": datetime(2026, 6, 24, 12, 0, 0),
+        }
+    ]
+
+    with (
+        patch("app.importers.excel_importer.extract_wps_images", return_value={}),
+        patch("app.importers.excel_importer.bulk_index", new_callable=AsyncMock) as mock_bulk,
+    ):
+        result = await import_excel(
+            str(excel_file),
+            pool,
+            str(tmp_path),
+            batch_size=1,
+            progress_interval=1,
+            sync_es=False,
+        )
+
+    assert result["success"] == 1
+    mock_bulk.assert_not_called()

@@ -91,7 +91,7 @@ def test_root_wrappers_delegate_to_prod_scripts():
 def test_deploy_environments_have_distinct_urls():
     local_env = _read_script("deploy/local/env.bat")
     prod_env = _read_script("deploy/prod/env.bat")
-    assert "APP_URL=http://localhost:8080" in local_env
+    assert "APP_URL=http://localhost:8081" in local_env
     assert "APP_URL=https://artsearch.testplus.cn" in prod_env
     assert "docker-compose.dev.yml" in local_env
     assert "docker-compose.dev.yml" not in prod_env
@@ -176,3 +176,9 @@ def test_compose_mounts_icon_png_results_for_frontend_icons():
     assert "./icon_png_results:/data/icons:ro" in text
     dev_text = (ROOT / "docker-compose.dev.yml").read_text(encoding="utf-8")
     assert "./icon_png_results:/data/icons:ro" in dev_text
+
+
+def test_local_compose_uses_non_production_port():
+    dev_text = (ROOT / "docker-compose.dev.yml").read_text(encoding="utf-8")
+    assert '"8081:80"' in dev_text
+    assert '"8080:80"' not in dev_text

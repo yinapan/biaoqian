@@ -140,14 +140,29 @@ def test_import_scripts_accept_custom_data_source_arguments():
         for script in ["import-new-data.bat", "reimport-data.bat"]:
             text = _read_script(f"{env_dir}/{script}")
             assert "EXCEL_PATH" in text
+            assert "IMPORT_EXCEL" in text
             assert "EFFECTS_JSON_PATH" in text
+            assert "IMPORT_EFFECTS" in text
             assert "ICONS_JSON_PATH" in text
+            assert "IMPORT_ICONS" in text
             assert "/excel" in text
             assert "/effects" in text
             assert "/icons" in text
             assert '--excel "%EXCEL_PATH%"' in text
             assert '--effects-json "%EFFECTS_JSON_PATH%"' in text
             assert '--icons-json "%ICONS_JSON_PATH%"' in text
+
+
+def test_reimport_only_imports_explicit_sources_when_arguments_are_provided():
+    for env_dir in ENV_DIRS:
+        text = _read_script(f"{env_dir}/reimport-data.bat")
+        assert "set \"HAS_EXPLICIT_SOURCE=0\"" in text
+        assert "set \"HAS_EXPLICIT_SOURCE=1\"" in text
+        assert "if \"%HAS_EXPLICIT_SOURCE%\"==\"0\"" in text
+        assert "if \"%IMPORT_EXCEL%\"==\"1\"" in text
+        assert "if \"%IMPORT_EFFECTS%\"==\"1\"" in text
+        assert "if \"%IMPORT_ICONS%\"==\"1\"" in text
+        assert "[SKIP] Excel source not requested." in text
 
 
 def test_import_scripts_stop_after_python_import_failure():

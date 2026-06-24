@@ -6,6 +6,10 @@ call "%SCRIPT_DIR%env.bat"
 set "EXCEL_PATH="
 set "EFFECTS_JSON_PATH="
 set "ICONS_JSON_PATH=icon_png_results\icon_png_results.json"
+set "HAS_EXPLICIT_SOURCE=0"
+set "IMPORT_EXCEL=0"
+set "IMPORT_EFFECTS=0"
+set "IMPORT_ICONS=0"
 
 :parse_args
 if "%~1"=="" goto args_done
@@ -24,6 +28,8 @@ exit /b 1
 :set_excel
 if "%~2"=="" goto missing_arg
 set "EXCEL_PATH=%~2"
+set "HAS_EXPLICIT_SOURCE=1"
+set "IMPORT_EXCEL=1"
 shift
 shift
 goto parse_args
@@ -31,6 +37,8 @@ goto parse_args
 :set_effects
 if "%~2"=="" goto missing_arg
 set "EFFECTS_JSON_PATH=%~2"
+set "HAS_EXPLICIT_SOURCE=1"
+set "IMPORT_EFFECTS=1"
 shift
 shift
 goto parse_args
@@ -38,6 +46,8 @@ goto parse_args
 :set_icons
 if "%~2"=="" goto missing_arg
 set "ICONS_JSON_PATH=%~2"
+set "HAS_EXPLICIT_SOURCE=1"
+set "IMPORT_ICONS=1"
 shift
 shift
 goto parse_args
@@ -49,6 +59,12 @@ pause
 exit /b 1
 
 :args_done
+if "%HAS_EXPLICIT_SOURCE%"=="0" (
+    set "IMPORT_EXCEL=1"
+    set "IMPORT_EFFECTS=1"
+    set "IMPORT_ICONS=1"
+)
+
 echo ================================
 echo  biaoqian - local incremental import
 echo ================================
@@ -58,6 +74,9 @@ echo [INFO] APP_URL=%APP_URL%
 echo [INFO] EXCEL_PATH=%EXCEL_PATH%
 echo [INFO] EFFECTS_JSON_PATH=%EFFECTS_JSON_PATH%
 echo [INFO] ICONS_JSON_PATH=%ICONS_JSON_PATH%
+echo [INFO] IMPORT_EXCEL=%IMPORT_EXCEL%
+echo [INFO] IMPORT_EFFECTS=%IMPORT_EFFECTS%
+echo [INFO] IMPORT_ICONS=%IMPORT_ICONS%
 
 docker info >nul 2>&1
 if errorlevel 1 (
@@ -86,29 +105,41 @@ if errorlevel 1 (
 timeout /t 10 /nobreak >nul
 
 echo [2/6] Import Excel data...
-if defined EXCEL_PATH (
-    python scripts/import_data.py --excel "%EXCEL_PATH%"
-    if errorlevel 1 goto import_failed
+if "%IMPORT_EXCEL%"=="1" (
+    if defined EXCEL_PATH (
+        python scripts/import_data.py --excel "%EXCEL_PATH%"
+        if errorlevel 1 goto import_failed
+    ) else (
+        powershell -NoProfile -ExecutionPolicy Bypass -Command "$p=Get-ChildItem -LiteralPath . -Filter *.xlsx -File | Select-Object -First 1 -ExpandProperty FullName; if($p){ python scripts/import_data.py --excel $p; exit $LASTEXITCODE } else { Write-Host '[SKIP] Excel source not found.'; exit 0 }"
+        if errorlevel 1 goto import_failed
+    )
 ) else (
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "$p=Get-ChildItem -LiteralPath . -Filter *.xlsx -File | Select-Object -First 1 -ExpandProperty FullName; if($p){ python scripts/import_data.py --excel $p; exit $LASTEXITCODE } else { Write-Host '[SKIP] Excel source not found.'; exit 0 }"
-    if errorlevel 1 goto import_failed
+    echo [SKIP] Excel source not requested.
 )
 
 echo [3/6] Import effects data...
-if defined EFFECTS_JSON_PATH (
-    python scripts/import_data.py --effects-json "%EFFECTS_JSON_PATH%"
-    if errorlevel 1 goto import_failed
+if "%IMPORT_EFFECTS%"=="1" (
+    if defined EFFECTS_JSON_PATH (
+        python scripts/import_data.py --effects-json "%EFFECTS_JSON_PATH%"
+        if errorlevel 1 goto import_failed
+    ) else (
+        powershell -NoProfile -ExecutionPolicy Bypass -Command "$p=Get-ChildItem -LiteralPath . -Recurse -Filter effect_gif_results.json -File | Where-Object { $_.Directory.Name -eq 'data' } | Select-Object -First 1 -ExpandProperty FullName; if($p){ python scripts/import_data.py --effects-json $p; exit $LASTEXITCODE } else { Write-Host '[SKIP] Effects source not found.'; exit 0 }"
+        if errorlevel 1 goto import_failed
+    )
 ) else (
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "$p=Get-ChildItem -LiteralPath . -Recurse -Filter effect_gif_results.json -File | Where-Object { $_.Directory.Name -eq 'data' } | Select-Object -First 1 -ExpandProperty FullName; if($p){ python scripts/import_data.py --effects-json $p; exit $LASTEXITCODE } else { Write-Host '[SKIP] Effects source not found.'; exit 0 }"
-    if errorlevel 1 goto import_failed
+    echo [SKIP] Effects source not requested.
 )
 
 echo [4/6] Import icons data...
-if exist "%ICONS_JSON_PATH%" (
-    python scripts/import_data.py --icons-json "%ICONS_JSON_PATH%"
-    if errorlevel 1 goto import_failed
+if "%IMPORT_ICONS%"=="1" (
+    if exist "%ICONS_JSON_PATH%" (
+        python scripts/import_data.py --icons-json "%ICONS_JSON_PATH%"
+        if errorlevel 1 goto import_failed
+    ) else (
+        echo [SKIP] Icons source not found: %ICONS_JSON_PATH%
+    )
 ) else (
-    echo [SKIP] Icons source not found: %ICONS_JSON_PATH%
+    echo [SKIP] Icons source not requested.
 )
 
 echo [5/6] Rebuild ES index and refresh dictionary...

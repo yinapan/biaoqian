@@ -209,6 +209,21 @@ UPSERT_ASSETS_SQL = """
 """
 
 
+def _dedupe_asset_batch(
+    rows: Sequence[tuple[int, str, str, str | None, str]],
+) -> list[tuple[int, str, str, str | None, str]]:
+    """Keep the last row for duplicate (module_type, resource_path) keys."""
+    seen: set[tuple[int, str]] = set()
+    deduped_reversed: list[tuple[int, str, str, str | None, str]] = []
+    for row in reversed(rows):
+        key = (row[0], row[2])
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped_reversed.append(row)
+    return list(reversed(deduped_reversed))
+
+
 async def _flush_asset_batch(
     pool: asyncpg.Pool,
     rows: Sequence[tuple[int, str, str, str | None, str]],
@@ -217,6 +232,7 @@ async def _flush_asset_batch(
     """Upsert a batch of assets and append returned ES docs to *es_batch*."""
     if not rows:
         return {"success": 0}
+    rows = _dedupe_asset_batch(rows)
 
     module_types = [row[0] for row in rows]
     names = [row[1] for row in rows]

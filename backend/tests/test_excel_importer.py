@@ -6,7 +6,7 @@ from openpyxl import Workbook
 
 from app.importers.excel_importer import (
     parse_multi_value, normalize_path, classify_sheet, COLUMN_MAP,
-    import_excel,
+    import_excel, _dedupe_asset_batch,
 )
 
 
@@ -77,6 +77,21 @@ def _create_excel(path, rows):
     for row in rows:
         ws.append(row)
     wb.save(path)
+
+
+def test_dedupe_asset_batch_keeps_last_duplicate_resource_path():
+    rows = [
+        (1, "old.mdl", "data/source/dup.mdl", None, '{"species":"old"}'),
+        (1, "unique.mdl", "data/source/unique.mdl", None, '{"species":"unique"}'),
+        (1, "new.mdl", "data/source/dup.mdl", "new.png", '{"species":"new"}'),
+    ]
+
+    deduped = _dedupe_asset_batch(rows)
+
+    assert deduped == [
+        (1, "unique.mdl", "data/source/unique.mdl", None, '{"species":"unique"}'),
+        (1, "new.mdl", "data/source/dup.mdl", "new.png", '{"species":"new"}'),
+    ]
 
 
 @pytest.mark.asyncio

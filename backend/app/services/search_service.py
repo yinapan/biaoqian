@@ -83,6 +83,7 @@ async def search(req: SearchRequest, pool) -> SearchResponse:
     parse_info = None
     effective_filters = dict(req.filters)
     effective_excludes: dict = dict(req.exclude_filters)
+    keyword_excludes: list[str] = []
     keyword = ""
     ignored_tags = []
 
@@ -96,6 +97,7 @@ async def search(req: SearchRequest, pool) -> SearchResponse:
             boolean_fields,
         )
         keyword = parsed.get("keyword", "")
+        keyword_excludes = parsed.get("excluded_keywords", [])
 
         for field, value in parsed["parsed_filters"].items():
             if field in req.filters:
@@ -148,7 +150,7 @@ async def search(req: SearchRequest, pool) -> SearchResponse:
         filters=effective_filters,
         excludes=effective_excludes,
         keyword=keyword,
-        keyword_excludes=parsed.get("excluded_keywords", []),
+        keyword_excludes=keyword_excludes,
         conditions=[c.model_dump() for c in req.conditions],
         sort=req.sort.model_dump() if req.sort else None,
         page=req.page,

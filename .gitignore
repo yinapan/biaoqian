@@ -12,6 +12,7 @@ previews/
 *.png
 *.jpg
 *.gif
+*.zip
 *.xlsx
 
 # Frontend build artifacts

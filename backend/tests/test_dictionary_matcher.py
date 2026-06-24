@@ -137,3 +137,39 @@ def test_longest_match_priority():
     result = m.match(1, "中原")
     assert result.matched.get("region") == ["中原"]
     assert result.remaining == ""
+
+
+def test_negated_tag_without_space_is_excluded():
+    """Inline negation should keep preceding matches and exclude the negated tag."""
+    m = DictionaryMatcher()
+    m.load_from_data(
+        tag_values={
+            (4, "semantic"): ["荷花"],
+            (4, "color"): ["粉色"],
+        },
+        synonyms=[],
+    )
+
+    result = m.match(4, "荷花不要粉色")
+
+    assert result.matched == {"semantic": "荷花"}
+    assert result.excluded == {"color": ["粉色"]}
+    assert result.remaining == ""
+
+
+def test_negated_unknown_text_becomes_excluded_keyword():
+    """Unknown text after a negation prefix should become a keyword exclusion."""
+    m = DictionaryMatcher()
+    m.load_from_data(
+        tag_values={
+            (4, "semantic"): ["荷花"],
+        },
+        synonyms=[],
+    )
+
+    result = m.match(4, "荷花不要紫色")
+
+    assert result.matched == {"semantic": "荷花"}
+    assert result.excluded == {}
+    assert result.excluded_keywords == ["紫色"]
+    assert result.remaining == ""

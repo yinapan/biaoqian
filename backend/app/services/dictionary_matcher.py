@@ -183,6 +183,7 @@ class DictionaryMatcher:
 
         matched: dict[str, Any] = {}
         excluded: dict[str, Any] = {}
+        excluded_keywords: list[str] = []
         remaining_parts: list[str] = []
 
         for segment in segments:
@@ -201,7 +202,7 @@ class DictionaryMatcher:
 
             if not seg_matched and negated:
                 if seg_remaining:
-                    result.excluded_keywords.append(seg_remaining)
+                    excluded_keywords.append(seg_remaining)
                 continue
 
             target = excluded if negated else matched
@@ -228,7 +229,7 @@ class DictionaryMatcher:
         return MatchResult(
             matched=matched,
             excluded=excluded,
-            excluded_keywords=result.excluded_keywords,
+            excluded_keywords=excluded_keywords,
             remaining=" ".join(remaining_parts),
         )
 

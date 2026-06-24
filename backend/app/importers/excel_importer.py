@@ -16,6 +16,7 @@ import os
 import re
 import uuid
 import zipfile
+from collections.abc import Sequence
 
 import asyncpg
 import openpyxl
@@ -190,27 +191,114 @@ def normalize_path(path: str) -> str:
 # ---------------------------------------------------------------------------
 
 
+UPSERT_ASSETS_SQL = """
+    INSERT INTO assets (module_type, name, resource_path, thumbnail_path, tags)
+    SELECT * FROM UNNEST(
+        $1::smallint[],
+        $2::text[],
+        $3::text[],
+        $4::text[],
+        $5::jsonb[]
+    ) AS t(module_type, name, resource_path, thumbnail_path, tags)
+    ON CONFLICT (module_type, resource_path)
+    DO UPDATE SET thumbnail_path = COALESCE(EXCLUDED.thumbnail_path, assets.thumbnail_path),
+                  tags = EXCLUDED.tags,
+                  updated_at = NOW()
+    RETURNING id, module_type, name, resource_path,
+              thumbnail_path, tags, created_at, updated_at
+"""
+
+
+async def _flush_asset_batch(
+    pool: asyncpg.Pool,
+    rows: Sequence[tuple[int, str, str, str | None, str]],
+    es_batch: list[dict],
+) -> dict:
+    """Upsert a batch of assets and append returned ES docs to *es_batch*."""
+    if not rows:
+        return {"success": 0}
+
+    module_types = [row[0] for row in rows]
+    names = [row[1] for row in rows]
+    resource_paths = [row[2] for row in rows]
+    thumbnail_paths = [row[3] for row in rows]
+    tags_json = [row[4] for row in rows]
+
+    async with pool.acquire() as conn:
+        result_rows = await conn.fetch(
+            UPSERT_ASSETS_SQL,
+            module_types,
+            names,
+            resource_paths,
+            thumbnail_paths,
+            tags_json,
+        )
+
+    for row_result in result_rows:
+        es_batch.append(build_es_doc(dict(row_result)))
+
+    return {"success": len(result_rows)}
+
+
 async def import_excel(
     filepath: str,
     pool: asyncpg.Pool,
     previews_dir: str,
+    batch_size: int = 1000,
+    progress_interval: int = 5000,
 ) -> dict:
     """Parse an Excel workbook and upsert rows into the *assets* table.
 
     Returns a summary dict with counts and any error details.
     """
     batch_id = str(uuid.uuid4())[:8]
+    print(f"Excel import: opening workbook {filepath}", flush=True)
     wb = openpyxl.load_workbook(filepath, read_only=True, data_only=True)
+    print(f"Excel import: workbook opened, sheets={len(wb.sheetnames)}", flush=True)
+    print("Excel import: extracting WPS image mappings", flush=True)
     wps_images = extract_wps_images(filepath)
+    print(
+        f"Excel import: WPS image mappings ready, sheets={len(wps_images)}",
+        flush=True,
+    )
 
     os.makedirs(previews_dir, exist_ok=True)
 
     # Pre-open the xlsx as a zip for image extraction
+    print("Excel import: opening workbook zip for thumbnails", flush=True)
     xlsx_zip = zipfile.ZipFile(filepath)
 
     stats = {"success": 0, "skipped": 0, "failed": 0, "es_sync_failed": 0, "images_extracted": 0}
     errors: list[dict] = []
     es_batch: list[dict] = []
+    asset_batch: list[tuple[int, str, str, str | None, str]] = []
+    processed = 0
+
+    async def flush_assets() -> None:
+        nonlocal asset_batch
+        result = await _flush_asset_batch(pool, asset_batch, es_batch)
+        stats["success"] += result["success"]
+        asset_batch = []
+
+    async def flush_es() -> None:
+        nonlocal es_batch
+        if not es_batch:
+            return
+        resp = await bulk_index(es_batch)
+        if resp.get("errors"):
+            for item in resp["items"]:
+                if "error" in item.get("index", {}):
+                    stats["es_sync_failed"] += 1
+        es_batch = []
+
+    def print_progress(sheet_name: str) -> None:
+        print(
+            "Excel progress: "
+            f"sheet={sheet_name} processed={processed} "
+            f"success={stats['success']} skipped={stats['skipped']} "
+            f"failed={stats['failed']}",
+            flush=True,
+        )
 
     for sheet_name in wb.sheetnames:
         module_type = classify_sheet(sheet_name)
@@ -235,6 +323,7 @@ async def import_excel(
         for row_idx, row in enumerate(
             ws.iter_rows(min_row=3, values_only=True), start=3
         ):
+            processed += 1
             try:
                 # Skip example/enum rows and notes rows
                 if _is_example_or_notes_row(row[0] if row else None, row):
@@ -300,32 +389,24 @@ async def import_excel(
                             thumb_filename = None
                     thumbnail_path = thumb_filename
 
-                async with pool.acquire() as conn:
-                    row_result = await conn.fetchrow(
-                        """INSERT INTO assets (module_type, name, resource_path,
-                                              thumbnail_path, tags)
-                           VALUES ($1, $2, $3, $4, $5::jsonb)
-                           ON CONFLICT (module_type, resource_path)
-                           DO UPDATE SET thumbnail_path = COALESCE($4, assets.thumbnail_path),
-                                         tags = $5::jsonb, updated_at = NOW()
-                           RETURNING id, module_type, name, resource_path,
-                                     thumbnail_path, tags, created_at, updated_at""",
+                asset_batch.append(
+                    (
                         module_type,
                         name,
                         resource_path,
                         thumbnail_path,
                         json.dumps(tags, ensure_ascii=False),
                     )
-                    es_batch.append(build_es_doc(dict(row_result)))
-                    stats["success"] += 1
+                )
 
-                    if len(es_batch) >= 500:
-                        resp = await bulk_index(es_batch)
-                        if resp.get("errors"):
-                            for item in resp["items"]:
-                                if "error" in item.get("index", {}):
-                                    stats["es_sync_failed"] += 1
-                        es_batch = []
+                if len(asset_batch) >= batch_size:
+                    await flush_assets()
+
+                if len(es_batch) >= batch_size:
+                    await flush_es()
+
+                if processed % progress_interval == 0:
+                    print_progress(sheet_name)
 
             except Exception as e:
                 stats["failed"] += 1
@@ -333,13 +414,9 @@ async def import_excel(
                     {"sheet": sheet_name, "row": row_idx, "error": str(e)}
                 )
 
-    # Flush remaining ES batch
-    if es_batch:
-        resp = await bulk_index(es_batch)
-        if resp.get("errors"):
-            for item in resp["items"]:
-                if "error" in item.get("index", {}):
-                    stats["es_sync_failed"] += 1
+    await flush_assets()
+    await flush_es()
+    print_progress("done")
 
     wb.close()
     xlsx_zip.close()

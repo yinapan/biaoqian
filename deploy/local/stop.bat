@@ -1,21 +1,20 @@
 @echo off
 setlocal
-chcp 65001 >nul
 set "SCRIPT_DIR=%~dp0"
 pushd "%SCRIPT_DIR%..\.."
 call "%SCRIPT_DIR%env.bat"
 
 echo ================================
-echo  biaoqian - 本地测试停止
+echo  biaoqian - local stop
 echo ================================
-echo [INFO] 仅停止容器，不删除 PostgreSQL / Elasticsearch 数据卷。
+echo [INFO] Stop containers only. Docker volumes are kept.
 %COMPOSE% stop
 if errorlevel 1 (
-    echo [ERROR] 服务停止失败。
+    echo [ERROR] Failed to stop services.
     popd
     pause
     exit /b 1
 )
-echo [OK] 服务已停止，数据卷保留。
+echo [OK] Services stopped. Data volumes are kept.
 popd
 pause

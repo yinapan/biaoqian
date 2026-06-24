@@ -1,19 +1,18 @@
 @echo off
 setlocal
-chcp 65001 >nul
 set "SCRIPT_DIR=%~dp0"
 pushd "%SCRIPT_DIR%..\.."
 call "%SCRIPT_DIR%env.bat"
 
 echo ================================
-echo  biaoqian - 本地测试启动
+echo  biaoqian - local start
 echo ================================
-echo [INFO] Docker Compose 项目名: %PROJECT_NAME%
-echo [INFO] 访问地址: %APP_URL%
+echo [INFO] Project: %PROJECT_NAME%
+echo [INFO] URL: %APP_URL%
 
 docker info >nul 2>&1
 if errorlevel 1 (
-    echo [ERROR] Docker Desktop 未运行，请先启动 Docker Desktop。
+    echo [ERROR] Docker Desktop is not running.
     popd
     pause
     exit /b 1
@@ -21,7 +20,7 @@ if errorlevel 1 (
 
 %COMPOSE% up -d --build
 if errorlevel 1 (
-    echo [ERROR] Docker Compose 启动失败。
+    echo [ERROR] Docker Compose failed.
     popd
     pause
     exit /b 1
@@ -30,18 +29,18 @@ if errorlevel 1 (
 set RETRIES=0
 :health_loop
 if %RETRIES% GEQ 24 (
-    echo [WARN] 服务未在 120 秒内就绪，请检查: docker compose -p %PROJECT_NAME% logs
-    goto :finish
+    echo [WARN] Health check timed out. Check: docker compose -p %PROJECT_NAME% logs
+    goto finish
 )
 timeout /t 5 /nobreak >nul
 curl -sf %APP_URL%/api/v1/health >nul 2>&1
 if errorlevel 1 (
     set /a RETRIES+=1
-    goto :health_loop
+    goto health_loop
 )
-echo [OK] 服务已就绪。
+echo [OK] Service is ready.
 
 :finish
-echo [INFO] 打开: %APP_URL%
+echo [INFO] Open: %APP_URL%
 popd
 pause

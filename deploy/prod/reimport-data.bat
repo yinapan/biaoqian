@@ -1,21 +1,20 @@
 @echo off
 setlocal
-chcp 65001 >nul
 set "SCRIPT_DIR=%~dp0"
 pushd "%SCRIPT_DIR%..\.."
 call "%SCRIPT_DIR%env.bat"
-set "EXCEL_PATH=资源标签对照表.xlsx"
+set "EXCEL_PATH="
 set "EFFECTS_JSON_PATH="
 set "ICONS_JSON_PATH=icon_png_results\icon_png_results.json"
 
 :parse_args
-if "%~1"=="" goto :args_done
-if /I "%~1"=="/excel" goto :set_excel
-if /I "%~1"=="--excel" goto :set_excel
-if /I "%~1"=="/effects" goto :set_effects
-if /I "%~1"=="--effects" goto :set_effects
-if /I "%~1"=="/icons" goto :set_icons
-if /I "%~1"=="--icons" goto :set_icons
+if "%~1"=="" goto args_done
+if /I "%~1"=="/excel" goto set_excel
+if /I "%~1"=="--excel" goto set_excel
+if /I "%~1"=="/effects" goto set_effects
+if /I "%~1"=="--effects" goto set_effects
+if /I "%~1"=="/icons" goto set_icons
+if /I "%~1"=="--icons" goto set_icons
 echo [ERROR] Unknown argument: %~1
 echo Usage: %~nx0 [/excel path.xlsx] [/effects effects.json] [/icons icons.json]
 popd
@@ -23,25 +22,25 @@ pause
 exit /b 1
 
 :set_excel
-if "%~2"=="" goto :missing_arg
+if "%~2"=="" goto missing_arg
 set "EXCEL_PATH=%~2"
 shift
 shift
-goto :parse_args
+goto parse_args
 
 :set_effects
-if "%~2"=="" goto :missing_arg
+if "%~2"=="" goto missing_arg
 set "EFFECTS_JSON_PATH=%~2"
 shift
 shift
-goto :parse_args
+goto parse_args
 
 :set_icons
-if "%~2"=="" goto :missing_arg
+if "%~2"=="" goto missing_arg
 set "ICONS_JSON_PATH=%~2"
 shift
 shift
-goto :parse_args
+goto parse_args
 
 :missing_arg
 echo [ERROR] Missing value for %~1
@@ -50,8 +49,6 @@ pause
 exit /b 1
 
 :args_done
-if not defined EFFECTS_JSON_PATH if exist "特效\data\effect_gif_results.json" set "EFFECTS_JSON_PATH=特效\data\effect_gif_results.json"
-
 echo ================================
 echo  biaoqian - production full reimport
 echo ================================
@@ -85,13 +82,13 @@ set RETRIES=0
 :health_loop
 if %RETRIES% GEQ 36 (
     echo [WARN] Backend did not become ready within 180 seconds. Import will still be attempted.
-    goto :open_pg
+    goto open_pg
 )
 timeout /t 5 /nobreak >nul
 curl -sf %APP_URL%/api/v1/health >nul 2>&1
 if errorlevel 1 (
     set /a RETRIES+=1
-    goto :health_loop
+    goto health_loop
 )
 echo [OK] Backend is ready.
 
@@ -107,27 +104,27 @@ if errorlevel 1 (
 timeout /t 10 /nobreak >nul
 
 echo [4/8] Import Excel data...
-if exist "%EXCEL_PATH%" (
+if defined EXCEL_PATH (
     python scripts/import_data.py --excel "%EXCEL_PATH%"
-    if errorlevel 1 goto :import_failed
+    if errorlevel 1 goto import_failed
 ) else (
-    echo [SKIP] Excel source not found: %EXCEL_PATH%
+    powershell -NoProfile -ExecutionPolicy Bypass -Command "$p=Get-ChildItem -LiteralPath . -Filter *.xlsx -File | Select-Object -First 1 -ExpandProperty FullName; if($p){ python scripts/import_data.py --excel $p; exit $LASTEXITCODE } else { Write-Host '[SKIP] Excel source not found.'; exit 0 }"
+    if errorlevel 1 goto import_failed
 )
 
 echo [5/8] Import effects data...
-if not defined EFFECTS_JSON_PATH goto :skip_effects
-if not exist "%EFFECTS_JSON_PATH%" goto :skip_effects
-python scripts/import_data.py --effects-json "%EFFECTS_JSON_PATH%"
-if errorlevel 1 goto :import_failed
-goto :after_effects
-:skip_effects
-echo [SKIP] Effects source not found: %EFFECTS_JSON_PATH%
-:after_effects
+if defined EFFECTS_JSON_PATH (
+    python scripts/import_data.py --effects-json "%EFFECTS_JSON_PATH%"
+    if errorlevel 1 goto import_failed
+) else (
+    powershell -NoProfile -ExecutionPolicy Bypass -Command "$p=Get-ChildItem -LiteralPath . -Recurse -Filter effect_gif_results.json -File | Where-Object { $_.Directory.Name -eq 'data' } | Select-Object -First 1 -ExpandProperty FullName; if($p){ python scripts/import_data.py --effects-json $p; exit $LASTEXITCODE } else { Write-Host '[SKIP] Effects source not found.'; exit 0 }"
+    if errorlevel 1 goto import_failed
+)
 
 echo [6/8] Import icons data...
 if exist "%ICONS_JSON_PATH%" (
     python scripts/import_data.py --icons-json "%ICONS_JSON_PATH%"
-    if errorlevel 1 goto :import_failed
+    if errorlevel 1 goto import_failed
 ) else (
     echo [SKIP] Icons source not found: %ICONS_JSON_PATH%
 )

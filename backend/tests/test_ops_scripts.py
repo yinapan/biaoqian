@@ -53,6 +53,17 @@ def test_ops_scripts_do_not_delete_docker_volumes():
             assert token not in text, f"{script} must not contain {token}"
 
 
+def test_ops_bat_scripts_are_ascii_only():
+    script_paths = ROOT_WRAPPERS + [
+        f"{env_dir}/{script_name}"
+        for env_dir in ENV_DIRS
+        for script_name in ["env.bat", *SCRIPT_NAMES]
+    ]
+    for script in script_paths:
+        text = _read_script(script)
+        assert text.isascii(), f"{script} must stay ASCII-only for cmd.exe safety"
+
+
 def test_import_scripts_use_non_destructive_upsert_flow():
     for env_dir in ENV_DIRS:
         for script in ["import-new-data.bat", "reimport-data.bat"]:
@@ -120,8 +131,8 @@ def test_effect_import_uses_real_effect_data_directory():
     for env_dir in ENV_DIRS:
         for script in ["import-new-data.bat", "reimport-data.bat"]:
             text = _read_script(f"{env_dir}/{script}")
-            assert "特效\\data\\effect_gif_results.json" in text
-            assert "特效\\merged" not in text
+            assert "effect_gif_results.json" in text
+            assert "merged" not in text
 
 
 def test_import_scripts_accept_custom_data_source_arguments():
@@ -143,7 +154,7 @@ def test_import_scripts_stop_after_python_import_failure():
     for env_dir in ENV_DIRS:
         for script in ["import-new-data.bat", "reimport-data.bat"]:
             text = _read_script(f"{env_dir}/{script}")
-            assert "goto :import_failed" in text
+            assert "goto import_failed" in text
             assert ":import_failed" in text
 
 

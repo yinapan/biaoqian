@@ -50,8 +50,6 @@ pause
 exit /b 1
 
 :args_done
-if not defined EFFECTS_JSON_PATH if exist "特效\merged\effects_data.json" set "EFFECTS_JSON_PATH=特效\merged\effects_data.json"
-if not defined EFFECTS_JSON_PATH if exist "特效\merged\effect_gif_results.json" set "EFFECTS_JSON_PATH=特效\merged\effect_gif_results.json"
 if not defined EFFECTS_JSON_PATH if exist "特效\data\effect_gif_results.json" set "EFFECTS_JSON_PATH=特效\data\effect_gif_results.json"
 
 echo ================================

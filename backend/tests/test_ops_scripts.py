@@ -107,6 +107,23 @@ def test_import_scripts_cover_three_visible_modules():
             assert "icon_png_results\\icon_png_results.json" in text
 
 
+def test_effect_import_uses_real_effect_data_directory():
+    compose_text = (ROOT / "docker-compose.yml").read_text(encoding="utf-8")
+    dev_compose_text = (ROOT / "docker-compose.dev.yml").read_text(encoding="utf-8")
+    import_text = (ROOT / "scripts" / "import_data.py").read_text(encoding="utf-8")
+
+    assert "./特效/gifs:/data/gifs:ro" in compose_text
+    assert "./特效/gifs:/data/gifs:ro" in dev_compose_text
+    assert "特效/merged/gifs" not in import_text
+    assert "特效/gifs" in import_text
+
+    for env_dir in ENV_DIRS:
+        for script in ["import-new-data.bat", "reimport-data.bat"]:
+            text = _read_script(f"{env_dir}/{script}")
+            assert "特效\\data\\effect_gif_results.json" in text
+            assert "特效\\merged" not in text
+
+
 def test_import_scripts_accept_custom_data_source_arguments():
     for env_dir in ENV_DIRS:
         for script in ["import-new-data.bat", "reimport-data.bat"]:

@@ -25,7 +25,7 @@ async def run_excel_import(excel_path: str, pool: asyncpg.Pool, previews_dir: st
 async def run_effects_import(json_path: str, pool: asyncpg.Pool, previews_dir: str):
     from app.importers.effects_importer import import_effects_json
     from app.importers.tag_initializer import sync_effect_tag_values
-    result = await import_effects_json(json_path, "特效/merged/gifs", pool, previews_dir)
+    result = await import_effects_json(json_path, "特效/gifs", pool, previews_dir)
     await sync_effect_tag_values(pool)
     print_import_summary("Effects", json_path, result)
     return result

@@ -59,7 +59,7 @@ services:
     volumes:
       - ./backend:/app
       - ./previews:/data/previews
-      - ./特效/merged/gifs:/data/gifs:ro
+      - ./特效/gifs:/data/gifs:ro
       - ./特效/data:/data/effects-data:ro
       - ./icon_png_results:/data/icons:ro
     environment:
@@ -96,7 +96,7 @@ services:
       - ./ssl:/etc/nginx/ssl:ro
       - ./frontend/dist:/usr/share/nginx/html:ro
       - ./previews:/data/previews:ro
-      - ./特效/merged/gifs:/data/gifs:ro
+      - ./特效/gifs:/data/gifs:ro
       - ./特效/data:/data/effects-data:ro
       - ./icon_png_results:/data/icons:ro
     depends_on:

@@ -61,7 +61,7 @@ services:
       - ./previews:/data/previews
       - ./特效/merged/gifs:/data/gifs:ro
       - ./特效/data:/data/effects-data:ro
-      - ./icons:/data/icons:ro
+      - ./icon_png_results:/data/icons:ro
     environment:
       - DATABASE_URL=postgresql://biaoqiao:biaoqiao_dev@postgres:5432/biaoqiao
       - ES_URL=http://elasticsearch:9200
@@ -98,7 +98,7 @@ services:
       - ./previews:/data/previews:ro
       - ./特效/merged/gifs:/data/gifs:ro
       - ./特效/data:/data/effects-data:ro
-      - ./icons:/data/icons:ro
+      - ./icon_png_results:/data/icons:ro
     depends_on:
       backend:
         condition: service_healthy

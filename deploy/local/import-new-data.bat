@@ -94,8 +94,8 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [1/6] Expose PostgreSQL port...
-%COMPOSE_IMPORT% up -d postgres
+echo [1/6] Expose PostgreSQL and Elasticsearch ports...
+%COMPOSE_IMPORT% up -d postgres elasticsearch
 if errorlevel 1 (
     echo [ERROR] PostgreSQL failed to start.
     popd

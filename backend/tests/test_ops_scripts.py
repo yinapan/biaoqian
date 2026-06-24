@@ -73,6 +73,20 @@ def test_import_scripts_use_non_destructive_upsert_flow():
             assert "docker-compose.import.yml" in text
 
 
+def test_import_mode_exposes_postgres_and_elasticsearch_to_host_importer():
+    compose_import = _read_script("docker-compose.import.yml")
+    assert "postgres:" in compose_import
+    assert "elasticsearch:" in compose_import
+    assert '"5432:5432"' in compose_import
+    assert '"9200:9200"' in compose_import
+
+    for env_dir in ENV_DIRS:
+        for script in ["import-new-data.bat", "reimport-data.bat"]:
+            text = _read_script(f"{env_dir}/{script}")
+            assert "Expose PostgreSQL and Elasticsearch ports" in text
+            assert "%COMPOSE_IMPORT% up -d postgres elasticsearch" in text
+
+
 def test_root_wrappers_delegate_to_prod_scripts():
     expected = {
         "start.bat": r"deploy\prod\start.bat",

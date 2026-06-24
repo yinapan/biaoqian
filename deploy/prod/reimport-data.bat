@@ -112,8 +112,8 @@ if errorlevel 1 (
 echo [OK] Backend is ready.
 
 :open_pg
-echo [3/8] Expose PostgreSQL port...
-%COMPOSE_IMPORT% up -d postgres
+echo [3/8] Expose PostgreSQL and Elasticsearch ports...
+%COMPOSE_IMPORT% up -d postgres elasticsearch
 if errorlevel 1 (
     echo [ERROR] PostgreSQL failed to start.
     popd

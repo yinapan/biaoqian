@@ -45,6 +45,16 @@ def infer_icons_pngs_dir(json_path: Path) -> Path:
     return next((p for p in candidates if p.exists()), candidates[0])
 
 
+def infer_models_pngs_dir(json_path: Path) -> Path:
+    candidates = [
+        json_path.parent / "pngs",
+        json_path.parent.parent / "pngs",
+        project_root() / "runtime_data" / "model" / "previews",
+        project_root() / "model" / "merged" / "pngs",
+    ]
+    return next((p for p in candidates if p.exists()), candidates[0])
+
+
 def infer_animator_gifs_dir(json_path: Path) -> Path:
     candidates = [
         json_path.parent / "gifs",
@@ -105,6 +115,22 @@ async def archive_assets_from_db(pool: asyncpg.Pool, module_types: tuple[int, ..
     return len(rows)
 
 
+async def run_model_import(json_path: str, pool: asyncpg.Pool):
+    from app.importers.model_importer import import_models_json
+    from app.importers.tag_initializer import sync_model_tag_values
+
+    result = await import_models_json(
+        json_path,
+        str(infer_models_pngs_dir(Path(json_path))),
+        pool,
+        project_root=str(project_root()),
+    )
+    await sync_model_tag_values(pool)
+    await archive_assets_from_db(pool, (1,))
+    print_import_summary("Model", json_path, result)
+    return result
+
+
 async def run_effects_import(json_path: str, pool: asyncpg.Pool, previews_dir: str):
     from app.importers.effects_importer import import_effects_json
     from app.importers.tag_initializer import sync_effect_tag_values
@@ -132,6 +158,7 @@ async def run_animator_import(json_path: str, pool: asyncpg.Pool):
         project_root=str(project_root()),
     )
     await sync_animator_tag_values(pool)
+    await archive_assets_from_db(pool, (3,))
     print_import_summary("Animator", json_path, result)
     return result
 
@@ -302,6 +329,7 @@ async def verify_previews(pool: asyncpg.Pool, backend_url: str, sample_size: int
 async def main():
     parser = argparse.ArgumentParser(description="Import data into biaoqian platform")
     parser.add_argument("--excel", help="Path to Excel file")
+    parser.add_argument("--models-json", help="Path to model JSON file")
     parser.add_argument("--animator-json", help="Path to animator JSON file")
     parser.add_argument("--effects-json", help="Path to effects JSON file")
     parser.add_argument("--icons-json", help="Path to icon JSON file")
@@ -342,6 +370,7 @@ async def main():
 
     for source, label in [
         (args.excel, "Excel"),
+        (args.models_json, "Model JSON"),
         (args.animator_json, "Animator JSON"),
         (args.effects_json, "Effects JSON"),
         (args.icons_json, "Icons JSON"),
@@ -353,6 +382,7 @@ async def main():
     needs_db = any(
         [
             args.excel,
+            args.models_json,
             args.animator_json,
             args.effects_json,
             args.icons_json,
@@ -364,6 +394,8 @@ async def main():
     try:
         if args.excel:
             await run_excel_import(args.excel, pool, previews_dir)
+        if args.models_json:
+            await run_model_import(args.models_json, pool)
         if args.animator_json:
             await run_animator_import(args.animator_json, pool)
         if args.effects_json:

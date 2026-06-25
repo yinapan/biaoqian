@@ -6,6 +6,7 @@ const store = useSearchStore()
 const modules = [
   { type: 1, label: '模型', count: 'Model' },
   { type: 2, label: '特效', count: 'VFX' },
+  { type: 3, label: '动作', count: 'Anim' },
   { type: 4, label: '图标', count: 'Icon' },
 ]
 

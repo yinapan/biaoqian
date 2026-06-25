@@ -11,7 +11,7 @@ const props = defineProps<{
 const store = useSearchStore()
 const showDetail = ref(false)
 const hovering = ref(false)
-const iconIdCopied = ref(false)
+const assetIdCopied = ref(false)
 
 const PLACEHOLDER = 'data:image/svg+xml;charset=UTF-8,' +
   encodeURIComponent(
@@ -20,6 +20,11 @@ const PLACEHOLDER = 'data:image/svg+xml;charset=UTF-8,' +
     '<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#5c5a54" font-size="12" font-family="sans-serif">No Preview</text>' +
     '</svg>',
   )
+
+const isEffect = computed(() => store.moduleType === 2)
+const isIcon = computed(() => store.moduleType === 4)
+const isModel = computed(() => store.moduleType === 1)
+const isAnimator = computed(() => store.moduleType === 3)
 
 const thumbnailSrc = computed(() => {
   if (!props.item.thumbnail_path) return PLACEHOLDER
@@ -31,11 +36,14 @@ const thumbnailSrc = computed(() => {
   if (isIcon.value) {
     return `/data/icons/${props.item.thumbnail_path}`
   }
+  if (isModel.value) {
+    return `/static/previews/model/${props.item.thumbnail_path}`
+  }
+  if (isAnimator.value) {
+    return `/static/previews/animator/${props.item.thumbnail_path}`
+  }
   return `/static/previews/${props.item.thumbnail_path}`
 })
-
-const isEffect = computed(() => store.moduleType === 2)
-const isIcon = computed(() => store.moduleType === 4)
 
 const displaySrc = computed(() => {
   if (isEffect.value && hovering.value && props.item.thumbnail_path) {
@@ -44,34 +52,30 @@ const displaySrc = computed(() => {
   return thumbnailSrc.value
 })
 
-const iconId = computed(() => {
-  if (!isIcon.value) return ''
-  return String(props.item.tags?.icon_id ?? props.item.name)
+const assetId = computed(() => {
+  if (isIcon.value) return String(props.item.tags?.icon_id ?? props.item.name)
+  return ''
 })
+
+const showIdRow = computed(() => isIcon.value)
 
 const visibleTags = computed(() => {
   const entries = Object.entries(props.item.tags)
   return entries
-    .filter(([key]) => !['description', 'gif_duration_sec'].includes(key))
+    .filter(([key]) => !['description', 'gif_duration_sec', 'gif_front_path', 'gif_left_path'].includes(key))
     .slice(0, 4)
 })
 
-const tagLabel = computed(() => {
-  const first = Object.values(props.item.tags)[0]
-  if (!first) return ''
-  return Array.isArray(first) ? first[0] : String(first)
-})
-
-function copyIconId(event: MouseEvent) {
+function copyAssetId(event: MouseEvent) {
   event.stopPropagation()
-  const text = String(props.item.tags?.icon_id ?? props.item.name)
+  const text = assetId.value
   if (navigator.clipboard) {
     navigator.clipboard.writeText(text).catch(() => fallbackCopy(text))
   } else {
     fallbackCopy(text)
   }
-  iconIdCopied.value = true
-  setTimeout(() => (iconIdCopied.value = false), 1500)
+  assetIdCopied.value = true
+  setTimeout(() => (assetIdCopied.value = false), 1500)
 }
 
 function fallbackCopy(text: string) {
@@ -105,20 +109,18 @@ function fallbackCopy(text: string) {
       <div class="thumb-overlay">
         <span class="overlay-action">查看详情</span>
       </div>
-      <!-- Floating tag badge -->
-      <span v-if="tagLabel" class="float-badge">{{ tagLabel }}</span>
       <!-- ID copy chip - appears on hover -->
       <Transition name="copy-fade">
         <button
-          v-if="isIcon && hovering"
+          v-if="showIdRow && hovering"
           class="id-copy-chip"
-          :class="{ copied: iconIdCopied }"
-          @click="copyIconId"
+          :class="{ copied: assetIdCopied }"
+          @click="copyAssetId"
         >
           <span class="chip-label">ID</span>
-          <span class="chip-value">{{ iconId }}</span>
+          <span class="chip-value">{{ assetId }}</span>
           <span class="chip-action">
-            <svg v-if="!iconIdCopied" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="14" height="14" rx="2.5"/><path d="M4 16H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v1"/></svg>
+            <svg v-if="!assetIdCopied" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="14" height="14" rx="2.5"/><path d="M4 16H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v1"/></svg>
             <svg v-else width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </span>
         </button>
@@ -129,13 +131,13 @@ function fallbackCopy(text: string) {
     <div class="card-info">
       <div class="card-name" :title="item.name">{{ item.name }}</div>
 
-      <!-- Icon ID row -->
-      <div v-if="isIcon" class="card-icon-id" @click.stop="copyIconId($event)">
+      <!-- Asset ID row (icon & animator) -->
+      <div v-if="showIdRow" class="card-icon-id" @click.stop="copyAssetId($event)">
         <div class="id-pill">
           <span class="id-pill-label">ID</span>
-          <code class="id-pill-value">{{ iconId }}</code>
+          <code class="id-pill-value">{{ assetId }}</code>
         </div>
-        <span class="id-pill-hint" :class="{ show: iconIdCopied }">
+        <span class="id-pill-hint" :class="{ show: assetIdCopied }">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           已复制
         </span>

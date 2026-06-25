@@ -58,6 +58,8 @@ function fallbackCopy(text: string) {
 }
 
 const isEffect = computed(() => store.moduleType === 2)
+const isModel = computed(() => store.moduleType === 1)
+const isAnimator = computed(() => store.moduleType === 3)
 
 const previewSrc = computed(() => {
   if (!props.item.thumbnail_path) return ''
@@ -67,6 +69,12 @@ const previewSrc = computed(() => {
   if (store.moduleType === 4) {
     return `/data/icons/${props.item.thumbnail_path}`
   }
+  if (isModel.value) {
+    return `/static/previews/model/${props.item.thumbnail_path}`
+  }
+  if (isAnimator.value) {
+    return `/static/previews/animator/${props.item.thumbnail_path}`
+  }
   return `/static/previews/${props.item.thumbnail_path}`
 })
 
@@ -74,6 +82,13 @@ const effectGridSrc = computed(() => {
   if (!isEffect.value || !props.item.thumbnail_path) return ''
   const gridName = props.item.thumbnail_path.replace('.gif', '_grid.gif')
   return `/data/gifs/${gridName}`
+})
+
+const animatorLeftSrc = computed(() => {
+  if (!isAnimator.value) return ''
+  const leftPath = props.item.tags?.gif_left_path
+  if (!leftPath) return ''
+  return `/static/previews/animator/${leftPath}`
 })
 
 const tagEntries = computed(() => Object.entries(props.item.tags))
@@ -116,6 +131,18 @@ const TAG_LABELS: Record<string, string> = {
   height_px: '高 (px)',
   framed: '是否分帧',
   related_items: '相关物品',
+  tag_source: '标签来源',
+  layout: '版面布局',
+  resource_type: '资源类型',
+  special_system: '特殊系统',
+  school: '门派',
+  weapon_type: '武器类型',
+  common_action: '通用动作分类',
+  mount_type: '骑乘类型',
+  qinggong_type: '轻功类型',
+  core_action: '核心动作',
+  file_type: '文件类型',
+  ai_tags: 'AI分析标签',
 }
 
 /** Group definitions for detail view: fields in the same group are merged into one row */
@@ -129,7 +156,7 @@ const TAG_GROUPS: Record<string, { label: string; fields: string[]; unit?: strin
 const GROUPED_FIELDS = new Set(Object.values(TAG_GROUPS).flatMap(g => g.fields))
 
 /** Fields hidden from detail view (internal / not useful to display) */
-const HIDDEN_FIELDS = new Set(['gif_duration_sec', 'focus_offset', 'center_x', 'center_y', 'clipped', 'fit_attempts', 'fit_stop_reason', 'source_name', 'size_bytes', 'scope_size'])
+const HIDDEN_FIELDS = new Set(['gif_duration_sec', 'focus_offset', 'center_x', 'center_y', 'clipped', 'fit_attempts', 'fit_stop_reason', 'source_name', 'size_bytes', 'scope_size', 'gif_front_path', 'gif_left_path'])
 
 /** Fields shown in dedicated UI sections, not in the generic tag grid */
 const DEDICATED_FIELDS = new Set(['icon_id'])
@@ -190,14 +217,18 @@ function formatValue(key: string, val: any): string {
     <div class="detail-layout">
       <!-- Preview -->
       <div v-if="previewSrc" class="detail-preview">
-        <div v-if="isEffect" class="effect-previews">
+        <div v-if="isEffect || isAnimator" class="effect-previews">
           <div class="preview-frame">
-            <div class="preview-label">普通视角</div>
+            <div class="preview-label">{{ isEffect ? '普通视角' : '前视角' }}</div>
             <img :src="previewSrc" :alt="item.name" />
           </div>
-          <div v-if="effectGridSrc" class="preview-frame">
+          <div v-if="isEffect && effectGridSrc" class="preview-frame">
             <div class="preview-label">网格视角</div>
             <img :src="effectGridSrc" :alt="item.name + ' grid'" />
+          </div>
+          <div v-if="isAnimator && animatorLeftSrc" class="preview-frame">
+            <div class="preview-label">左视角</div>
+            <img :src="animatorLeftSrc" :alt="item.name + ' left'" />
           </div>
         </div>
         <div v-else class="preview-frame">
@@ -232,7 +263,7 @@ function formatValue(key: string, val: any): string {
           </div>
         </div>
 
-        <!-- Icon ID -->
+        <!-- Asset ID (icon only) -->
         <div v-if="isIcon" class="meta-path icon-id-section">
           <span class="path-label">Icon ID</span>
           <div class="icon-id-row">
@@ -240,7 +271,7 @@ function formatValue(key: string, val: any): string {
               <span class="icon-id-badge">ID</span>
               <code class="icon-id-code">{{ item.tags?.icon_id ?? item.name }}</code>
             </div>
-            <button class="id-copy-action" :class="{ copied: iconIdCopied }" @click="copyIconId">
+            <button class="id-copy-action" :class="{ copied: iconIdCopied }" @click="copyIconId()">
               <svg v-if="!iconIdCopied" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="14" height="14" rx="2.5"/><path d="M4 16H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v1"/></svg>
               <svg v-else width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               <span class="id-copy-text" :class="{ visible: iconIdCopied }">已复制</span>

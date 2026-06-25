@@ -16,7 +16,7 @@
 
 | 模块类型 | module_type | 数据源                     | 预览目录                       |
 | -------- | ----------- | -------------------------- | ------------------------------ |
-| 模型     | 1           | Excel + JSON + PNGs        | runtime_data/model/previews/   |
+| 模型     | 1           | JSON + PNGs                | runtime_data/model/previews/   |
 | 特效     | 2           | JSON + GIFs                | runtime_data/effect/gifs/      |
 | 动作     | 3           | JSON + GIFs                | runtime_data/animator/previews/ |
 | 图标     | 4           | JSON + PNGs                | runtime_data/ui/pngs/          |
@@ -41,7 +41,6 @@ copy .env.example .env
 # 编辑 .env，修改 ADMIN_API_KEY 为随机字符串
 
 # 3. 准备数据文件（放到项目根目录对应位置）
-# - 资源标签对照表.xlsx               （模型 Excel）
 # - model/merged/model_png_results.json + pngs/   （模型 JSON+PNG）
 # - animator/actions_tags_format.json + gifs/     （动作 JSON+GIF）
 # - 特效/data/effect_gif_results.json + gifs/      （特效 JSON+GIF）
@@ -72,8 +71,8 @@ python scripts/extract_thumbnails.py
 `scripts/import_data.py` 支持批量导入各模块数据，自动推断预览目录：
 
 ```bash
-# 导入模型（Excel + JSON）
-python scripts/import_data.py --excel 资源标签对照表.xlsx --models-json model/merged/model_png_results.json --reindex
+# 导入模型
+python scripts/import_data.py --models-json model/merged/model_png_results.json --reindex
 
 # 导入动作
 python scripts/import_data.py --animator-json animator/actions_tags_format.json --reindex
@@ -103,7 +102,6 @@ python scripts/import_data.py --verify-previews --verify-sample-size 20
 
 | 接口                          | 说明           |
 | ----------------------------- | -------------- |
-| POST /api/v1/admin/import-excel          | 导入模型 Excel |
 | POST /api/v1/admin/import-models-json   | 导入模型 JSON  |
 | POST /api/v1/admin/import-animator-json  | 导入动作 JSON  |
 | POST /api/v1/admin/import-effects-json  | 导入特效 JSON  |
@@ -137,7 +135,7 @@ docker compose exec -T postgres psql -U biaoqian -d biaoqian < backups/biaoqian_
 ```
 biaoqian/
 ├── backend/                # FastAPI 后端
-│   └── app/importers/      # 各模块导入器（model/animator/effects/icon/excel）
+│   └── app/importers/      # 各模块导入器（model/animator/effects/icon）
 ├── frontend/               # Vue 3 前端
 ├── docker/                  # Dockerfile (ES + IK)
 ├── sql/                     # 数据库初始化 SQL

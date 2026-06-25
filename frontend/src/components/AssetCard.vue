@@ -46,7 +46,7 @@ const displaySrc = computed(() => {
 
 const iconId = computed(() => {
   if (!isIcon.value) return ''
-  return props.item.name
+  return String(props.item.tags?.icon_id ?? props.item.name)
 })
 
 const visibleTags = computed(() => {
@@ -64,7 +64,7 @@ const tagLabel = computed(() => {
 
 function copyIconId(event: MouseEvent) {
   event.stopPropagation()
-  const text = props.item.name
+  const text = String(props.item.tags?.icon_id ?? props.item.name)
   if (navigator.clipboard) {
     navigator.clipboard.writeText(text).catch(() => fallbackCopy(text))
   } else {

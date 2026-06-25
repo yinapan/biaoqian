@@ -36,7 +36,7 @@ function copyPath() {
 }
 
 function copyIconId() {
-  const text = props.item.name
+  const text = String(props.item.tags?.icon_id ?? props.item.name)
   if (navigator.clipboard) {
     navigator.clipboard.writeText(text).catch(() => fallbackCopy(text))
   } else {
@@ -111,11 +111,17 @@ const TAG_LABELS: Record<string, string> = {
   effect_duration_sec: '特效时长',
   predefined: '类别',
   semantic: '语义',
+  icon_id: '图标ID',
+  width_px: '宽 (px)',
+  height_px: '高 (px)',
+  framed: '是否分帧',
+  related_items: '相关物品',
 }
 
 /** Group definitions for detail view: fields in the same group are merged into one row */
 const TAG_GROUPS: Record<string, { label: string; fields: string[]; unit?: string }> = {
   dimensions: { label: '尺寸 (cm)', fields: ['length_cm', 'width_cm', 'height_cm'], unit: 'cm' },
+  dimensions_px: { label: '尺寸 (px)', fields: ['width_px', 'height_px'] },
   camera: { label: '相机参数', fields: ['camera_distance', 'camera_scale'] },
   coverage: { label: '画面占比', fields: ['area_ratio', 'span_max'] },
 }
@@ -125,15 +131,23 @@ const GROUPED_FIELDS = new Set(Object.values(TAG_GROUPS).flatMap(g => g.fields))
 /** Fields hidden from detail view (internal / not useful to display) */
 const HIDDEN_FIELDS = new Set(['gif_duration_sec', 'focus_offset', 'center_x', 'center_y', 'clipped', 'fit_attempts', 'fit_stop_reason', 'source_name', 'size_bytes', 'scope_size'])
 
+/** Fields shown in dedicated UI sections, not in the generic tag grid */
+const DEDICATED_FIELDS = new Set(['icon_id'])
+
 const FIELD_SHORT_LABELS: Record<string, string> = {
   length_cm: '长', width_cm: '宽', height_cm: '高',
   camera_distance: '距离', camera_scale: '缩放',
   area_ratio: '面积', span_max: '跨度',
+  width_px: '宽', height_px: '高',
 }
 
-/** Tag entries excluding grouped fields and hidden internal fields */
+/** Tag entries excluding grouped fields, hidden internal fields, and dedicated-section fields */
 const visibleTagEntries = computed(() =>
-  tagEntries.value.filter(([key]) => !GROUPED_FIELDS.has(key) && !HIDDEN_FIELDS.has(key))
+  tagEntries.value.filter(([key, val]) =>
+    !GROUPED_FIELDS.has(key) && !HIDDEN_FIELDS.has(key) && !DEDICATED_FIELDS.has(key) &&
+    // Only show framed when it's true
+    !(key === 'framed' && val !== true)
+  )
 )
 
 /** Grouped numeric entries that exist in this item's tags */
@@ -156,6 +170,12 @@ const activeGroups = computed(() => {
 
 function getLabel(key: string) {
   return TAG_LABELS[key] || key
+}
+
+function formatValue(key: string, val: any): string {
+  if (typeof val === 'boolean') return val ? '是' : '否'
+  if (Array.isArray(val)) return val.join(' · ')
+  return String(val)
 }
 </script>
 
@@ -196,7 +216,7 @@ function getLabel(key: string) {
           >
             <span class="meta-label">{{ getLabel(key) }}</span>
             <span class="meta-value">
-              {{ Array.isArray(val) ? val.join(' · ') : val }}
+              {{ formatValue(key, val) }}
             </span>
           </div>
           <!-- Grouped numeric fields -->
@@ -218,7 +238,7 @@ function getLabel(key: string) {
           <div class="icon-id-row">
             <div class="icon-id-display">
               <span class="icon-id-badge">ID</span>
-              <code class="icon-id-code">{{ item.name }}</code>
+              <code class="icon-id-code">{{ item.tags?.icon_id ?? item.name }}</code>
             </div>
             <button class="id-copy-action" :class="{ copied: iconIdCopied }" @click="copyIconId">
               <svg v-if="!iconIdCopied" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="14" height="14" rx="2.5"/><path d="M4 16H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v1"/></svg>

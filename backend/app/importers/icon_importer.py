@@ -51,6 +51,29 @@ def build_icon_tags(resource: dict) -> dict:
     if desc:
         tags["description"] = desc
 
+    # Icon ID lives at the resource top level in the generated manifest.
+    icon_id = resource.get("icon_id", result.get("icon_id"))
+    if icon_id is not None:
+        tags["icon_id"] = icon_id
+
+    # Dimensions (px)
+    width_px = result.get("width_px")
+    height_px = result.get("height_px")
+    if width_px is not None:
+        tags["width_px"] = width_px
+    if height_px is not None:
+        tags["height_px"] = height_px
+
+    # Framed flag
+    framed = result.get("framed")
+    if framed is not None:
+        tags["framed"] = bool(framed)
+
+    # Related items (top 10)
+    related = result.get("related_items")
+    if related and isinstance(related, list):
+        tags["related_items"] = related[:10]
+
     return tags
 
 

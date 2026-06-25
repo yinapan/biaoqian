@@ -15,6 +15,7 @@ export const useSearchStore = defineStore('search', () => {
 
   const response = ref<SearchResponse | null>(null)
   const tagDefinitions = ref<TagDefinition[]>([])
+  let latestSearchId = 0
 
   // ---- getters ----
   const items = computed(() => response.value?.items ?? [])
@@ -24,9 +25,10 @@ export const useSearchStore = defineStore('search', () => {
 
   // ---- actions ----
   async function doSearch() {
+    const searchId = ++latestSearchId
     loading.value = true
     try {
-      response.value = await searchAssets({
+      const result = await searchAssets({
         module_type: moduleType.value,
         query: query.value || undefined,
         filters: Object.keys(filters.value).length
@@ -38,8 +40,13 @@ export const useSearchStore = defineStore('search', () => {
         page: page.value,
         page_size: pageSize.value,
       })
+      if (searchId === latestSearchId) {
+        response.value = result
+      }
     } finally {
-      loading.value = false
+      if (searchId === latestSearchId) {
+        loading.value = false
+      }
     }
   }
 

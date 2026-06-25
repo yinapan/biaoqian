@@ -54,6 +54,9 @@ build.bat
 start.bat
 # 或手动: docker compose up -d --build
 
+# 代码修改后只重启前端/后端（不导入数据、不清库）
+restart-app.bat
+
 # 6. 导入数据（见下方"数据导入"）
 
 # 7. 提取缩略图（首次导入后执行一次）
@@ -150,9 +153,19 @@ delete-stale-data.bat /apply
 | ---------- | -------------- |
 | 编译前端   | `build.bat`    |
 | 启动       | `start.bat`    |
+| 重启应用服务 | `restart-app.bat` |
 | 停止       | `stop.bat`     |
 | 导入数据   | `import.bat`   |
 | 备份数据库 | `backup.bat`   |
+
+`restart-app.bat` 会重新构建前端、重建后端镜像，并重启 `backend/nginx`。它不会导入数据、不会清理 PostgreSQL/Elasticsearch，也不会删除 Docker volumes。适合修改前端或后端代码后刷新本地/正式部署。
+
+也可以按环境显式执行：
+
+```bat
+deploy\local\restart-app.bat
+deploy\prod\restart-app.bat
+```
 
 ### 环境脚本
 

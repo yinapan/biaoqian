@@ -61,6 +61,7 @@ const showIdRow = computed(() => isIcon.value)
 
 const CARD_HIDDEN_TAG_FIELDS = new Set([
   'description',
+  'layout',
   'gif_duration_sec',
   'gif_front_path',
   'gif_left_path',

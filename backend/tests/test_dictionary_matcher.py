@@ -8,9 +8,11 @@ def make_matcher():
     m.load_from_data(
         tag_values={
             (1, "gender"): ["男", "女"],
+            (1, "species"): ["人"],
             (1, "profession"): ["刺客", "僧侣", "战士", "书生"],
             (1, "region"): ["中原", "东海", "西南"],
-            (1, "faction"): ["少林", "藏剑", "七秀"],
+            (1, "faction"): ["少林", "藏剑", "七秀", "天策"],
+            (1, "clothing"): ["护甲"],
             (1, "body_type"): ["标准", "壮硕", "瘦子"],
         },
         synonyms=[
@@ -173,3 +175,56 @@ def test_negated_unknown_text_becomes_excluded_keyword():
     assert result.excluded == {}
     assert result.excluded_keywords == ["紫色"]
     assert result.remaining == ""
+
+
+def test_tag_starting_with_negation_prefix_matches_as_tag():
+    """A real tag like 无相楼 should win over the single-char 无 negation prefix."""
+    m = DictionaryMatcher()
+    m.load_from_data(
+        tag_values={
+            (4, "predefined"): ["无相楼", "武器"],
+        },
+        synonyms=[],
+    )
+
+    result = m.match(4, "无相楼")
+
+    assert result.matched == {"predefined": "无相楼"}
+    assert result.excluded == {}
+    assert result.excluded_keywords == []
+    assert result.remaining == ""
+
+
+def test_model_style_query_ignores_connector_chars_and_excludes_region():
+    """Model search wording should not leave connector chars as keywords."""
+    m = make_matcher()
+
+    result = m.match(1, "带护甲中的男天策 不要中原")
+
+    assert result.matched == {
+        "clothing": ["护甲"],
+        "gender": "男",
+        "faction": ["天策"],
+    }
+    assert result.excluded == {"region": ["中原"]}
+    assert result.remaining == ""
+
+
+def test_common_location_connector_chars_do_not_become_keywords():
+    """Connector chars around matched tags should be discarded as fragments."""
+    m = DictionaryMatcher()
+    m.load_from_data(
+        tag_values={
+            (1, "clothing"): ["护甲"],
+            (1, "features"): ["翅膀"],
+        },
+        synonyms=[],
+    )
+
+    for query in ["护甲上的翅膀", "护甲里的翅膀", "护甲前的翅膀", "护甲后的翅膀"]:
+        result = m.match(1, query)
+        assert result.matched == {
+            "clothing": ["护甲"],
+            "features": ["翅膀"],
+        }
+        assert result.remaining == ""

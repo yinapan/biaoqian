@@ -38,6 +38,16 @@ STOPWORDS = frozenset({
     "得", "地", "之", "而", "但", "所", "以", "于", "不",
 })
 
+REMAINDER_STOPWORDS = STOPWORDS | frozenset({
+    "上",
+    "下",
+    "中",
+    "内",
+    "里",
+    "前",
+    "后",
+})
+
 import re
 _PUNCT_RE = re.compile(r'[，。！？；：、,.!?;:\s]+')
 _NEGATION_SPLIT_RE = re.compile(
@@ -168,6 +178,9 @@ class DictionaryMatcher:
         # Split segments on negation prefixes so "天策不要中原" → ["天策", "不要中原"]
         expanded: list[str] = []
         for seg in segments:
+            if seg in tokens:
+                expanded.append(seg)
+                continue
             parts = _NEGATION_SPLIT_RE.split(seg)
             i = 0
             while i < len(parts):
@@ -189,11 +202,12 @@ class DictionaryMatcher:
         for segment in segments:
             negated = False
             clean = segment
-            for prefix in NEGATION_PREFIXES:
-                if clean.startswith(prefix) and len(clean) > len(prefix):
-                    clean = clean[len(prefix):]
-                    negated = True
-                    break
+            if clean not in tokens:
+                for prefix in NEGATION_PREFIXES:
+                    if clean.startswith(prefix) and len(clean) > len(prefix):
+                        clean = clean[len(prefix):]
+                        negated = True
+                        break
 
             if clean in STOPWORDS:
                 continue
@@ -219,7 +233,11 @@ class DictionaryMatcher:
                     target[field_name] = value
 
             if seg_remaining:
-                remaining_parts.append(seg_remaining)
+                remaining = "".join(
+                    ch for ch in seg_remaining if ch not in REMAINDER_STOPWORDS
+                )
+                if remaining:
+                    remaining_parts.append(remaining)
 
         for collection in (matched, excluded):
             for k, v in collection.items():

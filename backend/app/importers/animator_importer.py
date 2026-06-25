@@ -49,8 +49,9 @@ ANIMATOR_TAG_DEFINITIONS = [
     ("file_type", "文件类型", "enum_multi", False, True, True, 11),
     ("ai_tags", "AI分析标签", "enum_multi", False, True, True, 12),
     ("description", "描述", "text", False, False, True, 13),
-    ("gif_left_path", "左视角GIF", "text", False, False, False, 14),
-    ("size_bytes", "文件大小", "number_range", False, True, False, 15),
+    ("gif_front_path", "正视角GIF", "text", False, False, False, 14),
+    ("gif_left_path", "左视角GIF", "text", False, False, False, 15),
+    ("size_bytes", "文件大小", "number_range", False, True, False, 16),
 ]
 
 
@@ -77,6 +78,10 @@ def build_animator_tags(resource: dict) -> dict:
     desc = result.get("description")
     if desc:
         tags["description"] = desc
+
+    front_path = resolve_animator_gif_path(result.get("gif_rel_path_front"))
+    if front_path:
+        tags["gif_front_path"] = front_path
 
     left_path = resolve_animator_gif_path(result.get("gif_rel_path_left"))
     if left_path:

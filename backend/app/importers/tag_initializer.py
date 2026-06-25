@@ -54,14 +54,37 @@ async def _sync_tag_values_from_db(
                 continue
             if ft == "enum_multi":
                 rows = await conn.fetch(
-                    """SELECT DISTINCT val FROM assets,
-                       jsonb_array_elements_text(tags->$1) AS val
+                    """SELECT DISTINCT
+                         CASE jsonb_typeof(tags->$1)
+                           WHEN 'array' THEN elem
+                           ELSE tags->>$1
+                         END AS val
+                       FROM assets,
+                       LATERAL jsonb_array_elements_text(
+                         CASE jsonb_typeof(tags->$1)
+                           WHEN 'array' THEN tags->$1
+                           ELSE jsonb_build_array(tags->>$1)
+                         END
+                       ) AS elem
                        WHERE module_type=$2 AND tags ? $1""",
                     fn, module_type,
                 )
             else:
+                # enum_single: also handle the case where the value is stored as a JSON array
+                # (legacy/mixed data) by unfolding arrays the same way as enum_multi.
                 rows = await conn.fetch(
-                    """SELECT DISTINCT tags->>$1 AS val FROM assets
+                    """SELECT DISTINCT
+                         CASE jsonb_typeof(tags->$1)
+                           WHEN 'array' THEN elem
+                           ELSE tags->>$1
+                         END AS val
+                       FROM assets,
+                       LATERAL jsonb_array_elements_text(
+                         CASE jsonb_typeof(tags->$1)
+                           WHEN 'array' THEN tags->$1
+                           ELSE jsonb_build_array(tags->>$1)
+                         END
+                       ) AS elem
                        WHERE module_type=$2 AND tags ? $1
                          AND tags->>$1 IS NOT NULL AND tags->>$1 != ''""",
                     fn, module_type,
@@ -122,6 +145,11 @@ async def extract_enum_values_from_excel(
     wb.close()
 
     return await _sync_tag_values_from_db(pool, module_type=1, all_values=all_values)
+
+
+async def sync_model_tag_values(pool: asyncpg.Pool) -> dict[str, list[str]]:
+    """从已导入的模型资产中提取标签值，写入 tag_values（module_type=1）"""
+    return await _sync_tag_values_from_db(pool, module_type=1)
 
 
 async def sync_effect_tag_values(pool: asyncpg.Pool) -> dict[str, list[str]]:

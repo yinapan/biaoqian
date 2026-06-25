@@ -13,6 +13,8 @@ SCRIPT_NAMES = [
     "deploy.bat",
     "import-new-data.bat",
     "reimport-data.bat",
+    "reset-and-reimport-data.bat",
+    "verify-previews.bat",
     "delete-stale-data.bat",
     "restore-from-canonical.bat",
     "backup.bat",
@@ -25,6 +27,8 @@ ROOT_WRAPPERS = [
     "import.bat",
     "import-new-data.bat",
     "reimport-data.bat",
+    "reset-and-reimport-data.bat",
+    "verify-previews.bat",
     "delete-stale-data.bat",
     "restore-from-canonical.bat",
     "backup.bat",
@@ -102,6 +106,8 @@ def test_root_wrappers_delegate_to_prod_scripts():
         "import.bat": r"deploy\prod\import-new-data.bat",
         "import-new-data.bat": r"deploy\prod\import-new-data.bat",
         "reimport-data.bat": r"deploy\prod\reimport-data.bat",
+        "reset-and-reimport-data.bat": r"deploy\prod\reset-and-reimport-data.bat",
+        "verify-previews.bat": r"deploy\prod\verify-previews.bat",
         "delete-stale-data.bat": r"deploy\prod\delete-stale-data.bat",
         "restore-from-canonical.bat": r"deploy\prod\restore-from-canonical.bat",
         "backup.bat": r"deploy\prod\backup.bat",
@@ -271,6 +277,15 @@ def test_reset_and_reimport_scripts_require_explicit_confirmation():
         assert "reimport-data.bat" in text
         assert "This clears imported DB rows" in text
         assert "does not remove Docker volumes" in text
+
+
+def test_verify_preview_scripts_use_environment_backend_url():
+    for env_dir in ENV_DIRS:
+        text = _read_script(f"{env_dir}/verify-previews.bat")
+        assert "--verify-previews" in text
+        assert '--backend-url "%APP_URL%"' in text
+        assert "--verify-sample-size" in text
+        assert "scripts/import_data.py" in text
 
 
 def test_import_data_syncs_tag_values_for_all_modules():

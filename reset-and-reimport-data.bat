@@ -1,2 +1,2 @@
 @echo off
-call "%~dp0deploy\local\reset-and-reimport-data.bat"
+call "%~dp0deploy\prod\reset-and-reimport-data.bat"

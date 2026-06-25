@@ -59,8 +59,8 @@ restart-app.bat
 
 # 6. 导入数据（见下方"数据导入"）
 
-# 7. 提取缩略图（首次导入后执行一次）
-python scripts/extract_thumbnails.py
+# 7. 验证预览图可访问
+verify-previews.bat
 ```
 
 ### 访问
@@ -113,7 +113,8 @@ python scripts/import_data.py --icons-json ../tag_data_upload/ui/icon_png_result
 python scripts/import_data.py --from-canonical --reindex
 
 # 验证预览图可访问
-python scripts/import_data.py --verify-previews --verify-sample-size 20
+verify-previews.bat
+# 或按环境执行: deploy\local\verify-previews.bat / deploy\prod\verify-previews.bat
 
 # Dry-run: list DB assets missing from the current JSON files, no deletion
 python scripts/import_data.py --delete-stale --models-json ../tag_data_upload/model/merged/model_png_results.json --animator-json ../tag_data_upload/animation/actions_tags_format.json --effects-json ../tag_data_upload/effect/merged/effect_gif_results.json --icons-json ../tag_data_upload/ui/icon_png_results.json

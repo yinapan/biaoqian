@@ -12,8 +12,8 @@ from typing import Any
 MODULE_NAMES = {
     1: "model",
     2: "effect",
-    3: "action",
-    4: "icon",
+    3: "animator",
+    4: "ui",
 }
 
 
@@ -42,10 +42,20 @@ def import_log_path(project_root: Path, module_name: str, batch_id: str) -> Path
 
 
 def ensure_runtime_dirs(project_root: Path) -> None:
+    migrate_legacy_runtime_dirs(project_root)
     for module_type in MODULE_NAMES:
         preview_dir(project_root, module_type).mkdir(parents=True, exist_ok=True)
         canonical_jsonl_path(project_root, module_type).parent.mkdir(parents=True, exist_ok=True)
     (runtime_root(project_root) / "logs" / "imports").mkdir(parents=True, exist_ok=True)
+
+
+def migrate_legacy_runtime_dirs(project_root: Path) -> None:
+    root = runtime_root(project_root)
+    for old_name, new_name in [("action", "animator"), ("icon", "ui")]:
+        old_path = root / old_name
+        new_path = root / new_name
+        if old_path.exists() and not new_path.exists():
+            shutil.copytree(old_path, new_path)
 
 
 def normalize_rel_path(path: str | None, strip_prefixes: tuple[str, ...] = ()) -> str | None:

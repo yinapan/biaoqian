@@ -7,4 +7,4 @@ services:
       - ./frontend/dist:/usr/share/nginx/html:ro
       - ./runtime_data/previews:/data/previews:ro
       - ./runtime_data/effect/gifs:/data/gifs:ro
-      - ./runtime_data/icon/pngs:/data/icons:ro
+      - ./runtime_data/ui/pngs:/data/icons:ro

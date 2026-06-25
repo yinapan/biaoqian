@@ -39,7 +39,7 @@ def infer_icons_pngs_dir(json_path: Path) -> Path:
     candidates = [
         json_path.parent / "pngs",
         json_path.parent.parent / "pngs",
-        project_root() / "runtime_data" / "icon" / "pngs",
+        project_root() / "runtime_data" / "ui" / "pngs",
         project_root() / "icon_png_results" / "pngs",
     ]
     return next((p for p in candidates if p.exists()), candidates[0])

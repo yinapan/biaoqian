@@ -19,11 +19,11 @@
 runtime_data/
   previews/              # 模型/动作预览
   effect/gifs/           # 特效 GIF
-  icon/pngs/             # 图标 PNG
+  ui/pngs/               # UI 图标 PNG
   model/data.jsonl       # 模型归档
   effect/data.jsonl      # 特效归档
-  action/data.jsonl      # 动作归档
-  icon/data.jsonl        # 图标归档
+  animator/data.jsonl    # 动作归档
+  ui/data.jsonl          # UI 图标归档
   logs/imports/          # 导入失败完整日志
 ```
 

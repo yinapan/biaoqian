@@ -206,9 +206,9 @@ def test_import_data_syncs_tag_values_for_three_visible_modules():
 
 def test_compose_mounts_runtime_icon_pngs_dir_for_frontend_icons():
     text = (ROOT / "docker-compose.yml").read_text(encoding="utf-8")
-    assert "./runtime_data/icon/pngs:/data/icons:ro" in text
+    assert "./runtime_data/ui/pngs:/data/icons:ro" in text
     dev_text = (ROOT / "docker-compose.dev.yml").read_text(encoding="utf-8")
-    assert "./runtime_data/icon/pngs:/data/icons:ro" in dev_text
+    assert "./runtime_data/ui/pngs:/data/icons:ro" in dev_text
 
 
 def test_runtime_data_is_gitignored_and_used_for_previews():
@@ -216,6 +216,16 @@ def test_runtime_data_is_gitignored_and_used_for_previews():
     compose = _read_script("docker-compose.yml")
     assert "runtime_data/" in gitignore
     assert "./runtime_data/previews:/data/previews" in compose
+
+
+def test_runtime_data_uses_ui_and_animator_module_dirs():
+    text = (ROOT / "scripts" / "canonical_data.py").read_text(encoding="utf-8")
+    docs = _read_script("docs/deployment-guide.md")
+
+    assert '3: "animator"' in text
+    assert '4: "ui"' in text
+    assert "animator/data.jsonl" in docs
+    assert "ui/pngs/" in docs
 
 
 def test_deploy_and_import_scripts_verify_preview_images():

@@ -250,6 +250,65 @@ async def test_import_thumbnail_is_gif_filename(tmp_path):
 
 
 @pytest.mark.asyncio
+async def test_import_effects_json_does_not_store_missing_thumbnail(tmp_path):
+    json_file = tmp_path / "effects.json"
+    json_file.write_text(json.dumps(_make_json_data([SAMPLE_RESOURCE_OK])), encoding="utf-8")
+
+    pool, conn = _make_mock_pool()
+    result = await import_effects_json(
+        str(json_file),
+        str(tmp_path / "gifs"),
+        pool,
+        str(tmp_path),
+        project_root=str(tmp_path),
+    )
+
+    assert result["success"] == 1
+    assert conn.fetchrow.call_args.args[4] is None
+    assert list((tmp_path / "runtime_data/logs/imports").glob("*_effect_errors.jsonl"))
+
+
+@pytest.mark.asyncio
+async def test_import_effects_json_skips_preview_copy_when_svn_unchanged(tmp_path):
+    json_file = tmp_path / "effects.json"
+    json_file.write_text(json.dumps(_make_json_data([SAMPLE_RESOURCE_OK])), encoding="utf-8")
+    existing_preview = tmp_path / "runtime_data/effect/gifs/001_UI______94a9f160_angle45.gif"
+    existing_preview.parent.mkdir(parents=True)
+    existing_preview.write_bytes(b"old")
+
+    pool, conn = _make_mock_pool()
+    conn.fetchrow.side_effect = [
+        {
+            "thumbnail_path": "001_UI______94a9f160_angle45.gif",
+            "tags": {"__svn": SAMPLE_RESOURCE_OK["svn"]},
+        },
+        {
+            "id": 1,
+            "module_type": 2,
+            "name": "ui_浜戦浘",
+            "resource_path": SAMPLE_RESOURCE_OK["resource_id"],
+            "thumbnail_path": "001_UI______94a9f160_angle45.gif",
+            "tags": {},
+            "created_at": datetime(2026, 6, 25, 12, 0, 0),
+            "updated_at": datetime(2026, 6, 25, 12, 0, 0),
+        },
+    ]
+
+    result = await import_effects_json(
+        str(json_file),
+        str(tmp_path / "gifs"),
+        pool,
+        str(tmp_path),
+        project_root=str(tmp_path),
+    )
+
+    assert result["success"] == 1
+    assert existing_preview.read_bytes() == b"old"
+    assert conn.fetchrow.call_args.args[4] == "001_UI______94a9f160_angle45.gif"
+    assert not list((tmp_path / "runtime_data/logs/imports").glob("*_effect_errors.jsonl"))
+
+
+@pytest.mark.asyncio
 async def test_import_mixed_resources(tmp_path):
     json_file = tmp_path / "effects.json"
     data = _make_json_data([SAMPLE_RESOURCE_OK, SAMPLE_RESOURCE_FAILED, SAMPLE_RESOURCE_OK])

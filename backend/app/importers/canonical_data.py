@@ -76,6 +76,60 @@ def normalize_rel_path(path: str | None, strip_prefixes: tuple[str, ...] = ()) -
     return rel or None
 
 
+def resource_version_metadata(resource: dict[str, Any]) -> tuple[str, dict[str, Any]] | None:
+    svn = resource.get("svn")
+    if isinstance(svn, dict) and svn:
+        return "__svn", {k: svn[k] for k in sorted(svn) if svn[k] is not None}
+
+    fallback = {
+        key: resource[key]
+        for key in ("source_sha1", "size_bytes")
+        if resource.get(key) is not None
+    }
+    if fallback:
+        return "__source_version", fallback
+    return None
+
+
+def attach_resource_version(tags: dict[str, Any], resource: dict[str, Any]) -> dict[str, Any]:
+    version = resource_version_metadata(resource)
+    if version:
+        key, value = version
+        tags[key] = value
+    return tags
+
+
+def existing_version_matches(existing_tags: Any, resource: dict[str, Any]) -> bool:
+    version = resource_version_metadata(resource)
+    if not version:
+        return False
+    key, value = version
+    if isinstance(existing_tags, str):
+        try:
+            existing_tags = json.loads(existing_tags)
+        except json.JSONDecodeError:
+            return False
+    return isinstance(existing_tags, dict) and existing_tags.get(key) == value
+
+
+async def fetch_existing_asset(
+    pool: Any,
+    module_type: int,
+    resource_path: str,
+) -> dict[str, Any] | None:
+    async with pool.acquire() as conn:
+        row = await conn.fetchrow(
+            "SELECT thumbnail_path, tags FROM assets WHERE module_type=$1 AND resource_path=$2",
+            module_type,
+            resource_path,
+        )
+    return dict(row) if row else None
+
+
+def preview_exists(project_root: Path, module_type: int, rel_path: str | None) -> bool:
+    return bool(rel_path) and (preview_dir(project_root, module_type) / Path(rel_path)).exists()
+
+
 def write_error(
     project_root: Path,
     module_name: str,

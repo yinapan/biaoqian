@@ -41,13 +41,14 @@ copy .env.example .env
 # 编辑 .env，修改 ADMIN_API_KEY 为随机字符串
 
 # 3. 准备数据文件（放到项目根目录对应位置）
-# - model/merged/model_png_results.json + pngs/   （模型 JSON+PNG）
-# - animator/actions_tags_format.json + gifs/     （动作 JSON+GIF）
-# - 特效/data/effect_gif_results.json + gifs/      （特效 JSON+GIF）
-# - icon_png_results/icon_png_results.json + pngs/ （图标 JSON+PNG）
+# - tag_data_upload/model/merged/model_png_results.json + pngs/   （模型 JSON+PNG）
+# - tag_data_upload/animator/actions_tags_format.json + gifs/     （动作 JSON+GIF）
+# - tag_data_upload/effect/merged/effect_gif_results.json + gifs/      （特效 JSON+GIF）
+# - tag_data_upload/ui/icon_png_results.json + pngs/ （图标 JSON+PNG）
 
 # 4. 构建前端（首次部署或前端代码变更时）
-cd frontend && npm install && npx vite build && cd ..
+build.bat
+# 或按环境执行: deploy\local\build.bat / deploy\prod\build.bat
 
 # 5. 启动服务
 start.bat
@@ -72,16 +73,16 @@ python scripts/extract_thumbnails.py
 
 ```bash
 # 导入模型
-python scripts/import_data.py --models-json model/merged/model_png_results.json --reindex
+python scripts/import_data.py --models-json tag_data_upload/model/merged/model_png_results.json --reindex
 
 # 导入动作
-python scripts/import_data.py --animator-json animator/actions_tags_format.json --reindex
+python scripts/import_data.py --animator-json tag_data_upload/animation/actions_tags_format.json --reindex
 
 # 导入特效
-python scripts/import_data.py --effects-json 特效/data/effect_gif_results.json --reindex
+python scripts/import_data.py --effects-json tag_data_upload/effect/merged/effect_gif_results.json --reindex
 
 # 导入图标
-python scripts/import_data.py --icons-json icon_png_results/icon_png_results.json --reindex
+python scripts/import_data.py --icons-json tag_data_upload/ui/icon_png_results.json --reindex
 
 # 从 canonical 归档恢复（不读源 JSON，从 runtime_data 的 JSONL 还原）
 python scripts/import_data.py --from-canonical --reindex
@@ -115,10 +116,30 @@ python scripts/import_data.py --verify-previews --verify-sample-size 20
 
 | 操作       | 命令           |
 | ---------- | -------------- |
+| 编译前端   | `build.bat`    |
 | 启动       | `start.bat`    |
 | 停止       | `stop.bat`     |
 | 导入数据   | `import.bat`   |
 | 备份数据库 | `backup.bat`   |
+
+### 环境脚本
+
+`deploy\local\env.bat` 和 `deploy\prod\env.bat` 只决定当前机器上的 Compose 项目名、访问地址和 compose 文件组合：
+
+| 脚本 | PROJECT_NAME | APP_URL | 用途 |
+| ---- | ------------ | ------- | ---- |
+| `deploy\local\env.bat` | `biaoqian_local` | `http://localhost:8081` | 本地测试环境 |
+| `deploy\prod\env.bat` | `biaoqian` | `https://artsearch.testplus.cn` | 正式配置 |
+
+注意：`deploy\prod` 不会自动连接线上服务器。它只会操作当前这台机器的 Docker。执行正式脚本前先运行：
+
+```bat
+hostname
+ipconfig
+docker compose -p biaoqian ps
+```
+
+如果是在本机执行，只影响本机 Docker；只有登录线上服务器后执行，才会影响线上正式环境。
 
 ### 备份与恢复
 
@@ -153,7 +174,7 @@ biaoqian/
 ├── icon_png_results/        # 图标源数据（不进 git）
 ├── nginx.conf               # Nginx 配置
 ├── docker-compose.yml
-├── start.bat / stop.bat / import.bat / backup.bat
+├── build.bat / start.bat / stop.bat / import.bat / backup.bat
 └── .env.example             # 环境变量模板
 ```
 
@@ -163,7 +184,7 @@ biaoqian/
 修改 `.env` 中的镜像源地址，或参考 `docs/docker-offline-images.md` 使用离线镜像。
 
 **Q: 启动后页面空白？**
-确认已执行 `cd frontend && npx vite build` 构建前端。
+确认已执行 `build.bat` 构建前端。
 
 **Q: 搜索没结果？**
 确认已运行 `import.bat` 导入数据。可通过 health 接口检查服务状态:

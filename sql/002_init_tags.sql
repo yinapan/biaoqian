@@ -46,7 +46,7 @@ INSERT INTO tag_definitions (module_type, field_name, display_name, field_type, 
 (3, 'body_type',     '体型',     'enum_single',  true,  true,  true,  1),
 (3, 'action_module', '动作模组', 'enum_single',  true,  true,  true,  2),
 (3, 'action_type',   '动作类型', 'enum_single',  true,  true,  true,  3),
-(3, 'action_id',     '动作ID',   'number_range', false, true,  false, 4),
+(3, 'action_id',     '动作ID',   'number_range', false, false, false, 4),
 (3, 'remark',        '备注',     'text',         false, false, true,  5),
 (3, 'slot_name',     '插槽',     'text',         false, false, false, 6),
 (3, 'slot_path',     '插槽路径', 'text',         false, false, false, 7),
@@ -63,7 +63,7 @@ INSERT INTO tag_definitions (module_type, field_name, display_name, field_type, 
 (3, 'ai_tags',       'AI分析标签', 'enum_multi', false, true,  true,  18),
 (3, 'description',   '描述',     'text',         false, false, true,  19),
 (3, 'gif_left_path', '左视角GIF', 'text',        false, false, false, 20),
-(3, 'size_bytes',    '文件大小', 'number_range', false, true,  false, 21);
+(3, 'size_bytes',    '文件大小', 'number_range', false, false, false, 21);
 
 -- ===== 特效模块 (module_type=2) 标签维度 =====
 -- 13 个语义标签维度（来自 AI 自动标注） + 描述 + 量化字段

@@ -145,11 +145,11 @@ async def test_import_animator_json_upserts_module_3_and_copies_front_gif(tmp_pa
 
 
 @pytest.mark.asyncio
-async def test_import_animator_json_logs_missing_gif_but_keeps_db_import(tmp_path):
+async def test_import_animator_json_does_not_store_missing_thumbnail(tmp_path):
     json_file = tmp_path / "animator.json"
     json_file.write_text(json.dumps(_make_json_data([SAMPLE_ANIMATOR_RESOURCE])), encoding="utf-8")
 
-    pool, _conn = _make_mock_pool()
+    pool, conn = _make_mock_pool()
     result = await import_animator_json(
         str(json_file),
         str(tmp_path / "gifs"),
@@ -158,7 +158,54 @@ async def test_import_animator_json_logs_missing_gif_but_keeps_db_import(tmp_pat
     )
 
     assert result["success"] == 1
+    assert conn.fetchrow.call_args.args[4] is None
     assert list((tmp_path / "runtime_data/logs/imports").glob("*_animator_errors.jsonl"))
+
+
+@pytest.mark.asyncio
+async def test_import_animator_json_skips_preview_copy_when_svn_unchanged(tmp_path):
+    json_file = tmp_path / "animator.json"
+    json_file.write_text(json.dumps(_make_json_data([SAMPLE_ANIMATOR_RESOURCE])), encoding="utf-8")
+    existing_front = (
+        tmp_path / "runtime_data/animator/previews/data/source/player/M1/actions/run.ani_front.gif"
+    )
+    existing_left = (
+        tmp_path / "runtime_data/animator/previews/data/source/player/M1/actions/run.ani_left.gif"
+    )
+    existing_front.parent.mkdir(parents=True)
+    existing_front.write_bytes(b"front-old")
+    existing_left.write_bytes(b"left-old")
+
+    pool, conn = _make_mock_pool()
+    conn.fetchrow.side_effect = [
+        {
+            "thumbnail_path": "data/source/player/M1/actions/run.ani_front.gif",
+            "tags": {"__svn": SAMPLE_ANIMATOR_RESOURCE["svn"]},
+        },
+        {
+            "id": 1,
+            "module_type": 3,
+            "name": "run",
+            "resource_path": "data/source/player/M1/actions/run.ani",
+            "thumbnail_path": "data/source/player/M1/actions/run.ani_front.gif",
+            "tags": {},
+            "created_at": datetime(2026, 6, 25, 12, 0, 0),
+            "updated_at": datetime(2026, 6, 25, 12, 0, 0),
+        },
+    ]
+
+    result = await import_animator_json(
+        str(json_file),
+        str(tmp_path / "gifs"),
+        pool,
+        project_root=str(tmp_path),
+    )
+
+    assert result["success"] == 1
+    assert existing_front.read_bytes() == b"front-old"
+    assert existing_left.read_bytes() == b"left-old"
+    assert conn.fetchrow.call_args.args[4] == "data/source/player/M1/actions/run.ani_front.gif"
+    assert not list((tmp_path / "runtime_data/logs/imports").glob("*_animator_errors.jsonl"))
 
 
 @pytest.mark.asyncio
@@ -174,3 +221,5 @@ async def test_ensure_animator_tag_definitions_inserts_json_fields():
     assert "weapon_type" in field_names
     assert "core_action" in field_names
     assert "gif_left_path" in field_names
+    by_field = {row[0]: row for row in rows}
+    assert by_field["size_bytes"][4] is False

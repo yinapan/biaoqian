@@ -62,7 +62,16 @@ const showIdRow = computed(() => isIcon.value)
 const visibleTags = computed(() => {
   const entries = Object.entries(props.item.tags)
   return entries
-    .filter(([key]) => !['description', 'gif_duration_sec', 'gif_front_path', 'gif_left_path'].includes(key))
+    .filter(([key]) => ![
+      'description',
+      'gif_duration_sec',
+      'gif_front_path',
+      'gif_left_path',
+      'size_bytes',
+      'action_id',
+      '__svn',
+      '__source_version',
+    ].includes(key))
     .slice(0, 4)
 })
 

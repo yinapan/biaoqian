@@ -15,6 +15,8 @@ async def get_definitions(module_type: int):
     defs = await get_tag_definitions(pool, module_type)
     result = []
     for d in defs:
+        if module_type == 3 and d["field_name"] == "ai_tags":
+            continue
         if not d["is_filterable"]:
             continue
         result.append(

@@ -15,8 +15,12 @@ from pathlib import Path
 import asyncpg
 
 from app.importers.canonical_data import (
+    attach_resource_version,
     copy_preview,
+    existing_version_matches,
+    fetch_existing_asset,
     normalize_rel_path,
+    preview_exists,
     preview_dir,
     upsert_canonical_records,
     write_error,
@@ -135,23 +139,37 @@ async def import_models_json(
                 continue
 
             name = extract_name_from_path(resource_path)
-            tags = build_model_tags(resource)
-            thumbnail_path = resolve_model_png_path(result.get("png_rel_path"))
+            tags = attach_resource_version(build_model_tags(resource), resource)
+            requested_thumbnail_path = resolve_model_png_path(result.get("png_rel_path"))
+            thumbnail_path = requested_thumbnail_path
 
-            if root and thumbnail_path:
-                copy_preview(
-                    source_root,
-                    thumbnail_path,
-                    preview_dir(root, MODULE_TYPE_MODEL),
-                    project_root=root,
-                    module_name="model",
-                    batch_id=batch_id,
-                    context={
-                        "source_json": json_path,
-                        "resource_id": resource.get("resource_id"),
-                        "resource_path": resource_path,
-                    },
+            if root and requested_thumbnail_path:
+                existing_asset = await fetch_existing_asset(
+                    pool,
+                    MODULE_TYPE_MODEL,
+                    resource_path,
                 )
+                can_reuse_preview = (
+                    existing_asset
+                    and existing_asset.get("thumbnail_path") == requested_thumbnail_path
+                    and existing_version_matches(existing_asset.get("tags"), resource)
+                    and preview_exists(root, MODULE_TYPE_MODEL, requested_thumbnail_path)
+                )
+                if not can_reuse_preview:
+                    if not copy_preview(
+                        source_root,
+                        requested_thumbnail_path,
+                        preview_dir(root, MODULE_TYPE_MODEL),
+                        project_root=root,
+                        module_name="model",
+                        batch_id=batch_id,
+                        context={
+                            "source_json": json_path,
+                            "resource_id": resource.get("resource_id"),
+                            "resource_path": resource_path,
+                        },
+                    ):
+                        thumbnail_path = None
 
             async with pool.acquire() as conn:
                 row_result = await conn.fetchrow(

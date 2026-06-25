@@ -14,8 +14,12 @@ from pathlib import Path
 import asyncpg
 
 from app.importers.canonical_data import (
+    attach_resource_version,
     copy_preview,
+    existing_version_matches,
+    fetch_existing_asset,
     normalize_rel_path,
+    preview_exists,
     preview_dir,
     upsert_canonical_records,
     write_error,
@@ -118,24 +122,38 @@ async def import_icons_json(
                 continue
 
             name = extract_name_from_path(resource_path)
-            tags = build_icon_tags(resource)
+            tags = attach_resource_version(build_icon_tags(resource), resource)
 
-            thumbnail_path = normalize_rel_path(result.get("rel_path"), ("pngs",))
+            requested_thumbnail_path = normalize_rel_path(result.get("rel_path"), ("pngs",))
+            thumbnail_path = requested_thumbnail_path
 
-            if root and source_root and thumbnail_path:
-                copy_preview(
-                    source_root,
-                    thumbnail_path,
-                    preview_dir(root, MODULE_TYPE_ICON),
-                    project_root=root,
-                    module_name="icon",
-                    batch_id=batch_id,
-                    context={
-                        "source_json": json_path,
-                        "resource_id": resource.get("resource_id"),
-                        "resource_path": resource_path,
-                    },
+            if root and source_root and requested_thumbnail_path:
+                existing_asset = await fetch_existing_asset(
+                    pool,
+                    MODULE_TYPE_ICON,
+                    resource_path,
                 )
+                can_reuse_preview = (
+                    existing_asset
+                    and existing_asset.get("thumbnail_path") == requested_thumbnail_path
+                    and existing_version_matches(existing_asset.get("tags"), resource)
+                    and preview_exists(root, MODULE_TYPE_ICON, requested_thumbnail_path)
+                )
+                if not can_reuse_preview:
+                    if not copy_preview(
+                        source_root,
+                        requested_thumbnail_path,
+                        preview_dir(root, MODULE_TYPE_ICON),
+                        project_root=root,
+                        module_name="icon",
+                        batch_id=batch_id,
+                        context={
+                            "source_json": json_path,
+                            "resource_id": resource.get("resource_id"),
+                            "resource_path": resource_path,
+                        },
+                    ):
+                        thumbnail_path = None
 
             async with pool.acquire() as conn:
                 await conn.fetchrow(

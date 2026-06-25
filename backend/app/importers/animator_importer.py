@@ -9,8 +9,12 @@ from pathlib import Path
 import asyncpg
 
 from app.importers.canonical_data import (
+    attach_resource_version,
     copy_preview,
+    existing_version_matches,
+    fetch_existing_asset,
     normalize_rel_path,
+    preview_exists,
     preview_dir,
     upsert_canonical_records,
     write_error,
@@ -51,7 +55,7 @@ ANIMATOR_TAG_DEFINITIONS = [
     ("description", "描述", "text", False, False, True, 13),
     ("gif_front_path", "正视角GIF", "text", False, False, False, 14),
     ("gif_left_path", "左视角GIF", "text", False, False, False, 15),
-    ("size_bytes", "文件大小", "number_range", False, True, False, 16),
+    ("size_bytes", "文件大小", "number_range", False, False, False, 16),
 ]
 
 
@@ -148,26 +152,45 @@ async def import_animator_json(
                 continue
 
             name = extract_name_from_path(resource_path)
-            tags = build_animator_tags(resource)
-            thumbnail_path = resolve_animator_gif_path(result.get("gif_rel_path_front"))
+            tags = attach_resource_version(build_animator_tags(resource), resource)
+            requested_thumbnail_path = resolve_animator_gif_path(result.get("gif_rel_path_front"))
             left_path = resolve_animator_gif_path(result.get("gif_rel_path_left"))
+            thumbnail_path = requested_thumbnail_path
 
             if root:
-                for rel_path in (thumbnail_path, left_path):
-                    if rel_path:
-                        copy_preview(
-                            source_root,
-                            rel_path,
-                            preview_dir(root, MODULE_TYPE_ANIMATOR),
-                            project_root=root,
-                            module_name="animator",
-                            batch_id=batch_id,
-                            context={
-                                "source_json": json_path,
-                                "resource_id": resource.get("resource_id"),
-                                "resource_path": resource_path,
-                            },
-                        )
+                existing_asset = await fetch_existing_asset(
+                    pool,
+                    MODULE_TYPE_ANIMATOR,
+                    resource_path,
+                )
+                can_reuse_preview = (
+                    existing_asset
+                    and existing_asset.get("thumbnail_path") == requested_thumbnail_path
+                    and existing_version_matches(existing_asset.get("tags"), resource)
+                    and preview_exists(root, MODULE_TYPE_ANIMATOR, requested_thumbnail_path)
+                    and (not left_path or preview_exists(root, MODULE_TYPE_ANIMATOR, left_path))
+                )
+                if not can_reuse_preview:
+                    thumbnail_copied = True
+                    for rel_path in (requested_thumbnail_path, left_path):
+                        if rel_path:
+                            copied = copy_preview(
+                                source_root,
+                                rel_path,
+                                preview_dir(root, MODULE_TYPE_ANIMATOR),
+                                project_root=root,
+                                module_name="animator",
+                                batch_id=batch_id,
+                                context={
+                                    "source_json": json_path,
+                                    "resource_id": resource.get("resource_id"),
+                                    "resource_path": resource_path,
+                                },
+                            )
+                            if rel_path == requested_thumbnail_path:
+                                thumbnail_copied = copied
+                    if requested_thumbnail_path and not thumbnail_copied:
+                        thumbnail_path = None
 
             async with pool.acquire() as conn:
                 await conn.fetchrow(

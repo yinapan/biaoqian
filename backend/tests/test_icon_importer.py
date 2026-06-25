@@ -56,15 +56,10 @@ class _FakePool:
     def acquire(self):
         return _FakeAcquireCtx(self)
 
-    async def fetchrow(
-        self,
-        query,
-        module_type,
-        name,
-        resource_path,
-        thumbnail_path,
-        tags_json,
-    ):
+    async def fetchrow(self, query, *args):
+        if query.startswith("SELECT"):
+            return None
+        module_type, name, resource_path, thumbnail_path, tags_json = args
         row = {
             "id": len(self.rows) + 1,
             "module_type": module_type,
@@ -105,6 +100,37 @@ async def test_import_icon_thumbnail_path_strips_pngs_prefix(tmp_path):
 
 
 @pytest.mark.asyncio
+async def test_import_icons_json_does_not_store_missing_thumbnail_when_copying(tmp_path):
+    json_path = tmp_path / "icons.json"
+    json_path.write_text(
+        json.dumps(
+            {
+                "resources": [
+                    {
+                        "icon_id": 5,
+                        "source_path": "mui/Resource/icon/System/quest/QuestItem.png",
+                        "result": {"rel_path": "pngs/System/quest/QuestItem.png"},
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    pool = _FakePool()
+
+    result = await import_icons_json(
+        str(json_path),
+        pool,
+        project_root=str(tmp_path),
+        icons_source_dir=str(tmp_path / "pngs"),
+    )
+
+    assert result["success"] == 1
+    assert pool.rows[0]["thumbnail_path"] is None
+    assert list((tmp_path / "runtime_data/logs/imports").glob("*_icon_errors.jsonl"))
+
+
+@pytest.mark.asyncio
 async def test_import_icons_json_defers_es_sync_to_reindex(tmp_path):
     json_path = tmp_path / "icons.json"
     json_path.write_text(
@@ -128,3 +154,41 @@ async def test_import_icons_json_defers_es_sync_to_reindex(tmp_path):
     assert result["success"] == 1
     assert result["failed"] == 0
     assert pool.rows[0]["tags"]["icon_id"] == 5
+
+
+@pytest.mark.asyncio
+async def test_import_icons_json_skips_preview_copy_when_svn_unchanged(tmp_path):
+    json_path = tmp_path / "icons.json"
+    resource = {
+        "icon_id": 5,
+        "source_path": "mui/Resource/icon/System/quest/QuestItem.png",
+        "svn": {"last_changed_revision": "123"},
+        "result": {"rel_path": "pngs/System/quest/QuestItem.png"},
+    }
+    json_path.write_text(json.dumps({"resources": [resource]}), encoding="utf-8")
+    existing_preview = tmp_path / "runtime_data/ui/pngs/System/quest/QuestItem.png"
+    existing_preview.parent.mkdir(parents=True)
+    existing_preview.write_bytes(b"old")
+
+    class Pool(_FakePool):
+        async def fetchrow(self, query, *args):
+            if query.startswith("SELECT"):
+                return {
+                    "thumbnail_path": "System/quest/QuestItem.png",
+                    "tags": {"__svn": resource["svn"]},
+                }
+            return await super().fetchrow(query, *args)
+
+    pool = Pool()
+
+    result = await import_icons_json(
+        str(json_path),
+        pool,
+        project_root=str(tmp_path),
+        icons_source_dir=str(tmp_path / "pngs"),
+    )
+
+    assert result["success"] == 1
+    assert existing_preview.read_bytes() == b"old"
+    assert pool.rows[0]["thumbnail_path"] == "System/quest/QuestItem.png"
+    assert not list((tmp_path / "runtime_data/logs/imports").glob("*_icon_errors.jsonl"))

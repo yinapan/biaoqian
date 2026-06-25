@@ -7,6 +7,7 @@ ENV_DIRS = [
     "deploy/prod",
 ]
 SCRIPT_NAMES = [
+    "build.bat",
     "start.bat",
     "stop.bat",
     "deploy.bat",
@@ -16,6 +17,7 @@ SCRIPT_NAMES = [
     "backup.bat",
 ]
 ROOT_WRAPPERS = [
+    "build.bat",
     "start.bat",
     "stop.bat",
     "deploy.bat",
@@ -94,6 +96,7 @@ def test_root_wrappers_delegate_to_prod_scripts():
         "start.bat": r"deploy\prod\start.bat",
         "stop.bat": r"deploy\prod\stop.bat",
         "deploy.bat": r"deploy\prod\deploy.bat",
+        "build.bat": r"deploy\prod\build.bat",
         "import.bat": r"deploy\prod\import-new-data.bat",
         "import-new-data.bat": r"deploy\prod\import-new-data.bat",
         "reimport-data.bat": r"deploy\prod\reimport-data.bat",
@@ -112,6 +115,15 @@ def test_deploy_environments_have_distinct_urls():
     assert "APP_URL=https://artsearch.testplus.cn" in prod_env
     assert "docker-compose.dev.yml" in local_env
     assert "docker-compose.dev.yml" not in prod_env
+
+
+def test_build_scripts_compile_frontend_only():
+    for env_dir in ENV_DIRS:
+        text = _read_script(f"{env_dir}/build.bat")
+        assert "npm run build" in text
+        assert "npm install" in text
+        assert "%COMPOSE% up" not in text
+        assert "scripts/import_data.py" not in text
 
 
 def test_import_scripts_use_environment_backend_url():
@@ -231,6 +243,8 @@ def test_init_sql_contains_animator_json_tag_fields():
     assert "(3, 'weapon_type'" in text
     assert "(3, 'core_action'" in text
     assert "(3, 'gif_left_path'" in text
+    assert "(3, 'action_id',     '动作ID',   'number_range', false, false, false, 4)" in text
+    assert "(3, 'size_bytes',    '文件大小', 'number_range', false, false, false, 21)" in text
 
 
 def test_backend_importers_do_not_depend_on_repo_scripts_path():

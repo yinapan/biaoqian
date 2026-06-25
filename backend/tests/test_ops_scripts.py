@@ -350,6 +350,12 @@ def test_backend_runs_single_worker_for_in_memory_dictionary_consistency():
     assert "--workers 1" in compose
 
 
+def test_backend_startup_migrates_animator_tag_definitions():
+    main_text = (ROOT / "backend/app/main.py").read_text(encoding="utf-8")
+    assert "ensure_animator_tag_definitions" in main_text
+    assert "await ensure_animator_tag_definitions(pool)" in main_text
+
+
 def test_runtime_data_uses_ui_and_animator_module_dirs():
     text = (ROOT / "backend/app/importers/canonical_data.py").read_text(encoding="utf-8")
     docs = _read_script("docs/deployment-guide.md")

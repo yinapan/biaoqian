@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.config import settings
+from app.importers.animator_importer import ensure_animator_tag_definitions
 from app.models.database import close_pool, get_pool
 from app.importers.tag_initializer import sync_all_tag_values
 from app.routers import admin, assets, filter, health, search
@@ -49,6 +50,7 @@ async def lifespan(app: FastAPI):
             await es.indices.create(index=idx_name, body=body)
             await es.indices.put_alias(index=idx_name, name="assets")
         logger.info("Elasticsearch ready")
+        await ensure_animator_tag_definitions(pool)
         # Sync tag values for all modules before loading the dictionary matcher
         await sync_all_tag_values(pool)
         await init_matcher(pool)

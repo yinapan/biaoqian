@@ -9,8 +9,11 @@ import type {
 const api = axios.create({ baseURL: '/api/v1' })
 
 /** Execute a search query */
-export async function searchAssets(req: SearchRequest): Promise<SearchResponse> {
-  const { data } = await api.post<SearchResponse>('/search/query', req)
+export async function searchAssets(
+  req: SearchRequest,
+  signal?: AbortSignal,
+): Promise<SearchResponse> {
+  const { data } = await api.post<SearchResponse>('/search/query', req, { signal })
   return data
 }
 

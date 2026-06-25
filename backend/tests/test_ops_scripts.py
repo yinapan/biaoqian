@@ -393,3 +393,19 @@ def test_local_compose_uses_non_production_port():
     dev_text = (ROOT / "docker-compose.dev.yml").read_text(encoding="utf-8")
     assert '"8081:80"' in dev_text
     assert '"8080:80"' not in dev_text
+
+
+def test_frontend_search_input_uses_cancellable_quiet_requests():
+    api_text = (ROOT / "frontend/src/api/search.ts").read_text(encoding="utf-8")
+    store_text = (ROOT / "frontend/src/stores/searchStore.ts").read_text(encoding="utf-8")
+    search_bar_text = (ROOT / "frontend/src/components/SearchBar.vue").read_text(encoding="utf-8")
+    result_grid_text = (ROOT / "frontend/src/components/ResultGrid.vue").read_text(encoding="utf-8")
+
+    assert "signal?: AbortSignal" in api_text
+    assert "{ signal }" in api_text
+    assert "currentSearchController?.abort()" in store_text
+    assert "quiet?: boolean" in store_text
+    assert "if (!options?.quiet)" in store_text
+    assert "store.doSearch({ quiet: true })" in search_bar_text
+    assert "}, 500)" in search_bar_text
+    assert "store.loading && !store.items.length" in result_grid_text

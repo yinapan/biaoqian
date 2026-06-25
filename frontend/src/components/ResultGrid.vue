@@ -19,7 +19,7 @@ const store = useSearchStore()
     </div>
 
     <!-- Loading state -->
-    <div v-if="store.loading" class="grid loading-grid">
+    <div v-if="store.loading && !store.items.length" class="grid loading-grid">
       <div v-for="i in 12" :key="i" class="skeleton-card">
         <div class="skeleton-thumb" />
         <div class="skeleton-body">

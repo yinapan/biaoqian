@@ -3,6 +3,10 @@ import { ref, computed } from 'vue'
 import { searchAssets, getTagDefinitions } from '@/api/search'
 import type { SearchResponse, TagDefinition } from '@/types'
 
+interface SearchOptions {
+  quiet?: boolean
+}
+
 export const useSearchStore = defineStore('search', () => {
   // ---- state ----
   const moduleType = ref(1)
@@ -16,6 +20,7 @@ export const useSearchStore = defineStore('search', () => {
   const response = ref<SearchResponse | null>(null)
   const tagDefinitions = ref<TagDefinition[]>([])
   let latestSearchId = 0
+  let currentSearchController: AbortController | null = null
 
   // ---- getters ----
   const items = computed(() => response.value?.items ?? [])
@@ -24,9 +29,14 @@ export const useSearchStore = defineStore('search', () => {
   const facets = computed(() => response.value?.facets ?? {})
 
   // ---- actions ----
-  async function doSearch() {
+  async function doSearch(options?: SearchOptions) {
     const searchId = ++latestSearchId
-    loading.value = true
+    currentSearchController?.abort()
+    const controller = new AbortController()
+    currentSearchController = controller
+    if (!options?.quiet) {
+      loading.value = true
+    }
     try {
       const result = await searchAssets({
         module_type: moduleType.value,
@@ -39,11 +49,19 @@ export const useSearchStore = defineStore('search', () => {
           : undefined,
         page: page.value,
         page_size: pageSize.value,
-      })
+      }, controller.signal)
       if (searchId === latestSearchId) {
         response.value = result
       }
+    } catch (error) {
+      if (controller.signal.aborted) {
+        return
+      }
+      throw error
     } finally {
+      if (currentSearchController === controller) {
+        currentSearchController = null
+      }
       if (searchId === latestSearchId) {
         loading.value = false
       }

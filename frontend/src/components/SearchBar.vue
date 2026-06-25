@@ -23,8 +23,8 @@ function onInput() {
     store.query = localQuery.value
     store.dismissedFields.clear()
     store.page = 1
-    store.doSearch()
-  }, 300)
+    store.doSearch({ quiet: true })
+  }, 500)
 }
 
 function onSearch() {

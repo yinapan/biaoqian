@@ -48,6 +48,11 @@ async def search(req: SearchRequest, pool) -> SearchResponse:
         for d in tag_defs
         if d["is_filterable"] and d["field_type"] in ("enum_single", "enum_multi")
     ]
+    agg_sizes = {
+        d["field_name"]: len(d.get("values") or [])
+        for d in tag_defs
+        if d["field_name"] in agg_fields
+    }
     valid_values = {}
     number_fields = set()
     boolean_fields = set()
@@ -157,6 +162,7 @@ async def search(req: SearchRequest, pool) -> SearchResponse:
         page_size=req.page_size,
         filterable_fields=filterable,
         agg_fields=agg_fields,
+        agg_sizes=agg_sizes,
         text_fields=text_fields,
         number_fields=number_fields,
     )

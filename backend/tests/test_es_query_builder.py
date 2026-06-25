@@ -55,3 +55,17 @@ def test_dynamic_function_score():
     filter_funcs = [f for f in functions if "filter" in f]
     # 2 filter boosts (gender, profession) + 1 thumbnail_path exists boost
     assert len(filter_funcs) == 3
+
+
+def test_aggregation_size_can_cover_large_enum_fields():
+    q = build_search_query(
+        module_type=4,
+        page=1,
+        page_size=20,
+        agg_fields=["predefined", "color", "semantic"],
+        agg_sizes={"predefined": 500, "color": 500, "semantic": 10838},
+    )
+
+    assert q["aggs"]["predefined"]["terms"]["size"] == 500
+    assert q["aggs"]["color"]["terms"]["size"] == 500
+    assert q["aggs"]["semantic"]["terms"]["size"] == 10838

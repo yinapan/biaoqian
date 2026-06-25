@@ -33,6 +33,7 @@ def build_search_query(
     page_size: int = 20,
     filterable_fields: list[str] | None = None,
     agg_fields: list[str] | None = None,
+    agg_sizes: dict[str, int] | None = None,
     text_fields: set[str] | None = None,
     number_fields: set[str] | None = None,
 ) -> dict:
@@ -42,6 +43,7 @@ def build_search_query(
     keyword_excludes = keyword_excludes or []
     filterable_fields = filterable_fields or []
     agg_fields = agg_fields or []
+    agg_sizes = agg_sizes or {}
     text_fields = text_fields or set()
     number_fields = number_fields or set()
     agg_fields_set = set(agg_fields)
@@ -162,7 +164,8 @@ def build_search_query(
         aggs: dict = {}
         for agg_field in agg_fields:
             other_facet = [c for f, c in facet_clauses.items() if f != agg_field]
-            inner = {"terms": {"field": f"tags.{agg_field}", "size": 500}}
+            size = max(500, min(int(agg_sizes.get(agg_field, 500)), 20000))
+            inner = {"terms": {"field": f"tags.{agg_field}", "size": size}}
             if other_facet:
                 aggs[agg_field] = {
                     "filter": {"bool": {"filter": other_facet}},

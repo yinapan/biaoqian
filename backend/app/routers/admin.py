@@ -4,10 +4,18 @@ import tempfile
 from fastapi import APIRouter, File, Header, HTTPException, UploadFile
 
 from app.config import settings
+from app.importers.animator_importer import import_animator_json
 from app.importers.effects_importer import import_effects_json
 from app.importers.excel_importer import import_excel
 from app.importers.icon_importer import import_icons_json
-from app.importers.tag_initializer import extract_enum_values_from_excel, sync_effect_tag_values, sync_icon_tag_values
+from app.importers.model_importer import import_models_json
+from app.importers.tag_initializer import (
+    extract_enum_values_from_excel,
+    sync_animator_tag_values,
+    sync_effect_tag_values,
+    sync_icon_tag_values,
+    sync_model_tag_values,
+)
 from app.models.database import get_pool
 from app.services.cache import clear_all_caches
 from app.services.es_mapping import build_index_settings_and_mappings
@@ -107,6 +115,50 @@ async def admin_import_icons_json(
     try:
         result = await import_icons_json(tmp_path, pool)
         await sync_icon_tag_values(pool)
+        clear_all_caches()
+        await init_matcher(pool)
+        return result
+    finally:
+        os.unlink(tmp_path)
+
+
+@router.post("/import-models-json")
+async def admin_import_models_json(
+    file: UploadFile = File(...),
+    x_admin_key: str = Header(...),
+):
+    verify_admin(x_admin_key)
+    pool = await get_pool()
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".json") as tmp:
+        tmp.write(await file.read())
+        tmp_path = tmp.name
+    try:
+        result = await import_models_json(
+            tmp_path, "/data/sources/model/pngs", pool, project_root="/"
+        )
+        await sync_model_tag_values(pool)
+        clear_all_caches()
+        await init_matcher(pool)
+        return result
+    finally:
+        os.unlink(tmp_path)
+
+
+@router.post("/import-animator-json")
+async def admin_import_animator_json(
+    file: UploadFile = File(...),
+    x_admin_key: str = Header(...),
+):
+    verify_admin(x_admin_key)
+    pool = await get_pool()
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".json") as tmp:
+        tmp.write(await file.read())
+        tmp_path = tmp.name
+    try:
+        result = await import_animator_json(
+            tmp_path, "/data/sources/animator/gifs", pool, project_root="/"
+        )
+        await sync_animator_tag_values(pool)
         clear_all_caches()
         await init_matcher(pool)
         return result

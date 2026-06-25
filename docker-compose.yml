@@ -58,10 +58,13 @@ services:
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
     volumes:
       - ./backend:/app
+      - ./runtime_data:/runtime_data
       - ./runtime_data/model/previews:/data/previews/model
       - ./runtime_data/animator/previews:/data/previews/animator
       - ./runtime_data/effect/gifs:/data/gifs:ro
       - ./runtime_data/ui/pngs:/data/icons:ro
+      - ./model/merged:/data/sources/model:ro
+      - ./animator:/data/sources/animator:ro
     environment:
       - DATABASE_URL=postgresql://biaoqiao:biaoqiao_dev@postgres:5432/biaoqiao
       - ES_URL=http://elasticsearch:9200

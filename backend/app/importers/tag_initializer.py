@@ -129,6 +129,11 @@ async def sync_effect_tag_values(pool: asyncpg.Pool) -> dict[str, list[str]]:
     return await _sync_tag_values_from_db(pool, module_type=2)
 
 
+async def sync_animator_tag_values(pool: asyncpg.Pool) -> dict[str, list[str]]:
+    """从已导入的动作资产中提取标签值，写入 tag_values（module_type=3）"""
+    return await _sync_tag_values_from_db(pool, module_type=3)
+
+
 async def sync_icon_tag_values(pool: asyncpg.Pool) -> dict[str, list[str]]:
     """从已导入的图标资产中提取标签值，写入 tag_values（module_type=4）"""
     return await _sync_tag_values_from_db(pool, module_type=4)

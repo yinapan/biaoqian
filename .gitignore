@@ -10,6 +10,7 @@ ssl/
 # Data & media (large files, generated)
 runtime_data/
 previews/
+animator/
 *.png
 *.jpg
 *.gif

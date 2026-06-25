@@ -4,10 +4,12 @@ set "SCRIPT_DIR=%~dp0"
 pushd "%SCRIPT_DIR%..\.."
 call "%SCRIPT_DIR%env.bat"
 set "EXCEL_PATH="
+set "ANIMATOR_JSON_PATH=animator\actions_tags_format.json"
 set "EFFECTS_JSON_PATH="
 set "ICONS_JSON_PATH=icon_png_results\icon_png_results.json"
 set "HAS_EXPLICIT_SOURCE=0"
 set "IMPORT_EXCEL=0"
+set "IMPORT_ANIMATOR=0"
 set "IMPORT_EFFECTS=0"
 set "IMPORT_ICONS=0"
 
@@ -15,12 +17,14 @@ set "IMPORT_ICONS=0"
 if "%~1"=="" goto args_done
 if /I "%~1"=="/excel" goto set_excel
 if /I "%~1"=="--excel" goto set_excel
+if /I "%~1"=="/animator" goto set_animator
+if /I "%~1"=="--animator" goto set_animator
 if /I "%~1"=="/effects" goto set_effects
 if /I "%~1"=="--effects" goto set_effects
 if /I "%~1"=="/icons" goto set_icons
 if /I "%~1"=="--icons" goto set_icons
 echo [ERROR] Unknown argument: %~1
-echo Usage: %~nx0 [/excel path.xlsx] [/effects effects.json] [/icons icons.json]
+echo Usage: %~nx0 [/excel path.xlsx] [/animator animator.json] [/effects effects.json] [/icons icons.json]
 popd
 pause
 exit /b 1
@@ -30,6 +34,15 @@ if "%~2"=="" goto missing_arg
 set "EXCEL_PATH=%~2"
 set "HAS_EXPLICIT_SOURCE=1"
 set "IMPORT_EXCEL=1"
+shift
+shift
+goto parse_args
+
+:set_animator
+if "%~2"=="" goto missing_arg
+set "ANIMATOR_JSON_PATH=%~2"
+set "HAS_EXPLICIT_SOURCE=1"
+set "IMPORT_ANIMATOR=1"
 shift
 shift
 goto parse_args
@@ -61,6 +74,7 @@ exit /b 1
 :args_done
 if "%HAS_EXPLICIT_SOURCE%"=="0" (
     set "IMPORT_EXCEL=1"
+    set "IMPORT_ANIMATOR=1"
     set "IMPORT_EFFECTS=1"
     set "IMPORT_ICONS=1"
 )
@@ -72,9 +86,11 @@ echo [INFO] Upsert import. Duplicate module/path rows are updated.
 echo [INFO] Using docker-compose.import.yml to expose PostgreSQL temporarily.
 echo [INFO] APP_URL=%APP_URL%
 echo [INFO] EXCEL_PATH=%EXCEL_PATH%
+echo [INFO] ANIMATOR_JSON_PATH=%ANIMATOR_JSON_PATH%
 echo [INFO] EFFECTS_JSON_PATH=%EFFECTS_JSON_PATH%
 echo [INFO] ICONS_JSON_PATH=%ICONS_JSON_PATH%
 echo [INFO] IMPORT_EXCEL=%IMPORT_EXCEL%
+echo [INFO] IMPORT_ANIMATOR=%IMPORT_ANIMATOR%
 echo [INFO] IMPORT_EFFECTS=%IMPORT_EFFECTS%
 echo [INFO] IMPORT_ICONS=%IMPORT_ICONS%
 
@@ -94,7 +110,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [1/7] Expose PostgreSQL and Elasticsearch ports...
+echo [1/8] Expose PostgreSQL and Elasticsearch ports...
 %COMPOSE_IMPORT% up -d postgres elasticsearch
 if errorlevel 1 (
     echo [ERROR] PostgreSQL failed to start.
@@ -104,7 +120,7 @@ if errorlevel 1 (
 )
 timeout /t 10 /nobreak >nul
 
-echo [2/7] Import Excel data...
+echo [2/8] Import Excel data...
 if "%IMPORT_EXCEL%"=="1" (
     if defined EXCEL_PATH (
         python scripts/import_data.py --excel "%EXCEL_PATH%"
@@ -117,7 +133,19 @@ if "%IMPORT_EXCEL%"=="1" (
     echo [SKIP] Excel source not requested.
 )
 
-echo [3/7] Import effects data...
+echo [3/8] Import animator data...
+if "%IMPORT_ANIMATOR%"=="1" (
+    if exist "%ANIMATOR_JSON_PATH%" (
+        python scripts/import_data.py --animator-json "%ANIMATOR_JSON_PATH%"
+        if errorlevel 1 goto import_failed
+    ) else (
+        echo [SKIP] Animator source not found: %ANIMATOR_JSON_PATH%
+    )
+) else (
+    echo [SKIP] Animator source not requested.
+)
+
+echo [4/8] Import effects data...
 if "%IMPORT_EFFECTS%"=="1" (
     if defined EFFECTS_JSON_PATH (
         python scripts/import_data.py --effects-json "%EFFECTS_JSON_PATH%"
@@ -130,7 +158,7 @@ if "%IMPORT_EFFECTS%"=="1" (
     echo [SKIP] Effects source not requested.
 )
 
-echo [4/7] Import icons data...
+echo [5/8] Import icons data...
 if "%IMPORT_ICONS%"=="1" (
     if exist "%ICONS_JSON_PATH%" (
         python scripts/import_data.py --icons-json "%ICONS_JSON_PATH%"
@@ -142,15 +170,15 @@ if "%IMPORT_ICONS%"=="1" (
     echo [SKIP] Icons source not requested.
 )
 
-echo [5/7] Rebuild ES index and refresh dictionary...
+echo [6/8] Rebuild ES index and refresh dictionary...
 python scripts/import_data.py --reindex --backend-url "%APP_URL%"
 if errorlevel 1 echo [WARN] ES reindex may have failed. Check output above.
 
-echo [6/7] Verify preview images...
+echo [7/8] Verify preview images...
 python scripts/import_data.py --verify-previews --backend-url "%APP_URL%"
 if errorlevel 1 goto verify_failed
 
-echo [7/7] Restore regular PostgreSQL service config...
+echo [8/8] Restore regular PostgreSQL service config...
 %COMPOSE% up -d postgres
 timeout /t 5 /nobreak >nul
 

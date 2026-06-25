@@ -126,12 +126,15 @@ def test_import_scripts_cover_four_modules_via_three_sources():
         for script in ["import-new-data.bat", "reimport-data.bat"]:
             text = _read_script(f"{env_dir}/{script}")
             assert "Import Excel data" in text
+            assert "Import animator data" in text
             assert "Import effects data" in text
             assert "Import icons data" in text
             assert "scripts/import_data.py" in text
             assert "--excel" in text
+            assert "--animator-json" in text
             assert "--effects-json" in text
             assert "--icons-json" in text
+            assert "animator\\actions_tags_format.json" in text
             assert "icon_png_results\\icon_png_results.json" in text
 
 
@@ -163,12 +166,16 @@ def test_import_scripts_accept_custom_data_source_arguments():
             assert "IMPORT_EFFECTS" in text
             assert "ICONS_JSON_PATH" in text
             assert "IMPORT_ICONS" in text
+            assert "ANIMATOR_JSON_PATH" in text
+            assert "IMPORT_ANIMATOR" in text
             assert "/excel" in text
             assert "/effects" in text
             assert "/icons" in text
+            assert "/animator" in text
             assert '--excel "%EXCEL_PATH%"' in text
             assert '--effects-json "%EFFECTS_JSON_PATH%"' in text
             assert '--icons-json "%ICONS_JSON_PATH%"' in text
+            assert '--animator-json "%ANIMATOR_JSON_PATH%"' in text
 
 
 def test_reimport_only_imports_explicit_sources_when_arguments_are_provided():
@@ -180,6 +187,7 @@ def test_reimport_only_imports_explicit_sources_when_arguments_are_provided():
         assert "if \"%IMPORT_EXCEL%\"==\"1\"" in text
         assert "if \"%IMPORT_EFFECTS%\"==\"1\"" in text
         assert "if \"%IMPORT_ICONS%\"==\"1\"" in text
+        assert "if \"%IMPORT_ANIMATOR%\"==\"1\"" in text
         assert "[SKIP] Excel source not requested." in text
 
 
@@ -200,8 +208,29 @@ def test_import_data_prints_source_summary():
 def test_import_data_syncs_tag_values_for_three_visible_modules():
     text = (ROOT / "scripts" / "import_data.py").read_text(encoding="utf-8")
     assert "extract_enum_values_from_excel" in text
+    assert "sync_animator_tag_values" in text
     assert "sync_effect_tag_values" in text
     assert "sync_icon_tag_values" in text
+
+
+def test_import_scripts_cover_animator_json_source():
+    text = (ROOT / "scripts" / "import_data.py").read_text(encoding="utf-8")
+    assert "--animator-json" in text
+    assert "import_animator_json" in text
+
+    for env_dir in ENV_DIRS:
+        for script in ["import-new-data.bat", "reimport-data.bat"]:
+            script_text = _read_script(f"{env_dir}/{script}")
+            assert "actions_tags_format.json" in script_text
+            assert "Import animator data" in script_text
+
+
+def test_init_sql_contains_animator_json_tag_fields():
+    text = _read_script("sql/002_init_tags.sql")
+    assert "(3, 'resource_type'" in text
+    assert "(3, 'weapon_type'" in text
+    assert "(3, 'core_action'" in text
+    assert "(3, 'gif_left_path'" in text
 
 
 def test_compose_mounts_runtime_icon_pngs_dir_for_frontend_icons():

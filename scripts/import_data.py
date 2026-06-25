@@ -45,6 +45,16 @@ def infer_icons_pngs_dir(json_path: Path) -> Path:
     return next((p for p in candidates if p.exists()), candidates[0])
 
 
+def infer_animator_gifs_dir(json_path: Path) -> Path:
+    candidates = [
+        json_path.parent / "gifs",
+        json_path.parent.parent / "gifs",
+        project_root() / "runtime_data" / "animator" / "previews",
+        project_root() / "animator" / "gifs",
+    ]
+    return next((p for p in candidates if p.exists()), candidates[0])
+
+
 def normalize_tags(tags) -> dict:
     if isinstance(tags, dict):
         return tags
@@ -108,6 +118,21 @@ async def run_effects_import(json_path: str, pool: asyncpg.Pool, previews_dir: s
     )
     await sync_effect_tag_values(pool)
     print_import_summary("Effects", json_path, result)
+    return result
+
+
+async def run_animator_import(json_path: str, pool: asyncpg.Pool):
+    from app.importers.animator_importer import import_animator_json
+    from app.importers.tag_initializer import sync_animator_tag_values
+
+    result = await import_animator_json(
+        json_path,
+        str(infer_animator_gifs_dir(Path(json_path))),
+        pool,
+        project_root=str(project_root()),
+    )
+    await sync_animator_tag_values(pool)
+    print_import_summary("Animator", json_path, result)
     return result
 
 
@@ -277,6 +302,7 @@ async def verify_previews(pool: asyncpg.Pool, backend_url: str, sample_size: int
 async def main():
     parser = argparse.ArgumentParser(description="Import data into biaoqian platform")
     parser.add_argument("--excel", help="Path to Excel file")
+    parser.add_argument("--animator-json", help="Path to animator JSON file")
     parser.add_argument("--effects-json", help="Path to effects JSON file")
     parser.add_argument("--icons-json", help="Path to icon JSON file")
     parser.add_argument("--from-canonical", action="store_true", help="Restore DB rows from runtime_data JSONL")
@@ -291,6 +317,7 @@ async def main():
     if not any(
         [
             args.excel,
+            args.animator_json,
             args.effects_json,
             args.icons_json,
             args.from_canonical,
@@ -315,6 +342,7 @@ async def main():
 
     for source, label in [
         (args.excel, "Excel"),
+        (args.animator_json, "Animator JSON"),
         (args.effects_json, "Effects JSON"),
         (args.icons_json, "Icons JSON"),
     ]:
@@ -322,11 +350,22 @@ async def main():
             print(f"Error: {label} file not found: {source}", file=sys.stderr)
             sys.exit(1)
 
-    needs_db = any([args.excel, args.effects_json, args.icons_json, args.from_canonical, args.verify_previews])
+    needs_db = any(
+        [
+            args.excel,
+            args.animator_json,
+            args.effects_json,
+            args.icons_json,
+            args.from_canonical,
+            args.verify_previews,
+        ]
+    )
     pool = await asyncpg.create_pool(args.pg_url) if needs_db else None
     try:
         if args.excel:
             await run_excel_import(args.excel, pool, previews_dir)
+        if args.animator_json:
+            await run_animator_import(args.animator_json, pool)
         if args.effects_json:
             await run_effects_import(args.effects_json, pool, previews_dir)
         if args.icons_json:

@@ -30,7 +30,7 @@ def preview_dir(project_root: Path, module_type: int) -> Path:
         return module_dir(project_root, module_type) / "gifs"
     if module_type == 4:
         return module_dir(project_root, module_type) / "pngs"
-    return runtime_root(project_root) / "previews"
+    return module_dir(project_root, module_type) / "previews"
 
 
 def canonical_jsonl_path(project_root: Path, module_type: int) -> Path:
@@ -56,6 +56,10 @@ def migrate_legacy_runtime_dirs(project_root: Path) -> None:
         new_path = root / new_name
         if old_path.exists() and not new_path.exists():
             shutil.copytree(old_path, new_path)
+    old_previews = root / "previews"
+    model_previews = root / "model" / "previews"
+    if old_previews.exists() and not model_previews.exists():
+        shutil.copytree(old_previews, model_previews)
 
 
 def normalize_rel_path(path: str | None, strip_prefixes: tuple[str, ...] = ()) -> str | None:

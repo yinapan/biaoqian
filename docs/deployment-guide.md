@@ -17,7 +17,8 @@
 
 ```text
 runtime_data/
-  previews/              # 模型/动作预览
+  model/previews/        # 模型预览
+  animator/previews/     # 动作预览
   effect/gifs/           # 特效 GIF
   ui/pngs/               # UI 图标 PNG
   model/data.jsonl       # 模型归档

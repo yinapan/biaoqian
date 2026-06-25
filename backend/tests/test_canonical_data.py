@@ -56,9 +56,13 @@ def test_ensure_runtime_dirs_copies_legacy_icon_and_action_dirs(tmp_path):
     (tmp_path / "runtime_data" / "icon" / "pngs" / "a.png").write_bytes(b"png")
     (tmp_path / "runtime_data" / "action").mkdir(parents=True)
     (tmp_path / "runtime_data" / "action" / "data.jsonl").write_text("{}", encoding="utf-8")
+    (tmp_path / "runtime_data" / "previews").mkdir(parents=True)
+    (tmp_path / "runtime_data" / "previews" / "model.png").write_bytes(b"model")
 
     ensure_runtime_dirs(tmp_path)
 
     assert (tmp_path / "runtime_data" / "ui" / "pngs" / "a.png").exists()
     assert (tmp_path / "runtime_data" / "animator" / "data.jsonl").exists()
+    assert (tmp_path / "runtime_data" / "model" / "previews" / "model.png").exists()
+    assert (tmp_path / "runtime_data" / "animator" / "previews").exists()
     assert (tmp_path / "runtime_data" / "icon" / "pngs" / "a.png").exists()

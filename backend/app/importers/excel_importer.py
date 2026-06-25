@@ -186,6 +186,17 @@ def normalize_path(path: str) -> str:
     return path.strip().replace("\\", "/").rstrip("\n").strip()
 
 
+def _preview_subdir(module_type: int) -> str:
+    return "animator" if module_type == 3 else "model"
+
+
+def _preview_storage_dir(previews_dir: str, module_type: int) -> str:
+    subdir = _preview_subdir(module_type)
+    if os.path.basename(os.path.normpath(previews_dir)) == "previews":
+        return os.path.join(previews_dir, subdir)
+    return os.path.join(previews_dir, subdir, "previews")
+
+
 # ---------------------------------------------------------------------------
 # Main import routine
 # ---------------------------------------------------------------------------
@@ -281,7 +292,8 @@ async def import_excel(
         flush=True,
     )
 
-    os.makedirs(previews_dir, exist_ok=True)
+    for module_type in (1, 3):
+        os.makedirs(_preview_storage_dir(previews_dir, module_type), exist_ok=True)
 
     # Pre-open the xlsx as a zip for image extraction
     print("Excel import: opening workbook zip for thumbnails", flush=True)
@@ -397,16 +409,22 @@ async def import_excel(
                 if media_path:
                     ext = os.path.splitext(media_path)[1] or ".png"
                     thumb_filename = f"{os.path.splitext(name)[0]}{ext}"
-                    thumb_full_path = os.path.join(previews_dir, thumb_filename)
+                    preview_subdir = _preview_subdir(module_type)
+                    thumb_rel_path = f"{preview_subdir}/{thumb_filename}"
+                    thumb_full_path = os.path.join(
+                        _preview_storage_dir(previews_dir, module_type),
+                        thumb_filename,
+                    )
                     if not os.path.exists(thumb_full_path):
                         try:
                             img_data = xlsx_zip.read(media_path)
+                            os.makedirs(os.path.dirname(thumb_full_path), exist_ok=True)
                             with open(thumb_full_path, "wb") as f:
                                 f.write(img_data)
                             stats["images_extracted"] += 1
                         except (KeyError, OSError):
-                            thumb_filename = None
-                    thumbnail_path = thumb_filename
+                            thumb_rel_path = None
+                    thumbnail_path = thumb_rel_path
 
                 asset_batch.append(
                     (

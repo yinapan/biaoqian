@@ -66,7 +66,7 @@ async def main():
     excel_path = sys.argv[1] if len(sys.argv) > 1 else "资源标签对照表.xlsx"
     pg_url = "postgresql://biaoqiao:biaoqiao_dev@localhost:5432/biaoqiao"
     project_root = Path(__file__).resolve().parent.parent
-    previews_dir = str(project_root / "previews")
+    previews_dir = str(project_root / "runtime_data" / "model" / "previews")
     os.makedirs(previews_dir, exist_ok=True)
 
     print(f"Extracting WPS images from {excel_path}...")
@@ -130,7 +130,7 @@ async def main():
                         stats["images"] += 1
                     except (KeyError, OSError):
                         thumb_filename = None
-                thumbnail_path = thumb_filename
+                thumbnail_path = f"model/{thumb_filename}" if thumb_filename else None
 
             async with pool.acquire() as conn:
                 await conn.execute(

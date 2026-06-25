@@ -215,7 +215,8 @@ def test_runtime_data_is_gitignored_and_used_for_previews():
     gitignore = _read_script(".gitignore")
     compose = _read_script("docker-compose.yml")
     assert "runtime_data/" in gitignore
-    assert "./runtime_data/previews:/data/previews" in compose
+    assert "./runtime_data/model/previews:/data/previews/model" in compose
+    assert "./runtime_data/animator/previews:/data/previews/animator" in compose
 
 
 def test_runtime_data_uses_ui_and_animator_module_dirs():
@@ -225,7 +226,15 @@ def test_runtime_data_uses_ui_and_animator_module_dirs():
     assert '3: "animator"' in text
     assert '4: "ui"' in text
     assert "animator/data.jsonl" in docs
+    assert "model/previews/" in docs
+    assert "animator/previews/" in docs
     assert "ui/pngs/" in docs
+
+
+def test_legacy_f1_import_uses_model_preview_dir():
+    text = (ROOT / "scripts" / "import_f1_sheet.py").read_text(encoding="utf-8")
+    assert '"runtime_data" / "model" / "previews"' in text
+    assert 'thumbnail_path = f"model/{thumb_filename}"' in text
 
 
 def test_deploy_and_import_scripts_verify_preview_images():

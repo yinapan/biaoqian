@@ -311,7 +311,7 @@ async def main():
 
     root = project_root()
     ensure_runtime_dirs(root)
-    previews_dir = str(root / "runtime_data" / "previews")
+    previews_dir = str(root / "runtime_data")
 
     for source, label in [
         (args.excel, "Excel"),

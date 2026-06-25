@@ -5,6 +5,7 @@ services:
     volumes: !override
       - ./nginx.dev.conf:/etc/nginx/conf.d/default.conf:ro
       - ./frontend/dist:/usr/share/nginx/html:ro
-      - ./runtime_data/previews:/data/previews:ro
+      - ./runtime_data/model/previews:/data/previews/model:ro
+      - ./runtime_data/animator/previews:/data/previews/animator:ro
       - ./runtime_data/effect/gifs:/data/gifs:ro
       - ./runtime_data/ui/pngs:/data/icons:ro

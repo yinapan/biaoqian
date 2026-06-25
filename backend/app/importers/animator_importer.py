@@ -3,14 +3,12 @@ from __future__ import annotations
 
 import json
 import logging
-import sys
 import uuid
 from pathlib import Path
 
 import asyncpg
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
-from canonical_data import (  # noqa: E402
+from app.importers.canonical_data import (
     copy_preview,
     normalize_rel_path,
     preview_dir,

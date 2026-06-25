@@ -233,6 +233,17 @@ def test_init_sql_contains_animator_json_tag_fields():
     assert "(3, 'gif_left_path'" in text
 
 
+def test_backend_importers_do_not_depend_on_repo_scripts_path():
+    for path in [
+        ROOT / "backend/app/importers/animator_importer.py",
+        ROOT / "backend/app/importers/effects_importer.py",
+        ROOT / "backend/app/importers/icon_importer.py",
+    ]:
+        text = path.read_text(encoding="utf-8")
+        assert "parents[3] / \"scripts\"" not in text
+        assert "from app.importers.canonical_data import" in text
+
+
 def test_compose_mounts_runtime_icon_pngs_dir_for_frontend_icons():
     text = (ROOT / "docker-compose.yml").read_text(encoding="utf-8")
     assert "./runtime_data/ui/pngs:/data/icons:ro" in text
@@ -249,7 +260,7 @@ def test_runtime_data_is_gitignored_and_used_for_previews():
 
 
 def test_runtime_data_uses_ui_and_animator_module_dirs():
-    text = (ROOT / "scripts" / "canonical_data.py").read_text(encoding="utf-8")
+    text = (ROOT / "backend/app/importers/canonical_data.py").read_text(encoding="utf-8")
     docs = _read_script("docs/deployment-guide.md")
 
     assert '3: "animator"' in text

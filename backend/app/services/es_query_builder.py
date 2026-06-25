@@ -147,6 +147,7 @@ def build_search_query(
         },
         "from": (page - 1) * page_size,
         "size": page_size,
+        "track_total_hits": True,
         "highlight": {
             "fields": {
                 "search_text": {"pre_tags": ["<em>"], "post_tags": ["</em>"]},

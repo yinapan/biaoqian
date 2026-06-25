@@ -291,3 +291,5 @@ async def test_ensure_animator_tag_definitions_inserts_json_fields():
     assert "gif_left_path" in field_names
     by_field = {row[0]: row for row in rows}
     assert by_field["size_bytes"][4] is False
+    execute_calls = [" ".join(call.args[0].split()) for call in conn.execute.call_args_list]
+    assert any("field_name IN ('action_id', 'size_bytes')" in call for call in execute_calls)

@@ -344,6 +344,12 @@ def test_runtime_data_is_gitignored_and_used_for_previews():
     assert "./runtime_data/animator/previews:/data/previews/animator" in compose
 
 
+def test_backend_runs_single_worker_for_in_memory_dictionary_consistency():
+    compose = _read_script("docker-compose.yml")
+    assert "--workers 4" not in compose
+    assert "--workers 1" in compose
+
+
 def test_runtime_data_uses_ui_and_animator_module_dirs():
     text = (ROOT / "backend/app/importers/canonical_data.py").read_text(encoding="utf-8")
     docs = _read_script("docs/deployment-guide.md")

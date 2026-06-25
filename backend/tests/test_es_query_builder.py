@@ -43,6 +43,11 @@ def test_pagination():
     assert q["size"] == 20
 
 
+def test_query_tracks_exact_total_hits():
+    q = build_search_query(module_type=3, page=1, page_size=60)
+    assert q["track_total_hits"] is True
+
+
 def test_dynamic_function_score():
     q = build_search_query(
         module_type=1,

@@ -116,6 +116,13 @@ async def ensure_animator_tag_definitions(pool: asyncpg.Pool) -> None:
                              sort_order = EXCLUDED.sort_order""",
             ANIMATOR_TAG_DEFINITIONS,
         )
+        await conn.execute(
+            """UPDATE tag_definitions
+               SET is_filterable = false,
+                   is_searchable = false
+               WHERE module_type = 3
+                 AND field_name IN ('action_id', 'size_bytes')"""
+        )
 
 
 async def import_animator_json(

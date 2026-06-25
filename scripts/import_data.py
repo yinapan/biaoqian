@@ -77,6 +77,76 @@ def normalize_tags(tags) -> dict:
     return {}
 
 
+def manifest_resource_paths(json_path: Path, module_type: int) -> set[str]:
+    data = json.loads(json_path.read_text(encoding="utf-8"))
+    resources = data.get("resources", []) if isinstance(data, dict) else data
+    paths: set[str] = set()
+    for resource in resources:
+        if not isinstance(resource, dict):
+            continue
+        result = resource.get("result", {}) or {}
+        if module_type == 2:
+            if result.get("status") != "ok":
+                continue
+            resource_path = resource.get("resource_id")
+        else:
+            status = result.get("status", "")
+            if isinstance(status, str) and status.startswith("error"):
+                continue
+            resource_path = resource.get("source_path") or resource.get("resource_id")
+        if resource_path:
+            paths.add(str(resource_path))
+    return paths
+
+
+async def delete_stale_assets_for_manifest(
+    pool: asyncpg.Pool,
+    module_type: int,
+    json_path: Path,
+    *,
+    apply: bool,
+) -> dict:
+    keep_paths = manifest_resource_paths(json_path, module_type)
+    if not keep_paths:
+        print(f"Stale delete skipped for module {module_type}: manifest has no importable resources.")
+        return {"module_type": module_type, "kept": 0, "stale": 0, "deleted": 0, "samples": []}
+
+    async with pool.acquire() as conn:
+        stale_rows = await conn.fetch(
+            """SELECT id, resource_path, thumbnail_path
+               FROM assets
+               WHERE module_type = $1
+                 AND NOT (resource_path = ANY($2::text[]))
+               ORDER BY resource_path""",
+            module_type,
+            sorted(keep_paths),
+        )
+        stale_ids = [row["id"] for row in stale_rows]
+        deleted = 0
+        if apply and stale_ids:
+            await conn.execute(
+                "DELETE FROM assets WHERE id = ANY($1::int[])",
+                stale_ids,
+            )
+            deleted = len(stale_ids)
+
+    samples = [row["resource_path"] for row in stale_rows[:10]]
+    mode = "APPLY" if apply else "DRY-RUN"
+    print(
+        f"Stale delete {mode}: module={module_type}, "
+        f"kept={len(keep_paths)}, stale={len(stale_rows)}, deleted={deleted}"
+    )
+    if samples:
+        print(f"Stale delete samples: {samples}")
+    return {
+        "module_type": module_type,
+        "kept": len(keep_paths),
+        "stale": len(stale_rows),
+        "deleted": deleted,
+        "samples": samples,
+    }
+
+
 async def archive_assets_from_db(pool: asyncpg.Pool, module_types: tuple[int, ...]) -> int:
     root = project_root()
     async with pool.acquire() as conn:
@@ -322,6 +392,16 @@ async def main():
     parser.add_argument("--effects-json", help="Path to effects JSON file")
     parser.add_argument("--icons-json", help="Path to icon JSON file")
     parser.add_argument("--from-canonical", action="store_true", help="Restore DB rows from runtime_data JSONL")
+    parser.add_argument(
+        "--delete-stale",
+        action="store_true",
+        help="Compare provided JSON files and report DB assets missing from them",
+    )
+    parser.add_argument(
+        "--apply-delete-stale",
+        action="store_true",
+        help="Actually delete stale DB assets. Must be used with --delete-stale.",
+    )
     parser.add_argument("--reindex", action="store_true", help="Trigger ES reindex after import")
     parser.add_argument("--verify-previews", action="store_true", help="Verify random preview URLs")
     parser.add_argument("--verify-sample-size", type=int, default=10)
@@ -336,11 +416,15 @@ async def main():
             args.effects_json,
             args.icons_json,
             args.from_canonical,
+            args.delete_stale,
             args.reindex,
             args.verify_previews,
         ]
     ):
         parser.print_help()
+        sys.exit(1)
+    if args.apply_delete_stale and not args.delete_stale:
+        print("Error: --apply-delete-stale requires --delete-stale.", file=sys.stderr)
         sys.exit(1)
 
     admin_key = load_admin_key(args.admin_key)
@@ -372,21 +456,46 @@ async def main():
             args.effects_json,
             args.icons_json,
             args.from_canonical,
+            args.delete_stale,
             args.verify_previews,
         ]
     )
     pool = await asyncpg.create_pool(args.pg_url) if needs_db else None
     try:
-        if args.models_json:
+        should_import = not args.delete_stale
+
+        if should_import and args.models_json:
             await run_model_import(args.models_json, pool)
-        if args.animator_json:
+        if should_import and args.animator_json:
             await run_animator_import(args.animator_json, pool)
-        if args.effects_json:
+        if should_import and args.effects_json:
             await run_effects_import(args.effects_json, pool, previews_dir)
-        if args.icons_json:
+        if should_import and args.icons_json:
             await run_icons_import(args.icons_json, pool)
         if args.from_canonical:
             await restore_from_canonical(pool)
+
+        if args.delete_stale:
+            delete_targets = [
+                (args.models_json, 1),
+                (args.effects_json, 2),
+                (args.animator_json, 3),
+                (args.icons_json, 4),
+            ]
+            if not any(source for source, _module_type in delete_targets):
+                print(
+                    "Error: --delete-stale requires at least one module JSON file.",
+                    file=sys.stderr,
+                )
+                sys.exit(1)
+            for source, module_type in delete_targets:
+                if source:
+                    await delete_stale_assets_for_manifest(
+                        pool,
+                        module_type,
+                        Path(source),
+                        apply=args.apply_delete_stale,
+                    )
 
         if args.reindex:
             await call_reindex(admin_key, args.backend_url)

@@ -42,7 +42,7 @@ copy .env.example .env
 
 # 3. 准备数据文件（放到项目根目录对应位置）
 # - tag_data_upload/model/merged/model_png_results.json + pngs/   （模型 JSON+PNG）
-# - tag_data_upload/animator/actions_tags_format.json + gifs/     （动作 JSON+GIF）
+# - tag_data_upload/animation/actions_tags_format.json + gifs/     （动作 JSON+GIF）
 # - tag_data_upload/effect/merged/effect_gif_results.json + gifs/      （特效 JSON+GIF）
 # - tag_data_upload/ui/icon_png_results.json + pngs/ （图标 JSON+PNG）
 
@@ -71,9 +71,31 @@ python scripts/extract_thumbnails.py
 
 `scripts/import_data.py` 支持批量导入各模块数据，自动推断预览目录：
 
+推荐优先使用环境脚本，它会自动切到项目根目录，并临时暴露 PostgreSQL/Elasticsearch 端口：
+
+```bat
+deploy\local\reimport-data.bat
+deploy\prod\import-new-data.bat
+```
+
+如果手动执行 `python scripts/import_data.py`，必须先进入项目根目录。不能在 `deploy\local` 或 `deploy` 目录下直接执行，否则会找不到 `scripts\import_data.py`：
+
+```bat
+cd /d F:\biaoqian
+```
+
+本地测试环境还需要先打开 import compose，让宿主机能连到 `localhost:5432`：
+
+```bat
+docker compose -p biaoqian_local -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.import.yml up -d postgres elasticsearch
+```
+
 ```bash
 # 导入模型
 python scripts/import_data.py --models-json tag_data_upload/model/merged/model_png_results.json --reindex
+
+# 本地测试环境手动导入模型
+python scripts/import_data.py --models-json tag_data_upload/model/merged/model_png_results.json --reindex --backend-url http://localhost:8081
 
 # 导入动作
 python scripts/import_data.py --animator-json tag_data_upload/animation/actions_tags_format.json --reindex
@@ -89,6 +111,16 @@ python scripts/import_data.py --from-canonical --reindex
 
 # 验证预览图可访问
 python scripts/import_data.py --verify-previews --verify-sample-size 20
+
+# Dry-run: list DB assets missing from the current JSON files, no deletion
+python scripts/import_data.py --delete-stale --models-json tag_data_upload/model/merged/model_png_results.json --animator-json tag_data_upload/animation/actions_tags_format.json --effects-json tag_data_upload/effect/merged/effect_gif_results.json --icons-json tag_data_upload/ui/icon_png_results.json
+
+# Apply stale deletion, then rebuild ES
+python scripts/import_data.py --delete-stale --apply-delete-stale --models-json tag_data_upload/model/merged/model_png_results.json --animator-json tag_data_upload/animation/actions_tags_format.json --effects-json tag_data_upload/effect/merged/effect_gif_results.json --icons-json tag_data_upload/ui/icon_png_results.json --reindex
+
+# Bat wrappers: dry-run first, then apply after checking output
+delete-stale-data.bat
+delete-stale-data.bat /apply
 ```
 
 参数说明：

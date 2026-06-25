@@ -13,6 +13,7 @@ SCRIPT_NAMES = [
     "deploy.bat",
     "import-new-data.bat",
     "reimport-data.bat",
+    "delete-stale-data.bat",
     "restore-from-canonical.bat",
     "backup.bat",
 ]
@@ -24,6 +25,7 @@ ROOT_WRAPPERS = [
     "import.bat",
     "import-new-data.bat",
     "reimport-data.bat",
+    "delete-stale-data.bat",
     "restore-from-canonical.bat",
     "backup.bat",
 ]
@@ -100,6 +102,7 @@ def test_root_wrappers_delegate_to_prod_scripts():
         "import.bat": r"deploy\prod\import-new-data.bat",
         "import-new-data.bat": r"deploy\prod\import-new-data.bat",
         "reimport-data.bat": r"deploy\prod\reimport-data.bat",
+        "delete-stale-data.bat": r"deploy\prod\delete-stale-data.bat",
         "restore-from-canonical.bat": r"deploy\prod\restore-from-canonical.bat",
         "backup.bat": r"deploy\prod\backup.bat",
     }
@@ -146,8 +149,10 @@ def test_import_scripts_cover_four_modules_via_four_sources():
             assert "--animator-json" in text
             assert "--effects-json" in text
             assert "--icons-json" in text
-            assert "animator\\actions_tags_format.json" in text
-            assert "icon_png_results\\icon_png_results.json" in text
+            assert "tag_data_upload\\model\\merged\\model_png_results.json" in text
+            assert "tag_data_upload\\animation\\actions_tags_format.json" in text
+            assert "tag_data_upload\\effect\\merged\\effect_gif_results.json" in text
+            assert "tag_data_upload\\ui\\icon_png_results.json" in text
 
 
 def test_effect_import_uses_real_effect_data_directory():
@@ -165,7 +170,7 @@ def test_effect_import_uses_real_effect_data_directory():
         for script in ["import-new-data.bat", "reimport-data.bat"]:
             text = _read_script(f"{env_dir}/{script}")
             assert "effect_gif_results.json" in text
-            assert "merged" not in text
+            assert "tag_data_upload\\effect\\merged\\effect_gif_results.json" in text
 
 
 def test_import_scripts_accept_custom_data_source_arguments():
@@ -215,6 +220,37 @@ def test_import_data_prints_source_summary():
     text = (ROOT / "scripts" / "import_data.py").read_text(encoding="utf-8")
     assert "print_import_summary" in text
     assert "total_processed" in text
+
+
+def test_import_data_supports_explicit_stale_delete_dry_run():
+    text = (ROOT / "scripts" / "import_data.py").read_text(encoding="utf-8")
+    assert "--delete-stale" in text
+    assert "--apply-delete-stale" in text
+    assert "delete_stale_assets_for_manifest" in text
+    assert "apply=args.apply_delete_stale" in text
+
+
+def test_import_scripts_do_not_delete_stale_by_default():
+    for env_dir in ENV_DIRS:
+        for script in ["import-new-data.bat", "reimport-data.bat"]:
+            text = _read_script(f"{env_dir}/{script}")
+            assert "--delete-stale" not in text
+            assert "--apply-delete-stale" not in text
+
+
+def test_delete_stale_scripts_are_dry_run_until_apply_flag():
+    for env_dir in ENV_DIRS:
+        text = _read_script(f"{env_dir}/delete-stale-data.bat")
+        assert "--delete-stale" in text
+        assert "APPLY_DELETE_STALE=0" in text
+        assert "APPLY_DELETE_STALE=1" in text
+        assert "--apply-delete-stale" in text
+        assert "--reindex" in text
+        assert "--verify-previews" in text
+        assert "tag_data_upload\\model\\merged\\model_png_results.json" in text
+        assert "tag_data_upload\\animation\\actions_tags_format.json" in text
+        assert "tag_data_upload\\effect\\merged\\effect_gif_results.json" in text
+        assert "tag_data_upload\\ui\\icon_png_results.json" in text
 
 
 def test_import_data_syncs_tag_values_for_all_modules():

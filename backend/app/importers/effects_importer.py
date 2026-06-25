@@ -14,8 +14,18 @@ import json
 import logging
 import uuid
 from pathlib import Path
+import sys
 
 import asyncpg
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
+from canonical_data import (  # noqa: E402
+    copy_preview,
+    normalize_rel_path,
+    preview_dir,
+    upsert_canonical_records,
+    write_error,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -96,12 +106,10 @@ def build_effect_tags(resource: dict) -> dict:
 def _resolve_gif_filename(gif_rel_path: str) -> str | None:
     """Extract the GIF filename from a relative path like 'gifs/xxx.gif'.
 
-    The GIF files are served directly from the mounted /data/gifs/ volume,
-    so no copying is needed — just return the filename.
+    The GIF files are copied into runtime_data/effect/gifs and served from
+    the mounted /data/gifs/ volume.
     """
-    if not gif_rel_path:
-        return None
-    return Path(gif_rel_path).name
+    return normalize_rel_path(gif_rel_path, ("gifs",))
 
 
 # ---------------------------------------------------------------------------
@@ -114,6 +122,8 @@ async def import_effects_json(
     gifs_source_dir: str,
     pool: asyncpg.Pool,
     previews_dir: str,
+    *,
+    project_root: str | None = None,
 ) -> dict:
     """Parse an effects JSON manifest and upsert rows into the *assets* table.
 
@@ -137,6 +147,8 @@ async def import_effects_json(
         ``es_sync_failed``, and ``errors`` keys.
     """
     batch_id = str(uuid.uuid4())[:8]
+    root = Path(project_root).resolve() if project_root else None
+    source_root = Path(gifs_source_dir).resolve()
 
     with open(json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -145,6 +157,12 @@ async def import_effects_json(
 
     stats = {"success": 0, "skipped": 0, "failed": 0, "es_sync_failed": 0}
     errors: list[dict] = []
+    canonical_batch: list[dict] = []
+
+    def flush_canonical() -> None:
+        if root and canonical_batch:
+            upsert_canonical_records(root, canonical_batch)
+            canonical_batch.clear()
 
     for idx, resource in enumerate(resources):
         try:
@@ -163,8 +181,38 @@ async def import_effects_json(
             gif_rel_path = result.get("gif_rel_path")
             thumbnail_path = _resolve_gif_filename(gif_rel_path)
 
+            if root and thumbnail_path:
+                copy_preview(
+                    source_root,
+                    thumbnail_path,
+                    preview_dir(root, MODULE_TYPE_EFFECT),
+                    project_root=root,
+                    module_name="effect",
+                    batch_id=batch_id,
+                    context={
+                        "source_json": json_path,
+                        "resource_id": resource.get("resource_id"),
+                        "resource_path": resource_path,
+                    },
+                )
+                grid_path = thumbnail_path.replace(".gif", "_grid.gif")
+                if (source_root / grid_path).exists():
+                    copy_preview(
+                        source_root,
+                        grid_path,
+                        preview_dir(root, MODULE_TYPE_EFFECT),
+                        project_root=root,
+                        module_name="effect",
+                        batch_id=batch_id,
+                        context={
+                            "source_json": json_path,
+                            "resource_id": resource.get("resource_id"),
+                            "resource_path": resource_path,
+                        },
+                    )
+
             async with pool.acquire() as conn:
-                row_result = await conn.fetchrow(
+                await conn.fetchrow(
                     """INSERT INTO assets
                            (module_type, name, resource_path, thumbnail_path, tags)
                        VALUES ($1, $2, $3, $4, $5::jsonb)
@@ -181,11 +229,36 @@ async def import_effects_json(
                     json.dumps(tags, ensure_ascii=False),
                 )
                 stats["success"] += 1
+                if root:
+                    canonical_batch.append(
+                        {
+                            "module_type": MODULE_TYPE_EFFECT,
+                            "name": name,
+                            "resource_path": resource_path,
+                            "thumbnail_path": thumbnail_path,
+                            "tags": tags,
+                            "source_json": json_path,
+                        },
+                    )
+                    if len(canonical_batch) >= 1000:
+                        flush_canonical()
 
         except Exception as e:
             stats["failed"] += 1
             errors.append(
                 {"index": idx, "resource_id": resource.get("resource_id", "?"), "error": str(e)}
             )
+            if root:
+                write_error(
+                    root,
+                    "effect",
+                    batch_id,
+                    "upsert_db",
+                    e,
+                    source_json=json_path,
+                    resource_id=resource.get("resource_id"),
+                    resource_path=resource.get("resource_id"),
+                )
 
+    flush_canonical()
     return {"batch_id": batch_id, **stats, "errors": errors[:50]}

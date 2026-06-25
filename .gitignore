@@ -8,6 +8,7 @@ __pycache__/
 ssl/
 
 # Data & media (large files, generated)
+runtime_data/
 previews/
 *.png
 *.jpg

@@ -80,6 +80,31 @@ class _FakePool:
 
 
 @pytest.mark.asyncio
+async def test_import_icon_thumbnail_path_strips_pngs_prefix(tmp_path):
+    json_path = tmp_path / "icons.json"
+    json_path.write_text(
+        json.dumps(
+            {
+                "resources": [
+                    {
+                        "icon_id": 5,
+                        "source_path": "mui/Resource/icon/System/quest/QuestItem.png",
+                        "result": {"rel_path": "pngs/System/quest/QuestItem.png"},
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    pool = _FakePool()
+
+    result = await import_icons_json(str(json_path), pool)
+
+    assert result["success"] == 1
+    assert pool.rows[0]["thumbnail_path"] == "System/quest/QuestItem.png"
+
+
+@pytest.mark.asyncio
 async def test_import_icons_json_defers_es_sync_to_reindex(tmp_path):
     json_path = tmp_path / "icons.json"
     json_path.write_text(

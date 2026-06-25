@@ -12,6 +12,7 @@ SCRIPT_NAMES = [
     "deploy.bat",
     "import-new-data.bat",
     "reimport-data.bat",
+    "restore-from-canonical.bat",
     "backup.bat",
 ]
 ROOT_WRAPPERS = [
@@ -21,6 +22,7 @@ ROOT_WRAPPERS = [
     "import.bat",
     "import-new-data.bat",
     "reimport-data.bat",
+    "restore-from-canonical.bat",
     "backup.bat",
 ]
 
@@ -95,6 +97,7 @@ def test_root_wrappers_delegate_to_prod_scripts():
         "import.bat": r"deploy\prod\import-new-data.bat",
         "import-new-data.bat": r"deploy\prod\import-new-data.bat",
         "reimport-data.bat": r"deploy\prod\reimport-data.bat",
+        "restore-from-canonical.bat": r"deploy\prod\restore-from-canonical.bat",
         "backup.bat": r"deploy\prod\backup.bat",
     }
     for wrapper, target in expected.items():
@@ -118,7 +121,7 @@ def test_import_scripts_use_environment_backend_url():
             assert '--backend-url "%APP_URL%"' in text
 
 
-def test_import_scripts_cover_three_visible_modules():
+def test_import_scripts_cover_four_modules_via_three_sources():
     for env_dir in ENV_DIRS:
         for script in ["import-new-data.bat", "reimport-data.bat"]:
             text = _read_script(f"{env_dir}/{script}")
@@ -137,10 +140,11 @@ def test_effect_import_uses_real_effect_data_directory():
     dev_compose_text = (ROOT / "docker-compose.dev.yml").read_text(encoding="utf-8")
     import_text = (ROOT / "scripts" / "import_data.py").read_text(encoding="utf-8")
 
-    assert "./特效/gifs:/data/gifs:ro" in compose_text
-    assert "./特效/gifs:/data/gifs:ro" in dev_compose_text
+    assert "./runtime_data/effect/gifs:/data/gifs:ro" in compose_text
+    assert "./runtime_data/effect/gifs:/data/gifs:ro" in dev_compose_text
     assert "特效/merged/gifs" not in import_text
-    assert "特效/gifs" in import_text
+    assert "\"runtime_data\" / \"effect\" / \"gifs\"" in import_text
+    assert "json_path.parent.parent / \"gifs\"" in import_text
 
     for env_dir in ENV_DIRS:
         for script in ["import-new-data.bat", "reimport-data.bat"]:
@@ -200,11 +204,39 @@ def test_import_data_syncs_tag_values_for_three_visible_modules():
     assert "sync_icon_tag_values" in text
 
 
-def test_compose_mounts_icon_png_results_for_frontend_icons():
+def test_compose_mounts_runtime_icon_pngs_dir_for_frontend_icons():
     text = (ROOT / "docker-compose.yml").read_text(encoding="utf-8")
-    assert "./icon_png_results:/data/icons:ro" in text
+    assert "./runtime_data/icon/pngs:/data/icons:ro" in text
     dev_text = (ROOT / "docker-compose.dev.yml").read_text(encoding="utf-8")
-    assert "./icon_png_results:/data/icons:ro" in dev_text
+    assert "./runtime_data/icon/pngs:/data/icons:ro" in dev_text
+
+
+def test_runtime_data_is_gitignored_and_used_for_previews():
+    gitignore = _read_script(".gitignore")
+    compose = _read_script("docker-compose.yml")
+    assert "runtime_data/" in gitignore
+    assert "./runtime_data/previews:/data/previews" in compose
+
+
+def test_deploy_and_import_scripts_verify_preview_images():
+    for env_dir in ENV_DIRS:
+        deploy_text = _read_script(f"{env_dir}/deploy.bat")
+        assert "--verify-previews" in deploy_text
+        assert '--backend-url "%APP_URL%"' in deploy_text
+
+        for script in ["import-new-data.bat", "reimport-data.bat"]:
+            text = _read_script(f"{env_dir}/{script}")
+            assert "--verify-previews" in text
+            assert '--backend-url "%APP_URL%"' in text
+
+
+def test_restore_from_canonical_scripts_exist_and_reindex():
+    for env_dir in ENV_DIRS:
+        text = _read_script(f"{env_dir}/restore-from-canonical.bat")
+        assert "--from-canonical" in text
+        assert "--reindex" in text
+        assert "--verify-previews" in text
+        assert "docker-compose.import.yml" in text
 
 
 def test_local_compose_uses_non_production_port():

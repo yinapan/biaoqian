@@ -1,31 +1,111 @@
-"""
-Host-side data import script.
-Connects directly to PostgreSQL at localhost:5432 (requires PG port exposed).
-Usage: python scripts/import_data.py [--excel PATH] [--effects-json PATH] [--icons-json PATH] [--reindex]
-"""
+"""Host-side data import, canonical archive, reindex, and preview verification."""
+from __future__ import annotations
+
 import argparse
 import asyncio
+import json
 import sys
+import urllib.request
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "backend"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import asyncpg
+
+from canonical_data import (
+    ensure_runtime_dirs,
+    read_canonical_records,
+    runtime_root,
+    upsert_canonical_records,
+    write_error,
+)
+
+
+def project_root() -> Path:
+    return Path(__file__).resolve().parent.parent
+
+
+def infer_effects_gifs_dir(json_path: Path) -> Path:
+    candidates = [
+        json_path.parent.parent / "gifs",
+        json_path.parent / "gifs",
+        project_root() / "runtime_data" / "effect" / "gifs",
+    ]
+    return next((p for p in candidates if p.exists()), candidates[0])
+
+
+def infer_icons_pngs_dir(json_path: Path) -> Path:
+    candidates = [
+        json_path.parent / "pngs",
+        json_path.parent.parent / "pngs",
+        project_root() / "runtime_data" / "icon" / "pngs",
+        project_root() / "icon_png_results" / "pngs",
+    ]
+    return next((p for p in candidates if p.exists()), candidates[0])
+
+
+def normalize_tags(tags) -> dict:
+    if isinstance(tags, dict):
+        return tags
+    if isinstance(tags, str) and tags.strip():
+        try:
+            value = json.loads(tags)
+            return value if isinstance(value, dict) else {}
+        except json.JSONDecodeError:
+            return {}
+    return {}
 
 
 async def run_excel_import(excel_path: str, pool: asyncpg.Pool, previews_dir: str):
     from app.importers.excel_importer import import_excel
     from app.importers.tag_initializer import extract_enum_values_from_excel
+
     result = await import_excel(excel_path, pool, previews_dir, sync_es=False)
     await extract_enum_values_from_excel(excel_path, pool)
+    await archive_assets_from_db(pool, (1, 3))
     print_import_summary("Excel", excel_path, result)
     return result
+
+
+async def archive_assets_from_db(pool: asyncpg.Pool, module_types: tuple[int, ...]) -> int:
+    root = project_root()
+    async with pool.acquire() as conn:
+        rows = await conn.fetch(
+            """SELECT module_type, name, resource_path, thumbnail_path, tags
+               FROM assets
+               WHERE module_type = ANY($1::int[])
+               ORDER BY module_type, resource_path""",
+            list(module_types),
+        )
+    by_module: dict[int, list[dict]] = {}
+    for row in rows:
+        module_type = int(row["module_type"])
+        by_module.setdefault(module_type, []).append(
+            {
+                "module_type": int(row["module_type"]),
+                "name": row["name"],
+                "resource_path": row["resource_path"],
+                "thumbnail_path": row["thumbnail_path"],
+                "tags": normalize_tags(row["tags"]),
+            }
+        )
+    for records in by_module.values():
+        upsert_canonical_records(root, records)
+    return len(rows)
 
 
 async def run_effects_import(json_path: str, pool: asyncpg.Pool, previews_dir: str):
     from app.importers.effects_importer import import_effects_json
     from app.importers.tag_initializer import sync_effect_tag_values
-    result = await import_effects_json(json_path, "特效/gifs", pool, previews_dir)
+
+    result = await import_effects_json(
+        json_path,
+        str(infer_effects_gifs_dir(Path(json_path))),
+        pool,
+        previews_dir,
+        project_root=str(project_root()),
+    )
     await sync_effect_tag_values(pool)
     print_import_summary("Effects", json_path, result)
     return result
@@ -34,7 +114,13 @@ async def run_effects_import(json_path: str, pool: asyncpg.Pool, previews_dir: s
 async def run_icons_import(json_path: str, pool: asyncpg.Pool):
     from app.importers.icon_importer import import_icons_json
     from app.importers.tag_initializer import sync_icon_tag_values
-    result = await import_icons_json(json_path, pool)
+
+    result = await import_icons_json(
+        json_path,
+        pool,
+        project_root=str(project_root()),
+        icons_source_dir=str(infer_icons_pngs_dir(Path(json_path))),
+    )
     await sync_icon_tag_values(pool)
     print_import_summary("Icons", json_path, result)
     return result
@@ -58,9 +144,18 @@ def print_import_summary(label: str, source_path: str, result: dict):
         print(f"{label} first_errors={result['errors'][:3]}")
 
 
+def load_admin_key(explicit: str | None) -> str:
+    if explicit:
+        return explicit
+    env_path = project_root() / ".env"
+    if env_path.exists():
+        for line in env_path.read_text(encoding="utf-8").splitlines():
+            if line.startswith("ADMIN_API_KEY="):
+                return line.split("=", 1)[1].strip()
+    return "dev-admin-key-change-in-prod"
+
+
 async def call_reindex(admin_key: str, backend_url: str = "http://localhost"):
-    import urllib.request
-    import json
     req = urllib.request.Request(
         f"{backend_url}/api/v1/admin/reindex-es",
         method="POST",
@@ -78,8 +173,6 @@ async def call_reindex(admin_key: str, backend_url: str = "http://localhost"):
 
 
 async def call_refresh_dict(admin_key: str, backend_url: str = "http://localhost"):
-    import urllib.request
-    import json
     req = urllib.request.Request(
         f"{backend_url}/api/v1/admin/refresh-dictionary",
         method="POST",
@@ -96,51 +189,141 @@ async def call_refresh_dict(admin_key: str, backend_url: str = "http://localhost
         sys.exit(1)
 
 
+async def restore_from_canonical(pool: asyncpg.Pool) -> dict:
+    root = project_root()
+    records = read_canonical_records(root)
+    stats = {"success": 0, "failed": 0, "skipped": 0, "es_sync_failed": 0}
+    async with pool.acquire() as conn:
+        for record in records:
+            try:
+                await conn.fetchrow(
+                    """INSERT INTO assets
+                           (module_type, name, resource_path, thumbnail_path, tags)
+                       VALUES ($1, $2, $3, $4, $5::jsonb)
+                       ON CONFLICT (module_type, resource_path)
+                       DO UPDATE SET tags = $5::jsonb,
+                                     thumbnail_path = COALESCE($4, assets.thumbnail_path),
+                                     updated_at = NOW()
+                       RETURNING id""",
+                    int(record["module_type"]),
+                    record.get("name") or Path(record["resource_path"]).stem,
+                    record["resource_path"],
+                    record.get("thumbnail_path"),
+                    json.dumps(record.get("tags") or {}, ensure_ascii=False),
+                )
+                stats["success"] += 1
+            except Exception as exc:
+                stats["failed"] += 1
+                write_error(
+                    root,
+                    "canonical",
+                    "restore",
+                    "upsert_db",
+                    exc,
+                    module_type=record.get("module_type"),
+                    resource_path=record.get("resource_path"),
+                )
+    print_import_summary("Canonical", str(runtime_root(root)), stats)
+    return stats
+
+
+def preview_url(module_type: int, thumbnail_path: str) -> str:
+    if module_type == 2:
+        return f"/data/gifs/{thumbnail_path}"
+    if module_type == 4:
+        return f"/data/icons/{thumbnail_path}"
+    return f"/static/previews/{thumbnail_path}"
+
+
+async def verify_previews(pool: asyncpg.Pool, backend_url: str, sample_size: int) -> dict:
+    root = project_root()
+    stats = {"checked": 0, "failed": 0}
+    async with pool.acquire() as conn:
+        rows = await conn.fetch(
+            """SELECT module_type, resource_path, thumbnail_path
+               FROM assets
+               WHERE thumbnail_path IS NOT NULL AND thumbnail_path != ''
+               ORDER BY random()
+               LIMIT $1""",
+            sample_size,
+        )
+    for row in rows:
+        stats["checked"] += 1
+        url = backend_url.rstrip("/") + preview_url(int(row["module_type"]), row["thumbnail_path"])
+        try:
+            req = urllib.request.Request(url, method="HEAD")
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                if resp.status >= 400:
+                    raise RuntimeError(f"HTTP {resp.status}")
+        except Exception as exc:
+            stats["failed"] += 1
+            write_error(
+                root,
+                "preview",
+                "verify",
+                "verify_preview",
+                exc,
+                module_type=int(row["module_type"]),
+                resource_path=row["resource_path"],
+                thumbnail_path=row["thumbnail_path"],
+                url=url,
+            )
+    print(f"Preview verify summary: checked={stats['checked']}, failed={stats['failed']}")
+    if stats["failed"]:
+        sys.exit(1)
+    return stats
+
+
 async def main():
-    parser = argparse.ArgumentParser(description="Import data into biaoqiao platform")
-    parser.add_argument("--excel", help="Path to Excel file (资源标签对照表.xlsx)")
+    parser = argparse.ArgumentParser(description="Import data into biaoqian platform")
+    parser.add_argument("--excel", help="Path to Excel file")
     parser.add_argument("--effects-json", help="Path to effects JSON file")
     parser.add_argument("--icons-json", help="Path to icon JSON file")
+    parser.add_argument("--from-canonical", action="store_true", help="Restore DB rows from runtime_data JSONL")
     parser.add_argument("--reindex", action="store_true", help="Trigger ES reindex after import")
+    parser.add_argument("--verify-previews", action="store_true", help="Verify random preview URLs")
+    parser.add_argument("--verify-sample-size", type=int, default=10)
     parser.add_argument("--pg-url", default="postgresql://biaoqiao:biaoqiao_dev@localhost:5432/biaoqiao")
     parser.add_argument("--admin-key", default=None, help="Admin API key (reads from .env if not provided)")
     parser.add_argument("--backend-url", default="http://localhost", help="Backend URL for API calls")
     args = parser.parse_args()
 
-    if not args.excel and not args.effects_json and not args.icons_json and not args.reindex:
+    if not any(
+        [
+            args.excel,
+            args.effects_json,
+            args.icons_json,
+            args.from_canonical,
+            args.reindex,
+            args.verify_previews,
+        ]
+    ):
         parser.print_help()
         sys.exit(1)
 
-    admin_key = args.admin_key
-    if not admin_key:
-        env_path = Path(__file__).resolve().parent.parent / ".env"
-        if env_path.exists():
-            for line in env_path.read_text().splitlines():
-                if line.startswith("ADMIN_API_KEY="):
-                    admin_key = line.split("=", 1)[1].strip()
-                    break
-        if not admin_key:
-            admin_key = "dev-admin-key-change-in-prod"
+    admin_key = load_admin_key(args.admin_key)
     if not admin_key or admin_key == "dev-admin-key-change-in-prod":
-        print("WARNING: ADMIN_API_KEY is using default value! "
-              "Set a secure key in .env for shared deployments.", file=sys.stderr)
+        print(
+            "WARNING: ADMIN_API_KEY is using default value! "
+            "Set a secure key in .env for shared deployments.",
+            file=sys.stderr,
+        )
 
-    project_root = Path(__file__).resolve().parent.parent
-    previews_dir = str(project_root / "previews")
+    root = project_root()
+    ensure_runtime_dirs(root)
+    previews_dir = str(root / "runtime_data" / "previews")
 
-    if args.excel and not Path(args.excel).exists():
-        print(f"Error: Excel file not found: {args.excel}", file=sys.stderr)
-        sys.exit(1)
-    if args.effects_json and not Path(args.effects_json).exists():
-        print(f"Error: Effects JSON file not found: {args.effects_json}", file=sys.stderr)
-        sys.exit(1)
-    if args.icons_json and not Path(args.icons_json).exists():
-        print(f"Error: Icons JSON file not found: {args.icons_json}", file=sys.stderr)
-        sys.exit(1)
+    for source, label in [
+        (args.excel, "Excel"),
+        (args.effects_json, "Effects JSON"),
+        (args.icons_json, "Icons JSON"),
+    ]:
+        if source and not Path(source).exists():
+            print(f"Error: {label} file not found: {source}", file=sys.stderr)
+            sys.exit(1)
 
-    pool = None
-    if args.excel or args.effects_json or args.icons_json:
-        pool = await asyncpg.create_pool(args.pg_url)
+    needs_db = any([args.excel, args.effects_json, args.icons_json, args.from_canonical, args.verify_previews])
+    pool = await asyncpg.create_pool(args.pg_url) if needs_db else None
     try:
         if args.excel:
             await run_excel_import(args.excel, pool, previews_dir)
@@ -148,13 +331,18 @@ async def main():
             await run_effects_import(args.effects_json, pool, previews_dir)
         if args.icons_json:
             await run_icons_import(args.icons_json, pool)
+        if args.from_canonical:
+            await restore_from_canonical(pool)
+
+        if args.reindex:
+            await call_reindex(admin_key, args.backend_url)
+            await call_refresh_dict(admin_key, args.backend_url)
+
+        if args.verify_previews:
+            await verify_previews(pool, args.backend_url, args.verify_sample_size)
     finally:
         if pool:
             await pool.close()
-
-    if args.reindex:
-        await call_reindex(admin_key, args.backend_url)
-        await call_refresh_dict(admin_key, args.backend_url)
 
 
 if __name__ == "__main__":

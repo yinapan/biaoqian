@@ -30,7 +30,7 @@ if not exist ".env" (
     )
 )
 
-echo [1/4] Build frontend...
+echo [1/5] Build frontend...
 pushd frontend
 if not exist node_modules (
     call npm install
@@ -52,7 +52,7 @@ if errorlevel 1 (
 )
 popd
 
-echo [2/4] Start Docker services...
+echo [2/5] Start Docker services...
 %COMPOSE% up -d --build
 if errorlevel 1 (
     echo [ERROR] Docker Compose failed.
@@ -61,7 +61,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [3/4] Wait for health check...
+echo [3/5] Wait for health check...
 set RETRIES=0
 :health_loop
 if %RETRIES% GEQ 36 (
@@ -77,7 +77,25 @@ if errorlevel 1 (
 echo [OK] Service is ready.
 
 :done
-echo [4/4] Deploy finished.
+echo [4/5] Verify preview images...
+%COMPOSE_IMPORT% up -d postgres >nul
+if errorlevel 1 (
+    echo [ERROR] Failed to expose PostgreSQL for preview verification.
+    popd
+    pause
+    exit /b 1
+)
+python scripts/import_data.py --verify-previews --backend-url "%APP_URL%"
+if errorlevel 1 (
+    echo [ERROR] Preview verification failed. Check runtime_data\logs\imports.
+    %COMPOSE% up -d postgres >nul
+    popd
+    pause
+    exit /b 1
+)
+%COMPOSE% up -d postgres >nul
+
+echo [5/5] Deploy finished.
 echo [INFO] Open: %APP_URL%
 popd
 pause

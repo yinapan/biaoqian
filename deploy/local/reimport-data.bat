@@ -87,7 +87,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [1/8] Start services...
+echo [1/9] Start services...
 %COMPOSE% up -d --build
 if errorlevel 1 (
     echo [ERROR] Docker Compose failed to start.
@@ -96,7 +96,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [2/8] Wait for backend...
+echo [2/9] Wait for backend...
 set RETRIES=0
 :health_loop
 if %RETRIES% GEQ 36 (
@@ -112,7 +112,7 @@ if errorlevel 1 (
 echo [OK] Backend is ready.
 
 :open_pg
-echo [3/8] Expose PostgreSQL and Elasticsearch ports...
+echo [3/9] Expose PostgreSQL and Elasticsearch ports...
 %COMPOSE_IMPORT% up -d postgres elasticsearch
 if errorlevel 1 (
     echo [ERROR] PostgreSQL failed to start.
@@ -122,7 +122,7 @@ if errorlevel 1 (
 )
 timeout /t 10 /nobreak >nul
 
-echo [4/8] Import Excel data...
+echo [4/9] Import Excel data...
 if "%IMPORT_EXCEL%"=="1" (
     if defined EXCEL_PATH (
         python scripts/import_data.py --excel "%EXCEL_PATH%"
@@ -135,7 +135,7 @@ if "%IMPORT_EXCEL%"=="1" (
     echo [SKIP] Excel source not requested.
 )
 
-echo [5/8] Import effects data...
+echo [5/9] Import effects data...
 if "%IMPORT_EFFECTS%"=="1" (
     if defined EFFECTS_JSON_PATH (
         python scripts/import_data.py --effects-json "%EFFECTS_JSON_PATH%"
@@ -148,7 +148,7 @@ if "%IMPORT_EFFECTS%"=="1" (
     echo [SKIP] Effects source not requested.
 )
 
-echo [6/8] Import icons data...
+echo [6/9] Import icons data...
 if "%IMPORT_ICONS%"=="1" (
     if exist "%ICONS_JSON_PATH%" (
         python scripts/import_data.py --icons-json "%ICONS_JSON_PATH%"
@@ -160,11 +160,15 @@ if "%IMPORT_ICONS%"=="1" (
     echo [SKIP] Icons source not requested.
 )
 
-echo [7/8] Rebuild ES index and refresh dictionary...
+echo [7/9] Rebuild ES index and refresh dictionary...
 python scripts/import_data.py --reindex --backend-url "%APP_URL%"
 if errorlevel 1 echo [WARN] ES reindex may have failed. Check output above.
 
-echo [8/8] Restore regular PostgreSQL service config...
+echo [8/9] Verify preview images...
+python scripts/import_data.py --verify-previews --backend-url "%APP_URL%"
+if errorlevel 1 goto verify_failed
+
+echo [9/9] Restore regular PostgreSQL service config...
 %COMPOSE% up -d postgres
 timeout /t 5 /nobreak >nul
 
@@ -177,6 +181,14 @@ exit /b 0
 
 :import_failed
 echo [ERROR] Import failed. Stop here to avoid rebuilding ES with partial data.
+%COMPOSE% up -d postgres
+popd
+pause
+exit /b 1
+
+:verify_failed
+echo [ERROR] Preview verification failed. Check runtime_data\logs\imports.
+%COMPOSE% up -d postgres
 popd
 pause
 exit /b 1

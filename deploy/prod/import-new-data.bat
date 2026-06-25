@@ -94,7 +94,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo [1/6] Expose PostgreSQL and Elasticsearch ports...
+echo [1/7] Expose PostgreSQL and Elasticsearch ports...
 %COMPOSE_IMPORT% up -d postgres elasticsearch
 if errorlevel 1 (
     echo [ERROR] PostgreSQL failed to start.
@@ -104,7 +104,7 @@ if errorlevel 1 (
 )
 timeout /t 10 /nobreak >nul
 
-echo [2/6] Import Excel data...
+echo [2/7] Import Excel data...
 if "%IMPORT_EXCEL%"=="1" (
     if defined EXCEL_PATH (
         python scripts/import_data.py --excel "%EXCEL_PATH%"
@@ -117,7 +117,7 @@ if "%IMPORT_EXCEL%"=="1" (
     echo [SKIP] Excel source not requested.
 )
 
-echo [3/6] Import effects data...
+echo [3/7] Import effects data...
 if "%IMPORT_EFFECTS%"=="1" (
     if defined EFFECTS_JSON_PATH (
         python scripts/import_data.py --effects-json "%EFFECTS_JSON_PATH%"
@@ -130,7 +130,7 @@ if "%IMPORT_EFFECTS%"=="1" (
     echo [SKIP] Effects source not requested.
 )
 
-echo [4/6] Import icons data...
+echo [4/7] Import icons data...
 if "%IMPORT_ICONS%"=="1" (
     if exist "%ICONS_JSON_PATH%" (
         python scripts/import_data.py --icons-json "%ICONS_JSON_PATH%"
@@ -142,11 +142,15 @@ if "%IMPORT_ICONS%"=="1" (
     echo [SKIP] Icons source not requested.
 )
 
-echo [5/6] Rebuild ES index and refresh dictionary...
+echo [5/7] Rebuild ES index and refresh dictionary...
 python scripts/import_data.py --reindex --backend-url "%APP_URL%"
 if errorlevel 1 echo [WARN] ES reindex may have failed. Check output above.
 
-echo [6/6] Restore regular PostgreSQL service config...
+echo [6/7] Verify preview images...
+python scripts/import_data.py --verify-previews --backend-url "%APP_URL%"
+if errorlevel 1 goto verify_failed
+
+echo [7/7] Restore regular PostgreSQL service config...
 %COMPOSE% up -d postgres
 timeout /t 5 /nobreak >nul
 
@@ -159,6 +163,14 @@ exit /b 0
 
 :import_failed
 echo [ERROR] Import failed. Stop here to avoid rebuilding ES with partial data.
+%COMPOSE% up -d postgres
+popd
+pause
+exit /b 1
+
+:verify_failed
+echo [ERROR] Preview verification failed. Check runtime_data\logs\imports.
+%COMPOSE% up -d postgres
 popd
 pause
 exit /b 1

@@ -156,6 +156,7 @@ delete-stale-data.bat /apply
 | 重启应用服务 | `restart-app.bat` |
 | 停止       | `stop.bat`     |
 | 导入数据   | `import.bat`   |
+| 清库重导   | `reset-and-reimport-data.bat` |
 | 备份数据库 | `backup.bat`   |
 
 `restart-app.bat` 会重新构建前端、重建后端镜像，并重启 `backend/nginx`。它不会导入数据、不会清理 PostgreSQL/Elasticsearch，也不会删除 Docker volumes。适合修改前端或后端代码后刷新本地/正式部署。
@@ -165,6 +166,15 @@ delete-stale-data.bat /apply
 ```bat
 deploy\local\restart-app.bat
 deploy\prod\restart-app.bat
+```
+
+`reset-and-reimport-data.bat` 用于清空已导入的业务数据后重新完整导入。脚本会要求输入 `RESET CONFIRM` 二次确认；它只清理数据库中的 `assets`、`tag_values`、`import_errors`、`user_favorites`，保留表结构、标签定义、同义词、Docker volumes 和 `runtime_data` 预览文件。正式环境执行前建议先运行 `backup.bat`。
+
+也可以按环境显式执行：
+
+```bat
+deploy\local\reset-and-reimport-data.bat
+deploy\prod\reset-and-reimport-data.bat
 ```
 
 ### 环境脚本

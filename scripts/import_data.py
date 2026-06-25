@@ -147,6 +147,18 @@ async def delete_stale_assets_for_manifest(
     }
 
 
+async def reset_import_data(pool: asyncpg.Pool) -> dict:
+    """Clear imported DB rows while keeping schema and tag definitions."""
+    async with pool.acquire() as conn:
+        await conn.execute("DELETE FROM user_favorites")
+        await conn.execute("DELETE FROM assets")
+        await conn.execute("DELETE FROM tag_values")
+        await conn.execute("DELETE FROM import_errors")
+        await conn.execute("ALTER SEQUENCE assets_id_seq RESTART WITH 1")
+    print("Reset import data: cleared assets, tag_values, import_errors, user_favorites.")
+    return {"assets": "cleared", "tag_values": "cleared", "import_errors": "cleared"}
+
+
 async def archive_assets_from_db(pool: asyncpg.Pool, module_types: tuple[int, ...]) -> int:
     root = project_root()
     async with pool.acquire() as conn:
@@ -393,6 +405,11 @@ async def main():
     parser.add_argument("--icons-json", help="Path to icon JSON file")
     parser.add_argument("--from-canonical", action="store_true", help="Restore DB rows from runtime_data JSONL")
     parser.add_argument(
+        "--reset-db",
+        action="store_true",
+        help="Clear imported DB rows before a full reimport. Keeps schema, tag definitions, synonyms, and runtime_data files.",
+    )
+    parser.add_argument(
         "--delete-stale",
         action="store_true",
         help="Compare provided JSON files and report DB assets missing from them",
@@ -416,6 +433,7 @@ async def main():
             args.animator_json,
             args.effects_json,
             args.icons_json,
+            args.reset_db,
             args.from_canonical,
             args.delete_stale,
             args.reindex,
@@ -456,6 +474,7 @@ async def main():
             args.animator_json,
             args.effects_json,
             args.icons_json,
+            args.reset_db,
             args.from_canonical,
             args.delete_stale,
             args.verify_previews,
@@ -464,6 +483,9 @@ async def main():
     pool = await asyncpg.create_pool(args.pg_url) if needs_db else None
     try:
         should_import = not args.delete_stale
+
+        if args.reset_db:
+            await reset_import_data(pool)
 
         if should_import and args.models_json:
             await run_model_import(args.models_json, pool)

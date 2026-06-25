@@ -263,6 +263,16 @@ def test_delete_stale_scripts_are_dry_run_until_apply_flag():
         assert "%DATA_ROOT%\\ui\\icon_png_results.json" in text
 
 
+def test_reset_and_reimport_scripts_require_explicit_confirmation():
+    for env_dir in ENV_DIRS:
+        text = _read_script(f"{env_dir}/reset-and-reimport-data.bat")
+        assert "RESET CONFIRM" in text
+        assert "--reset-db" in text
+        assert "reimport-data.bat" in text
+        assert "This clears imported DB rows" in text
+        assert "does not remove Docker volumes" in text
+
+
 def test_import_data_syncs_tag_values_for_all_modules():
     text = (ROOT / "scripts" / "import_data.py").read_text(encoding="utf-8")
     assert "sync_model_tag_values" in text

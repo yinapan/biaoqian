@@ -53,6 +53,23 @@ class _FakePool:
         return _FakeAcquireCtx(self.conn)
 
 
+class _ResetConn:
+    def __init__(self):
+        self.executed: list[str] = []
+
+    async def execute(self, query):
+        self.executed.append(" ".join(query.split()))
+        return "OK"
+
+
+class _ResetPool:
+    def __init__(self):
+        self.conn = _ResetConn()
+
+    def acquire(self):
+        return _FakeAcquireCtx(self.conn)
+
+
 def _write_json(path: Path, resources: list[dict]) -> Path:
     path.write_text(json.dumps({"resources": resources}), encoding="utf-8")
     return path
@@ -125,3 +142,19 @@ async def test_delete_stale_assets_apply_deletes_only_missing_paths(tmp_path):
     assert result["stale"] == 1
     assert result["deleted"] == 1
     assert pool.conn.deleted_paths == ["old.ani"]
+
+
+@pytest.mark.asyncio
+async def test_reset_import_data_clears_only_rebuildable_tables():
+    pool = _ResetPool()
+
+    result = await import_data.reset_import_data(pool)
+
+    assert result == {"assets": "cleared", "tag_values": "cleared", "import_errors": "cleared"}
+    assert pool.conn.executed == [
+        "DELETE FROM user_favorites",
+        "DELETE FROM assets",
+        "DELETE FROM tag_values",
+        "DELETE FROM import_errors",
+        "ALTER SEQUENCE assets_id_seq RESTART WITH 1",
+    ]

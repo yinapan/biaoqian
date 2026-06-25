@@ -4,13 +4,13 @@
 
 ## 技术栈
 
-| 层级 | 技术 |
-|------|------|
-| 前端 | Vue 3 + Element Plus + Pinia + TypeScript |
-| 后端 | FastAPI + asyncpg + elasticsearch-py |
-| 数据库 | PostgreSQL 16 (JSONB) |
-| 搜索引擎 | Elasticsearch 8.15 + IK 中文分词 |
-| 部署 | Docker Compose (4 服务) |
+| 层级     | 技术                                      |
+| -------- | ----------------------------------------- |
+| 前端     | Vue 3 + Element Plus + Pinia + TypeScript |
+| 后端     | FastAPI + asyncpg + elasticsearch-py      |
+| 数据库   | PostgreSQL 16 (JSONB)                     |
+| 搜索引擎 | Elasticsearch 8.15 + IK 中文分词          |
+| 部署     | Docker Compose (4 服务)                   |
 
 ## 快速部署
 
@@ -24,7 +24,7 @@
 ```bash
 # 1. 克隆项目
 git clone <repo-url>
-cd biaoqiao
+cd biaoqian
 
 # 2. 配置环境变量
 copy .env.example .env
@@ -56,11 +56,11 @@ python scripts/extract_thumbnails.py
 
 ## 日常管理
 
-| 操作 | 命令 |
-|------|------|
-| 启动 | `start.bat` |
-| 停止 | `stop.bat` |
-| 导入数据 | `import.bat` |
+| 操作       | 命令           |
+| ---------- | -------------- |
+| 启动       | `start.bat`  |
+| 停止       | `stop.bat`   |
+| 导入数据   | `import.bat` |
 | 备份数据库 | `backup.bat` |
 
 ### 备份与恢复
@@ -68,14 +68,15 @@ python scripts/extract_thumbnails.py
 **备份** — 运行 `backup.bat`，SQL 文件保存在 `backups/` 目录，自动保留最近 7 份。
 
 **恢复** — 将备份文件导入：
+
 ```bash
-docker compose exec -T postgres psql -U biaoqiao -d biaoqiao < backups/biaoqiao_YYYY-MM-DD_HHMM.sql
+docker compose exec -T postgres psql -U biaoqian -d biaoqian < backups/biaoqian_YYYY-MM-DD_HHMM.sql
 ```
 
 ## 目录结构
 
 ```
-biaoqiao/
+biaoqian/
 ├── backend/          # FastAPI 后端
 ├── frontend/         # Vue 3 前端
 ├── docker/           # Dockerfile (ES + IK)
@@ -98,6 +99,7 @@ biaoqiao/
 
 **Q: 搜索没结果？**
 确认已运行 `import.bat` 导入数据。可通过 health 接口检查服务状态:
+
 ```bash
 curl http://localhost/api/v1/health
 ```

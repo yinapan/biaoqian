@@ -3,9 +3,8 @@
 from __future__ import annotations
 
 import json
-import uuid
 from datetime import datetime
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -209,9 +208,7 @@ async def test_import_skips_non_ok(tmp_path):
     json_file.write_text(json.dumps(_make_json_data([SAMPLE_RESOURCE_FAILED])), encoding="utf-8")
 
     pool, conn = _make_mock_pool()
-    with patch("app.importers.effects_importer.bulk_index", new_callable=AsyncMock) as mock_bulk:
-        mock_bulk.return_value = {"errors": False, "items": []}
-        result = await import_effects_json(str(json_file), str(tmp_path), pool, str(tmp_path))
+    result = await import_effects_json(str(json_file), str(tmp_path), pool, str(tmp_path))
 
     assert result["success"] == 0
     assert result["skipped"] == 1
@@ -224,13 +221,7 @@ async def test_import_ok_resource(tmp_path):
     json_file.write_text(json.dumps(_make_json_data([SAMPLE_RESOURCE_OK])), encoding="utf-8")
 
     pool, conn = _make_mock_pool()
-    with (
-        patch("app.importers.effects_importer.bulk_index", new_callable=AsyncMock) as mock_bulk,
-        patch("app.importers.effects_importer.build_es_doc") as mock_es,
-    ):
-        mock_bulk.return_value = {"errors": False, "items": []}
-        mock_es.return_value = {"id": "test"}
-        result = await import_effects_json(str(json_file), str(tmp_path), pool, str(tmp_path))
+    result = await import_effects_json(str(json_file), str(tmp_path), pool, str(tmp_path))
 
     assert result["success"] == 1
     assert result["failed"] == 0
@@ -251,13 +242,7 @@ async def test_import_thumbnail_is_gif_filename(tmp_path):
     json_file.write_text(json.dumps(_make_json_data([SAMPLE_RESOURCE_OK])), encoding="utf-8")
 
     pool, conn = _make_mock_pool()
-    with (
-        patch("app.importers.effects_importer.bulk_index", new_callable=AsyncMock) as mock_bulk,
-        patch("app.importers.effects_importer.build_es_doc") as mock_es,
-    ):
-        mock_bulk.return_value = {"errors": False, "items": []}
-        mock_es.return_value = {"id": "test"}
-        await import_effects_json(str(json_file), str(tmp_path), pool, str(tmp_path))
+    await import_effects_json(str(json_file), str(tmp_path), pool, str(tmp_path))
 
     # $4 = thumbnail_path should be the GIF filename
     thumb = conn.fetchrow.call_args[0][4]
@@ -271,13 +256,7 @@ async def test_import_mixed_resources(tmp_path):
     json_file.write_text(json.dumps(data), encoding="utf-8")
 
     pool, conn = _make_mock_pool()
-    with (
-        patch("app.importers.effects_importer.bulk_index", new_callable=AsyncMock) as mock_bulk,
-        patch("app.importers.effects_importer.build_es_doc") as mock_es,
-    ):
-        mock_bulk.return_value = {"errors": False, "items": []}
-        mock_es.return_value = {"id": "test"}
-        result = await import_effects_json(str(json_file), str(tmp_path), pool, str(tmp_path))
+    result = await import_effects_json(str(json_file), str(tmp_path), pool, str(tmp_path))
 
     assert result["success"] == 2
     assert result["skipped"] == 1
@@ -289,9 +268,7 @@ async def test_import_empty_resources(tmp_path):
     json_file.write_text(json.dumps(_make_json_data([])), encoding="utf-8")
 
     pool, conn = _make_mock_pool()
-    with patch("app.importers.effects_importer.bulk_index", new_callable=AsyncMock) as mock_bulk:
-        mock_bulk.return_value = {"errors": False, "items": []}
-        result = await import_effects_json(str(json_file), str(tmp_path), pool, str(tmp_path))
+    result = await import_effects_json(str(json_file), str(tmp_path), pool, str(tmp_path))
 
     assert result["success"] == 0
     assert result["skipped"] == 0
@@ -305,9 +282,7 @@ async def test_import_db_error_counted(tmp_path):
 
     pool, conn = _make_mock_pool()
     conn.fetchrow.side_effect = Exception("DB down")
-    with patch("app.importers.effects_importer.bulk_index", new_callable=AsyncMock) as mock_bulk:
-        mock_bulk.return_value = {"errors": False, "items": []}
-        result = await import_effects_json(str(json_file), str(tmp_path), pool, str(tmp_path))
+    result = await import_effects_json(str(json_file), str(tmp_path), pool, str(tmp_path))
 
     assert result["failed"] == 1
     assert result["success"] == 0

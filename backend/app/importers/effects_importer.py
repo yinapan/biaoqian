@@ -6,8 +6,7 @@ Data source:
   AI-generated semantic tags, descriptions, and render results.
 - A directory of GIF preview files referenced by relative paths in the JSON.
 
-Each resource is upserted into the ``assets`` table with module_type=2
-and synced to Elasticsearch.
+Each resource is upserted into the ``assets`` table with module_type=2.
 """
 from __future__ import annotations
 
@@ -17,8 +16,6 @@ import uuid
 from pathlib import Path
 
 import asyncpg
-
-from app.services.es_sync_service import build_es_doc, bulk_index
 
 logger = logging.getLogger(__name__)
 
@@ -148,7 +145,6 @@ async def import_effects_json(
 
     stats = {"success": 0, "skipped": 0, "failed": 0, "es_sync_failed": 0}
     errors: list[dict] = []
-    es_batch: list[dict] = []
 
     for idx, resource in enumerate(resources):
         try:
@@ -184,29 +180,12 @@ async def import_effects_json(
                     thumbnail_path,
                     json.dumps(tags, ensure_ascii=False),
                 )
-                es_batch.append(build_es_doc(dict(row_result)))
                 stats["success"] += 1
-
-                if len(es_batch) >= 500:
-                    resp = await bulk_index(es_batch)
-                    if resp.get("errors"):
-                        for item in resp["items"]:
-                            if "error" in item.get("index", {}):
-                                stats["es_sync_failed"] += 1
-                    es_batch = []
 
         except Exception as e:
             stats["failed"] += 1
             errors.append(
                 {"index": idx, "resource_id": resource.get("resource_id", "?"), "error": str(e)}
             )
-
-    # Flush remaining ES batch
-    if es_batch:
-        resp = await bulk_index(es_batch)
-        if resp.get("errors"):
-            for item in resp["items"]:
-                if "error" in item.get("index", {}):
-                    stats["es_sync_failed"] += 1
 
     return {"batch_id": batch_id, **stats, "errors": errors[:50]}

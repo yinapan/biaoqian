@@ -13,7 +13,7 @@
 
 ## 数据目录机制
 
-导入时传入的 Excel、动作 JSON、特效 JSON、UI 图标 JSON 只是“来源”。脚本会把可用数据归档到项目内固定目录：
+导入时传入的模型 JSON、动作 JSON、特效 JSON、UI 图标 JSON 只是“来源”。脚本会把可用数据归档到项目内固定目录：
 
 ```text
 runtime_data/
@@ -98,7 +98,7 @@ docker info
 建议显式指定来源，避免自动查找选错文件：
 
 ```powershell
-.\deploy\local\reimport-data.bat /excel "F:\biaoqian\资源标签对照表.xlsx" /animator "F:\biaoqian\animator\actions_tags_format.json" /effects "F:\biaoqian\特效\data\effect_gif_results.json" /icons "F:\biaoqian\icon_png_results\icon_png_results.json"
+.\deploy\local\reimport-data.bat /models "F:\biaoqian\model\merged\model_png_results.json" /animator "F:\biaoqian\animator\actions_tags_format.json" /effects "F:\biaoqian\特效\data\effect_gif_results.json" /icons "F:\biaoqian\icon_png_results\icon_png_results.json"
 ```
 
 正式环境把 `deploy\local` 换成 `deploy\prod` 即可。
@@ -124,7 +124,7 @@ docker info
 只导入某一类数据：
 
 ```powershell
-.\deploy\local\import-new-data.bat /excel "F:\biaoqian\资源标签对照表.xlsx"
+.\deploy\local\import-new-data.bat /models "F:\biaoqian\model\merged\model_png_results.json"
 .\deploy\local\import-new-data.bat /animator "F:\biaoqian\animator\actions_tags_format.json"
 .\deploy\local\import-new-data.bat /effects "F:\biaoqian\特效\data\effect_gif_results.json"
 .\deploy\local\import-new-data.bat /icons "F:\biaoqian\icon_png_results\icon_png_results.json"

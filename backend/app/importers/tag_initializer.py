@@ -1,16 +1,5 @@
 # backend/app/importers/tag_initializer.py
-import openpyxl
 import asyncpg
-
-COLUMN_MAP = {
-    "物种": "species", "性别": "gender", "地域": "region",
-    "势力": "faction", "职业": "profession", "体型": "body_type",
-    "年龄": "age_group", "衣着": "clothing", "特征": "features",
-    "专属NPC": "exclusive_npc",
-}
-
-SKIP_SHEETS = {"通用规则", "进度统计", "动作模组", "需要新增的动作",
-               "特效标签", "问题模型记录区", "WpsReserved_CellImgList"}
 
 # Values that are descriptions/instructions, not real tag values
 _JUNK_VALUES = {"固定标签", "开放标签", "开放标签（后期合并后固定）"}
@@ -116,35 +105,6 @@ async def _sync_tag_values_from_db(
                 )
 
     return {k: sorted(v) for k, v in all_values.items()}
-
-
-async def extract_enum_values_from_excel(
-    filepath: str, pool: asyncpg.Pool
-) -> dict[str, list[str]]:
-    """从 Excel 第 2 行（枚举行）提取各维度可选值，并结合数据库实际值，写入 tag_values"""
-    wb = openpyxl.load_workbook(filepath, read_only=True, data_only=True)
-    all_values: dict[str, set[str]] = {}
-
-    for sheet_name in wb.sheetnames:
-        if sheet_name in SKIP_SHEETS:
-            continue
-        ws = wb[sheet_name]
-        headers = [c.value for c in next(ws.iter_rows(min_row=1, max_row=1))]
-        enum_row = list(ws.iter_rows(min_row=2, max_row=2, values_only=True))[0]
-
-        for col_idx, header in enumerate(headers):
-            if not header or header not in COLUMN_MAP:
-                continue
-            field_name = COLUMN_MAP[header]
-            cell_val = enum_row[col_idx] if col_idx < len(enum_row) else None
-            if not cell_val:
-                continue
-            values = {v.strip() for v in str(cell_val).split("\n") if v.strip()}
-            all_values.setdefault(field_name, set()).update(values)
-
-    wb.close()
-
-    return await _sync_tag_values_from_db(pool, module_type=1, all_values=all_values)
 
 
 async def sync_model_tag_values(pool: asyncpg.Pool) -> dict[str, list[str]]:

@@ -7,7 +7,7 @@ set -euo pipefail
 #  用法:
 #    1. git clone https://github.com/yinapan/biaoqian.git
 #    2. cd biaoqian
-#    3. 将 previews/ 目录和 Excel 数据文件拷贝到项目根目录
+#    3. 将源数据文件 (model/animator/特效/icon) 拷贝到对应目录
 #    4. bash deploy.sh
 #
 #  前置条件: Docker, Docker Compose, Node.js (>=18)
@@ -81,15 +81,7 @@ if [ ! -d frontend/dist ] || [ ! -f frontend/dist/index.html ]; then
 fi
 info "前端构建完成"
 
-# ------ 5. 检查 previews 目录 ------
-if [ ! -d previews ] || [ -z "$(ls -A previews/ 2>/dev/null)" ]; then
-    warn "previews/ 目录为空或不存在"
-    warn "请将预览图片拷贝到 ${PROJECT_DIR}/previews/ 目录"
-    warn "没有预览图，搜索结果将没有缩略图显示"
-    mkdir -p previews
-fi
-
-# ------ 6. 启动 Docker 服务 ------
+# ------ 5. 启动 Docker 服务 ------
 info "启动 Docker 服务 (PostgreSQL + Elasticsearch + Backend + Nginx)..."
 docker compose up -d --build
 
@@ -107,15 +99,17 @@ done
 echo ""
 info "服务已启动"
 
-# ------ 7. 导入数据 ------
+# ------ 6. 导入数据 ------
 ADMIN_KEY="${ADMIN_API_KEY:-dev-admin-key-change-in-prod}"
 API_BASE="https://localhost/api/v1/admin"
 
-import_excel() {
+import_json() {
     local file="$1"
-    info "导入 Excel: $(basename "$file")"
+    local endpoint="$2"
+    local label="$3"
+    info "导入 ${label}: $(basename "$file")"
     HTTP_CODE=$(curl -s -k -o /tmp/import_result.json -w "%{http_code}" \
-        -X POST "${API_BASE}/import-excel" \
+        -X POST "${API_BASE}/${endpoint}" \
         -H "X-Admin-Key: ${ADMIN_KEY}" \
         -F "file=@${file}" \
         --max-time 600)
@@ -126,48 +120,44 @@ import_excel() {
     fi
 }
 
-import_effects() {
-    local file="$1"
-    info "导入特效 JSON: $(basename "$file")"
-    HTTP_CODE=$(curl -s -k -o /tmp/import_result.json -w "%{http_code}" \
-        -X POST "${API_BASE}/import-effects-json" \
-        -H "X-Admin-Key: ${ADMIN_KEY}" \
-        -F "file=@${file}" \
-        --max-time 600)
-    if [ "$HTTP_CODE" = "200" ]; then
-        info "  导入成功: $(cat /tmp/import_result.json)"
-    else
-        warn "  导入失败 (HTTP ${HTTP_CODE}): $(cat /tmp/import_result.json)"
-    fi
-}
+IMPORT_COUNT=0
 
-EXCEL_COUNT=0
-for f in "$PROJECT_DIR"/*.xlsx "$PROJECT_DIR"/data/*.xlsx; do
-    [ -f "$f" ] || continue
-    import_excel "$f"
-    EXCEL_COUNT=$((EXCEL_COUNT + 1))
-done
+MODELS_JSON="$PROJECT_DIR/model/merged/model_png_results.json"
+if [ -f "$MODELS_JSON" ]; then
+    import_json "$MODELS_JSON" "import-models-json" "模型 JSON"
+    IMPORT_COUNT=$((IMPORT_COUNT + 1))
+fi
 
-EFFECTS_JSON="$PROJECT_DIR/特效/merged/effect_gif_results.json"
+ANIMATOR_JSON="$PROJECT_DIR/animator/actions_tags_format.json"
+if [ -f "$ANIMATOR_JSON" ]; then
+    import_json "$ANIMATOR_JSON" "import-animator-json" "动作 JSON"
+    IMPORT_COUNT=$((IMPORT_COUNT + 1))
+fi
+
+EFFECTS_JSON="$PROJECT_DIR/特效/data/effect_gif_results.json"
 if [ -f "$EFFECTS_JSON" ]; then
-    import_effects "$EFFECTS_JSON"
+    import_json "$EFFECTS_JSON" "import-effects-json" "特效 JSON"
+    IMPORT_COUNT=$((IMPORT_COUNT + 1))
 fi
 
-if [ $EXCEL_COUNT -eq 0 ]; then
-    warn "未找到 Excel 数据文件"
-    warn "请将 .xlsx 文件放到项目根目录，然后手动导入:"
-    warn "  curl -X POST https://artsearch.testplus.cn/api/v1/admin/import-excel \\"
-    warn "    -H 'X-Admin-Key: ${ADMIN_KEY}' \\"
-    warn "    -F 'file=@你的文件.xlsx'"
+ICONS_JSON="$PROJECT_DIR/icon_png_results/icon_png_results.json"
+if [ -f "$ICONS_JSON" ]; then
+    import_json "$ICONS_JSON" "import-icons-json" "图标 JSON"
+    IMPORT_COUNT=$((IMPORT_COUNT + 1))
 fi
 
-# ------ 8. 重建索引 ------
+if [ $IMPORT_COUNT -eq 0 ]; then
+    warn "未找到任何 JSON 数据文件"
+    warn "请将源 JSON 文件放到对应目录，然后手动通过 Admin API 导入"
+fi
+
+# ------ 7. 重建索引 ------
 info "重建 Elasticsearch 索引..."
 curl -sf -k -X POST "${API_BASE}/reindex-es" \
     -H "X-Admin-Key: ${ADMIN_KEY}" \
     -o /dev/null || warn "索引重建失败，可手动执行"
 
-# ------ 9. 完成 ------
+# ------ 8. 完成 ------
 echo ""
 echo "============================================"
 info "部署完成!"

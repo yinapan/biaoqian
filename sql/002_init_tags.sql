@@ -39,7 +39,7 @@ SELECT id, v, ord FROM tag_definitions td,
   unnest(ARRAY['护甲','劲装','布衣','华服','冬衣']) WITH ORDINALITY AS t(v, ord)
 WHERE td.module_type = 1 AND td.field_name = 'clothing';
 
--- region/faction/profession/features 值很多，由 tag_initializer.py 从 Excel 枚举行动态提取
+-- region/faction/profession/features 值很多，由 tag_initializer.py 从已导入资产中动态提取
 
 -- ===== 动作模块 (module_type=3) 标签维度 =====
 INSERT INTO tag_definitions (module_type, field_name, display_name, field_type, is_fixed, is_filterable, is_searchable, sort_order) VALUES

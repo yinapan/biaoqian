@@ -3,20 +3,20 @@ setlocal
 set "SCRIPT_DIR=%~dp0"
 pushd "%SCRIPT_DIR%..\.."
 call "%SCRIPT_DIR%env.bat"
-set "EXCEL_PATH="
 set "ANIMATOR_JSON_PATH=animator\actions_tags_format.json"
 set "EFFECTS_JSON_PATH="
 set "ICONS_JSON_PATH=icon_png_results\icon_png_results.json"
+set "MODELS_JSON_PATH="
 set "HAS_EXPLICIT_SOURCE=0"
-set "IMPORT_EXCEL=0"
+set "IMPORT_MODELS=0"
 set "IMPORT_ANIMATOR=0"
 set "IMPORT_EFFECTS=0"
 set "IMPORT_ICONS=0"
 
 :parse_args
 if "%~1"=="" goto args_done
-if /I "%~1"=="/excel" goto set_excel
-if /I "%~1"=="--excel" goto set_excel
+if /I "%~1"=="/models" goto set_models
+if /I "%~1"=="--models" goto set_models
 if /I "%~1"=="/animator" goto set_animator
 if /I "%~1"=="--animator" goto set_animator
 if /I "%~1"=="/effects" goto set_effects
@@ -24,16 +24,16 @@ if /I "%~1"=="--effects" goto set_effects
 if /I "%~1"=="/icons" goto set_icons
 if /I "%~1"=="--icons" goto set_icons
 echo [ERROR] Unknown argument: %~1
-echo Usage: %~nx0 [/excel path.xlsx] [/animator animator.json] [/effects effects.json] [/icons icons.json]
+echo Usage: %~nx0 [/models models.json] [/animator animator.json] [/effects effects.json] [/icons icons.json]
 popd
 pause
 exit /b 1
 
-:set_excel
+:set_models
 if "%~2"=="" goto missing_arg
-set "EXCEL_PATH=%~2"
+set "MODELS_JSON_PATH=%~2"
 set "HAS_EXPLICIT_SOURCE=1"
-set "IMPORT_EXCEL=1"
+set "IMPORT_MODELS=1"
 shift
 shift
 goto parse_args
@@ -73,7 +73,7 @@ exit /b 1
 
 :args_done
 if "%HAS_EXPLICIT_SOURCE%"=="0" (
-    set "IMPORT_EXCEL=1"
+    set "IMPORT_MODELS=1"
     set "IMPORT_ANIMATOR=1"
     set "IMPORT_EFFECTS=1"
     set "IMPORT_ICONS=1"
@@ -85,11 +85,11 @@ echo ================================
 echo [INFO] Upsert import. Duplicate module/path rows are updated.
 echo [INFO] Using docker-compose.import.yml to expose PostgreSQL temporarily.
 echo [INFO] APP_URL=%APP_URL%
-echo [INFO] EXCEL_PATH=%EXCEL_PATH%
+echo [INFO] MODELS_JSON_PATH=%MODELS_JSON_PATH%
 echo [INFO] ANIMATOR_JSON_PATH=%ANIMATOR_JSON_PATH%
 echo [INFO] EFFECTS_JSON_PATH=%EFFECTS_JSON_PATH%
 echo [INFO] ICONS_JSON_PATH=%ICONS_JSON_PATH%
-echo [INFO] IMPORT_EXCEL=%IMPORT_EXCEL%
+echo [INFO] IMPORT_MODELS=%IMPORT_MODELS%
 echo [INFO] IMPORT_ANIMATOR=%IMPORT_ANIMATOR%
 echo [INFO] IMPORT_EFFECTS=%IMPORT_EFFECTS%
 echo [INFO] IMPORT_ICONS=%IMPORT_ICONS%
@@ -120,17 +120,16 @@ if errorlevel 1 (
 )
 timeout /t 10 /nobreak >nul
 
-echo [2/8] Import Excel data...
-if "%IMPORT_EXCEL%"=="1" (
-    if defined EXCEL_PATH (
-        python scripts/import_data.py --excel "%EXCEL_PATH%"
+echo [2/8] Import models data...
+if "%IMPORT_MODELS%"=="1" (
+    if defined MODELS_JSON_PATH (
+        python scripts/import_data.py --models-json "%MODELS_JSON_PATH%"
         if errorlevel 1 goto import_failed
     ) else (
-        powershell -NoProfile -ExecutionPolicy Bypass -Command "$p=Get-ChildItem -LiteralPath . -Filter *.xlsx -File | Select-Object -First 1 -ExpandProperty FullName; if($p){ python scripts/import_data.py --excel $p; exit $LASTEXITCODE } else { Write-Host '[SKIP] Excel source not found.'; exit 0 }"
-        if errorlevel 1 goto import_failed
+        echo [SKIP] Models source not provided. Use /models path.json
     )
 ) else (
-    echo [SKIP] Excel source not requested.
+    echo [SKIP] Models source not requested.
 )
 
 echo [3/8] Import animator data...

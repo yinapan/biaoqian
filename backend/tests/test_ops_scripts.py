@@ -121,16 +121,16 @@ def test_import_scripts_use_environment_backend_url():
             assert '--backend-url "%APP_URL%"' in text
 
 
-def test_import_scripts_cover_four_modules_via_three_sources():
+def test_import_scripts_cover_four_modules_via_four_sources():
     for env_dir in ENV_DIRS:
         for script in ["import-new-data.bat", "reimport-data.bat"]:
             text = _read_script(f"{env_dir}/{script}")
-            assert "Import Excel data" in text
+            assert "Import models data" in text
             assert "Import animator data" in text
             assert "Import effects data" in text
             assert "Import icons data" in text
             assert "scripts/import_data.py" in text
-            assert "--excel" in text
+            assert "--models-json" in text
             assert "--animator-json" in text
             assert "--effects-json" in text
             assert "--icons-json" in text
@@ -160,19 +160,19 @@ def test_import_scripts_accept_custom_data_source_arguments():
     for env_dir in ENV_DIRS:
         for script in ["import-new-data.bat", "reimport-data.bat"]:
             text = _read_script(f"{env_dir}/{script}")
-            assert "EXCEL_PATH" in text
-            assert "IMPORT_EXCEL" in text
+            assert "MODELS_JSON_PATH" in text
+            assert "IMPORT_MODELS" in text
             assert "EFFECTS_JSON_PATH" in text
             assert "IMPORT_EFFECTS" in text
             assert "ICONS_JSON_PATH" in text
             assert "IMPORT_ICONS" in text
             assert "ANIMATOR_JSON_PATH" in text
             assert "IMPORT_ANIMATOR" in text
-            assert "/excel" in text
+            assert "/models" in text
             assert "/effects" in text
             assert "/icons" in text
             assert "/animator" in text
-            assert '--excel "%EXCEL_PATH%"' in text
+            assert '--models-json "%MODELS_JSON_PATH%"' in text
             assert '--effects-json "%EFFECTS_JSON_PATH%"' in text
             assert '--icons-json "%ICONS_JSON_PATH%"' in text
             assert '--animator-json "%ANIMATOR_JSON_PATH%"' in text
@@ -184,11 +184,11 @@ def test_reimport_only_imports_explicit_sources_when_arguments_are_provided():
         assert "set \"HAS_EXPLICIT_SOURCE=0\"" in text
         assert "set \"HAS_EXPLICIT_SOURCE=1\"" in text
         assert "if \"%HAS_EXPLICIT_SOURCE%\"==\"0\"" in text
-        assert "if \"%IMPORT_EXCEL%\"==\"1\"" in text
+        assert "if \"%IMPORT_MODELS%\"==\"1\"" in text
         assert "if \"%IMPORT_EFFECTS%\"==\"1\"" in text
         assert "if \"%IMPORT_ICONS%\"==\"1\"" in text
         assert "if \"%IMPORT_ANIMATOR%\"==\"1\"" in text
-        assert "[SKIP] Excel source not requested." in text
+        assert "[SKIP] Models source not requested." in text
 
 
 def test_import_scripts_stop_after_python_import_failure():
@@ -205,9 +205,9 @@ def test_import_data_prints_source_summary():
     assert "total_processed" in text
 
 
-def test_import_data_syncs_tag_values_for_three_visible_modules():
+def test_import_data_syncs_tag_values_for_all_modules():
     text = (ROOT / "scripts" / "import_data.py").read_text(encoding="utf-8")
-    assert "extract_enum_values_from_excel" in text
+    assert "sync_model_tag_values" in text
     assert "sync_animator_tag_values" in text
     assert "sync_effect_tag_values" in text
     assert "sync_icon_tag_values" in text
@@ -269,12 +269,6 @@ def test_runtime_data_uses_ui_and_animator_module_dirs():
     assert "model/previews/" in docs
     assert "animator/previews/" in docs
     assert "ui/pngs/" in docs
-
-
-def test_legacy_f1_import_uses_model_preview_dir():
-    text = (ROOT / "scripts" / "import_f1_sheet.py").read_text(encoding="utf-8")
-    assert '"runtime_data" / "model" / "previews"' in text
-    assert 'thumbnail_path = f"model/{thumb_filename}"' in text
 
 
 def test_deploy_and_import_scripts_verify_preview_images():

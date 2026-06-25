@@ -77,17 +77,6 @@ def normalize_tags(tags) -> dict:
     return {}
 
 
-async def run_excel_import(excel_path: str, pool: asyncpg.Pool, previews_dir: str):
-    from app.importers.excel_importer import import_excel
-    from app.importers.tag_initializer import extract_enum_values_from_excel
-
-    result = await import_excel(excel_path, pool, previews_dir, sync_es=False)
-    await extract_enum_values_from_excel(excel_path, pool)
-    await archive_assets_from_db(pool, (1, 3))
-    print_import_summary("Excel", excel_path, result)
-    return result
-
-
 async def archive_assets_from_db(pool: asyncpg.Pool, module_types: tuple[int, ...]) -> int:
     root = project_root()
     async with pool.acquire() as conn:
@@ -328,7 +317,6 @@ async def verify_previews(pool: asyncpg.Pool, backend_url: str, sample_size: int
 
 async def main():
     parser = argparse.ArgumentParser(description="Import data into biaoqian platform")
-    parser.add_argument("--excel", help="Path to Excel file")
     parser.add_argument("--models-json", help="Path to model JSON file")
     parser.add_argument("--animator-json", help="Path to animator JSON file")
     parser.add_argument("--effects-json", help="Path to effects JSON file")
@@ -344,7 +332,6 @@ async def main():
 
     if not any(
         [
-            args.excel,
             args.animator_json,
             args.effects_json,
             args.icons_json,
@@ -369,7 +356,6 @@ async def main():
     previews_dir = str(root / "runtime_data")
 
     for source, label in [
-        (args.excel, "Excel"),
         (args.models_json, "Model JSON"),
         (args.animator_json, "Animator JSON"),
         (args.effects_json, "Effects JSON"),
@@ -381,7 +367,6 @@ async def main():
 
     needs_db = any(
         [
-            args.excel,
             args.models_json,
             args.animator_json,
             args.effects_json,
@@ -392,8 +377,6 @@ async def main():
     )
     pool = await asyncpg.create_pool(args.pg_url) if needs_db else None
     try:
-        if args.excel:
-            await run_excel_import(args.excel, pool, previews_dir)
         if args.models_json:
             await run_model_import(args.models_json, pool)
         if args.animator_json:

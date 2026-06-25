@@ -40,11 +40,11 @@ cd biaoqian
 copy .env.example .env
 # 编辑 .env，修改 ADMIN_API_KEY 为随机字符串
 
-# 3. 准备数据文件（放到项目根目录对应位置）
-# - tag_data_upload/model/merged/model_png_results.json + pngs/   （模型 JSON+PNG）
-# - tag_data_upload/animation/actions_tags_format.json + gifs/     （动作 JSON+GIF）
-# - tag_data_upload/effect/merged/effect_gif_results.json + gifs/      （特效 JSON+GIF）
-# - tag_data_upload/ui/icon_png_results.json + pngs/ （图标 JSON+PNG）
+# 3. 准备数据文件（tag_data_upload 与 biaoqian 项目目录同级）
+# - ../tag_data_upload/model/merged/model_png_results.json + pngs/   （模型 JSON+PNG）
+# - ../tag_data_upload/animation/actions_tags_format.json + gifs/     （动作 JSON+GIF）
+# - ../tag_data_upload/effect/merged/effect_gif_results.json + gifs/      （特效 JSON+GIF）
+# - ../tag_data_upload/ui/icon_png_results.json + pngs/ （图标 JSON+PNG）
 
 # 4. 构建前端（首次部署或前端代码变更时）
 build.bat
@@ -95,19 +95,19 @@ docker compose -p biaoqian_local -f docker-compose.yml -f docker-compose.dev.yml
 
 ```bash
 # 导入模型
-python scripts/import_data.py --models-json tag_data_upload/model/merged/model_png_results.json --reindex
+python scripts/import_data.py --models-json ../tag_data_upload/model/merged/model_png_results.json --reindex
 
 # 本地测试环境手动导入模型
-python scripts/import_data.py --models-json tag_data_upload/model/merged/model_png_results.json --reindex --backend-url http://localhost:8081
+python scripts/import_data.py --models-json ../tag_data_upload/model/merged/model_png_results.json --reindex --backend-url http://localhost:8081
 
 # 导入动作
-python scripts/import_data.py --animator-json tag_data_upload/animation/actions_tags_format.json --reindex
+python scripts/import_data.py --animator-json ../tag_data_upload/animation/actions_tags_format.json --reindex
 
 # 导入特效
-python scripts/import_data.py --effects-json tag_data_upload/effect/merged/effect_gif_results.json --reindex
+python scripts/import_data.py --effects-json ../tag_data_upload/effect/merged/effect_gif_results.json --reindex
 
 # 导入图标
-python scripts/import_data.py --icons-json tag_data_upload/ui/icon_png_results.json --reindex
+python scripts/import_data.py --icons-json ../tag_data_upload/ui/icon_png_results.json --reindex
 
 # 从 canonical 归档恢复（不读源 JSON，从 runtime_data 的 JSONL 还原）
 python scripts/import_data.py --from-canonical --reindex
@@ -116,10 +116,10 @@ python scripts/import_data.py --from-canonical --reindex
 python scripts/import_data.py --verify-previews --verify-sample-size 20
 
 # Dry-run: list DB assets missing from the current JSON files, no deletion
-python scripts/import_data.py --delete-stale --models-json tag_data_upload/model/merged/model_png_results.json --animator-json tag_data_upload/animation/actions_tags_format.json --effects-json tag_data_upload/effect/merged/effect_gif_results.json --icons-json tag_data_upload/ui/icon_png_results.json
+python scripts/import_data.py --delete-stale --models-json ../tag_data_upload/model/merged/model_png_results.json --animator-json ../tag_data_upload/animation/actions_tags_format.json --effects-json ../tag_data_upload/effect/merged/effect_gif_results.json --icons-json ../tag_data_upload/ui/icon_png_results.json
 
 # Apply stale deletion, then rebuild ES
-python scripts/import_data.py --delete-stale --apply-delete-stale --models-json tag_data_upload/model/merged/model_png_results.json --animator-json tag_data_upload/animation/actions_tags_format.json --effects-json tag_data_upload/effect/merged/effect_gif_results.json --icons-json tag_data_upload/ui/icon_png_results.json --reindex
+python scripts/import_data.py --delete-stale --apply-delete-stale --models-json ../tag_data_upload/model/merged/model_png_results.json --animator-json ../tag_data_upload/animation/actions_tags_format.json --effects-json ../tag_data_upload/effect/merged/effect_gif_results.json --icons-json ../tag_data_upload/ui/icon_png_results.json --reindex
 
 # Bat wrappers: dry-run first, then apply after checking output
 delete-stale-data.bat

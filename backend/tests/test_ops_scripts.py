@@ -404,6 +404,8 @@ def test_frontend_search_input_uses_cancellable_quiet_requests():
     assert "signal?: AbortSignal" in api_text
     assert "{ signal }" in api_text
     assert "currentSearchController?.abort()" in store_text
+    assert "cancelPendingSearch" in store_text
+    assert "store.cancelPendingSearch()" in search_bar_text
     assert "quiet?: boolean" in store_text
     assert "if (!options?.quiet)" in store_text
     assert "store.doSearch({ quiet: true })" in search_bar_text

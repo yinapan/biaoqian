@@ -18,6 +18,7 @@ watch(
 )
 
 function onInput() {
+  store.cancelPendingSearch()
   if (debounceTimer) clearTimeout(debounceTimer)
   debounceTimer = setTimeout(() => {
     store.query = localQuery.value

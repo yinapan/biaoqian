@@ -29,9 +29,14 @@ export const useSearchStore = defineStore('search', () => {
   const facets = computed(() => response.value?.facets ?? {})
 
   // ---- actions ----
+  function cancelPendingSearch() {
+    currentSearchController?.abort()
+    currentSearchController = null
+  }
+
   async function doSearch(options?: SearchOptions) {
     const searchId = ++latestSearchId
-    currentSearchController?.abort()
+    cancelPendingSearch()
     const controller = new AbortController()
     currentSearchController = controller
     if (!options?.quiet) {
@@ -127,6 +132,7 @@ export const useSearchStore = defineStore('search', () => {
     facets,
     // actions
     doSearch,
+    cancelPendingSearch,
     loadDefinitions,
     setModuleType,
     setFilter,

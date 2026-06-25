@@ -156,7 +156,23 @@ const TAG_GROUPS: Record<string, { label: string; fields: string[]; unit?: strin
 const GROUPED_FIELDS = new Set(Object.values(TAG_GROUPS).flatMap(g => g.fields))
 
 /** Fields hidden from detail view (internal / not useful to display) */
-const HIDDEN_FIELDS = new Set(['gif_duration_sec', 'focus_offset', 'center_x', 'center_y', 'clipped', 'fit_attempts', 'fit_stop_reason', 'source_name', 'size_bytes', 'scope_size', 'gif_front_path', 'gif_left_path'])
+const HIDDEN_FIELDS = new Set([
+  'gif_duration_sec',
+  'focus_offset',
+  'center_x',
+  'center_y',
+  'clipped',
+  'fit_attempts',
+  'fit_stop_reason',
+  'source_name',
+  'size_bytes',
+  'scope_size',
+  'gif_front_path',
+  'gif_left_path',
+  'layout',
+  '__svn',
+  '__source_version',
+])
 
 /** Fields shown in dedicated UI sections, not in the generic tag grid */
 const DEDICATED_FIELDS = new Set(['icon_id'])
@@ -202,6 +218,7 @@ function getLabel(key: string) {
 function formatValue(key: string, val: any): string {
   if (typeof val === 'boolean') return val ? '是' : '否'
   if (Array.isArray(val)) return val.join(' · ')
+  if (val && typeof val === 'object') return JSON.stringify(val)
   return String(val)
 }
 </script>

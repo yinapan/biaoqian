@@ -13,10 +13,12 @@ from app.importers.canonical_data import (
     copy_preview,
     existing_version_matches,
     fetch_existing_asset,
+    module_has_assets,
     normalize_rel_path,
     preview_exists,
     preview_dir,
     upsert_canonical_records,
+    upsert_asset_batch,
     write_error,
 )
 
@@ -135,13 +137,21 @@ async def import_animator_json(
     stats = {"success": 0, "skipped": 0, "failed": 0, "es_sync_failed": 0}
     errors: list[dict] = []
     canonical_batch: list[dict] = []
+    asset_batch: list[tuple] = []
 
     await ensure_animator_tag_definitions(pool)
+    has_existing_assets = await module_has_assets(pool, MODULE_TYPE_ANIMATOR)
 
     def flush_canonical() -> None:
         if root and canonical_batch:
             upsert_canonical_records(root, canonical_batch)
             canonical_batch.clear()
+
+    async def flush_assets() -> None:
+        if asset_batch:
+            await upsert_asset_batch(pool, asset_batch)
+            stats["success"] += len(asset_batch)
+            asset_batch.clear()
 
     for idx, resource in enumerate(resources):
         try:
@@ -158,11 +168,13 @@ async def import_animator_json(
             thumbnail_path = requested_thumbnail_path
 
             if root:
-                existing_asset = await fetch_existing_asset(
-                    pool,
-                    MODULE_TYPE_ANIMATOR,
-                    resource_path,
-                )
+                existing_asset = None
+                if has_existing_assets:
+                    existing_asset = await fetch_existing_asset(
+                        pool,
+                        MODULE_TYPE_ANIMATOR,
+                        resource_path,
+                    )
                 can_reuse_preview = (
                     existing_asset
                     and existing_asset.get("thumbnail_path") == requested_thumbnail_path
@@ -192,39 +204,33 @@ async def import_animator_json(
                     if requested_thumbnail_path and not thumbnail_copied:
                         thumbnail_path = None
 
-            async with pool.acquire() as conn:
-                await conn.fetchrow(
-                    """INSERT INTO assets
-                           (module_type, name, resource_path, thumbnail_path, tags)
-                       VALUES ($1, $2, $3, $4, $5::jsonb)
-                       ON CONFLICT (module_type, resource_path)
-                       DO UPDATE SET tags = $5::jsonb,
-                                     thumbnail_path = COALESCE($4, assets.thumbnail_path),
-                                     updated_at = NOW()
-                       RETURNING id, module_type, name, resource_path,
-                                 thumbnail_path, tags, created_at, updated_at""",
+            asset_batch.append(
+                (
                     MODULE_TYPE_ANIMATOR,
                     name,
                     resource_path,
                     thumbnail_path,
                     json.dumps(tags, ensure_ascii=False),
                 )
-                stats["success"] += 1
-                if root:
-                    canonical_batch.append(
-                        {
-                            "module_type": MODULE_TYPE_ANIMATOR,
-                            "name": name,
-                            "resource_path": resource_path,
-                            "thumbnail_path": thumbnail_path,
-                            "tags": tags,
-                            "source_json": json_path,
-                        }
-                    )
-                    if len(canonical_batch) >= 1000:
-                        flush_canonical()
+            )
+            if root:
+                canonical_batch.append(
+                    {
+                        "module_type": MODULE_TYPE_ANIMATOR,
+                        "name": name,
+                        "resource_path": resource_path,
+                        "thumbnail_path": thumbnail_path,
+                        "tags": tags,
+                        "source_json": json_path,
+                    }
+                )
+            if len(asset_batch) >= 1000:
+                await flush_assets()
+            if len(canonical_batch) >= 1000:
+                flush_canonical()
 
         except Exception as exc:
+            await flush_assets()
             stats["failed"] += 1
             errors.append(
                 {"index": idx, "resource_id": resource.get("resource_id", "?"), "error": str(exc)}
@@ -241,5 +247,21 @@ async def import_animator_json(
                     resource_path=resource.get("source_path") or resource.get("resource_id"),
                 )
 
+    try:
+        await flush_assets()
+    except Exception as exc:
+        stats["failed"] += len(asset_batch)
+        asset_batch.clear()
+        errors.append({"index": len(resources) - 1, "resource_id": "batch", "error": str(exc)})
+        if root:
+            write_error(
+                root,
+                "animator",
+                batch_id,
+                "upsert_db",
+                exc,
+                source_json=json_path,
+                resource_id="batch",
+            )
     flush_canonical()
     return {"batch_id": batch_id, **stats, "errors": errors[:50]}

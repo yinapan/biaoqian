@@ -230,6 +230,14 @@ def test_import_data_supports_explicit_stale_delete_dry_run():
     assert "apply=args.apply_delete_stale" in text
 
 
+def test_import_data_accepts_models_json_as_work_to_do():
+    text = (ROOT / "scripts" / "import_data.py").read_text(encoding="utf-8")
+    guard_start = text.index("if not any(")
+    guard_end = text.index("):", guard_start)
+    guard_text = text[guard_start:guard_end]
+    assert "args.models_json" in guard_text
+
+
 def test_import_scripts_do_not_delete_stale_by_default():
     for env_dir in ENV_DIRS:
         for script in ["import-new-data.bat", "reimport-data.bat"]:

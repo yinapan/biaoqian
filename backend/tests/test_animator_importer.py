@@ -71,6 +71,7 @@ def _make_mock_pool():
     }
     conn = AsyncMock()
     conn.fetchrow = AsyncMock(return_value=fake_row)
+    conn.fetchval = AsyncMock(return_value=1)
     conn.executemany = AsyncMock()
     pool = MagicMock()
     pool.acquire.return_value = _FakeAcquireCtx(conn)
@@ -128,11 +129,11 @@ async def test_import_animator_json_upserts_module_3_and_copies_front_gif(tmp_pa
     )
 
     assert result["success"] == 1
-    call_args = conn.fetchrow.call_args.args
-    assert call_args[1] == 3
-    assert call_args[2] == "run"
-    assert call_args[4] == "data/source/player/M1/actions/run.ani_front.gif"
-    tags = json.loads(call_args[5])
+    row = conn.executemany.call_args.args[1][0]
+    assert row[0] == 3
+    assert row[1] == "run"
+    assert row[3] == "data/source/player/M1/actions/run.ani_front.gif"
+    tags = json.loads(row[4])
     assert tags["gif_left_path"] == "data/source/player/M1/actions/run.ani_left.gif"
     assert (
         tmp_path
@@ -158,7 +159,7 @@ async def test_import_animator_json_does_not_store_missing_thumbnail(tmp_path):
     )
 
     assert result["success"] == 1
-    assert conn.fetchrow.call_args.args[4] is None
+    assert conn.executemany.call_args.args[1][0][3] is None
     assert list((tmp_path / "runtime_data/logs/imports").glob("*_animator_errors.jsonl"))
 
 
@@ -204,8 +205,75 @@ async def test_import_animator_json_skips_preview_copy_when_svn_unchanged(tmp_pa
     assert result["success"] == 1
     assert existing_front.read_bytes() == b"front-old"
     assert existing_left.read_bytes() == b"left-old"
-    assert conn.fetchrow.call_args.args[4] == "data/source/player/M1/actions/run.ani_front.gif"
+    assert conn.executemany.call_args.args[1][0][3] == "data/source/player/M1/actions/run.ani_front.gif"
     assert not list((tmp_path / "runtime_data/logs/imports").glob("*_animator_errors.jsonl"))
+
+
+@pytest.mark.asyncio
+async def test_import_animator_json_skips_existing_lookup_for_empty_module(tmp_path):
+    json_file = tmp_path / "animator.json"
+    json_file.write_text(json.dumps(_make_json_data([SAMPLE_ANIMATOR_RESOURCE])), encoding="utf-8")
+    front = tmp_path / "runtime_data/animator/previews/data/source/player/M1/actions/run.ani_front.gif"
+    left = tmp_path / "runtime_data/animator/previews/data/source/player/M1/actions/run.ani_left.gif"
+    front.parent.mkdir(parents=True)
+    front.write_bytes(b"front")
+    left.write_bytes(b"left")
+
+    pool, conn = _make_mock_pool()
+    conn.fetchval.return_value = 0
+
+    result = await import_animator_json(
+        str(json_file),
+        str(tmp_path / "gifs"),
+        pool,
+        project_root=str(tmp_path),
+    )
+
+    assert result["success"] == 1
+    conn.fetchrow.assert_not_called()
+    assert conn.executemany.call_count == 2
+
+
+@pytest.mark.asyncio
+async def test_import_animator_json_batches_asset_upserts(tmp_path):
+    resources = []
+    gifs_root = tmp_path / "gifs"
+    for index in range(1001):
+        resource = json.loads(json.dumps(SAMPLE_ANIMATOR_RESOURCE))
+        resource["source_path"] = f"data/source/player/M1/actions/run_{index}.ani"
+        resource["resource_id"] = resource["source_path"]
+        resource["result"]["gif_rel_path_front"] = (
+            f"gifs/data/source/player/M1/actions/run_{index}.ani_front.gif"
+        )
+        resource["result"]["gif_rel_path_left"] = (
+            f"gifs/data/source/player/M1/actions/run_{index}.ani_left.gif"
+        )
+        resources.append(resource)
+        front = gifs_root / f"data/source/player/M1/actions/run_{index}.ani_front.gif"
+        left = gifs_root / f"data/source/player/M1/actions/run_{index}.ani_left.gif"
+        front.parent.mkdir(parents=True, exist_ok=True)
+        front.write_bytes(b"front")
+        left.write_bytes(b"left")
+    json_file = tmp_path / "animator.json"
+    json_file.write_text(json.dumps(_make_json_data(resources)), encoding="utf-8")
+
+    pool, conn = _make_mock_pool()
+    conn.fetchval.return_value = 0
+
+    result = await import_animator_json(
+        str(json_file),
+        str(gifs_root),
+        pool,
+        project_root=str(tmp_path),
+    )
+
+    assert result["success"] == 1001
+    batch_sizes = [
+        len(call.args[1])
+        for call in conn.executemany.call_args_list
+        if "INSERT INTO assets" in call.args[0]
+    ]
+    assert batch_sizes == [1000, 1]
 
 
 @pytest.mark.asyncio

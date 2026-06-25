@@ -412,6 +412,7 @@ async def main():
 
     if not any(
         [
+            args.models_json,
             args.animator_json,
             args.effects_json,
             args.icons_json,

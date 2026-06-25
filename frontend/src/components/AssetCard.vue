@@ -59,19 +59,41 @@ const assetId = computed(() => {
 
 const showIdRow = computed(() => isIcon.value)
 
+const CARD_HIDDEN_TAG_FIELDS = new Set([
+  'description',
+  'gif_duration_sec',
+  'gif_front_path',
+  'gif_left_path',
+  'size_bytes',
+  'action_id',
+  'icon_id',
+  'framed',
+  'width_px',
+  'height_px',
+  'length_cm',
+  'width_cm',
+  'height_cm',
+  'camera_distance',
+  'camera_scale',
+  'area_ratio',
+  'span_max',
+  'effect_duration_sec',
+  'tag_source',
+  'related_items',
+  '__svn',
+  '__source_version',
+])
+
 const visibleTags = computed(() => {
   const entries = Object.entries(props.item.tags)
   return entries
-    .filter(([key]) => ![
-      'description',
-      'gif_duration_sec',
-      'gif_front_path',
-      'gif_left_path',
-      'size_bytes',
-      'action_id',
-      '__svn',
-      '__source_version',
-    ].includes(key))
+    .filter(([key]) => !CARD_HIDDEN_TAG_FIELDS.has(key))
+    .filter(([, val]) => {
+      if (Array.isArray(val)) {
+        return val.every((item) => ['string', 'number', 'boolean'].includes(typeof item))
+      }
+      return ['string', 'number', 'boolean'].includes(typeof val)
+    })
     .slice(0, 4)
 })
 
@@ -439,6 +461,10 @@ function fallbackCopy(text: string) {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
+  min-height: 45px;
+  max-height: 45px;
+  overflow: hidden;
+  align-content: flex-start;
 }
 
 .mini-tag {

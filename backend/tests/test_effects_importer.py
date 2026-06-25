@@ -197,6 +197,8 @@ def _make_mock_pool():
     }
     conn = AsyncMock()
     conn.fetchrow = AsyncMock(return_value=fake_row)
+    conn.fetchval = AsyncMock(return_value=1)
+    conn.executemany = AsyncMock()
     pool = MagicMock()
     pool.acquire.return_value = _FakeAcquireCtx(conn)
     return pool, conn
@@ -213,6 +215,7 @@ async def test_import_skips_non_ok(tmp_path):
     assert result["success"] == 0
     assert result["skipped"] == 1
     conn.fetchrow.assert_not_called()
+    conn.executemany.assert_not_called()
 
 
 @pytest.mark.asyncio
@@ -225,12 +228,11 @@ async def test_import_ok_resource(tmp_path):
 
     assert result["success"] == 1
     assert result["failed"] == 0
-    conn.fetchrow.assert_called_once()
-    call_args = conn.fetchrow.call_args
-    assert call_args[0][1] == 2  # module_type
-    assert call_args[0][2] == "ui_云雾"  # name
+    row = conn.executemany.call_args.args[1][0]
+    assert row[0] == 2  # module_type
+    assert row[1] == extract_name_from_path(SAMPLE_RESOURCE_OK["resource_id"])
     # Check tags contain semantic fields
-    tags = json.loads(call_args[0][5])
+    tags = json.loads(row[4])
     assert tags["color"] == ["白", "青"]
     assert tags["effect_duration_sec"] == 0.0
     assert "description" in tags
@@ -244,8 +246,7 @@ async def test_import_thumbnail_is_gif_filename(tmp_path):
     pool, conn = _make_mock_pool()
     await import_effects_json(str(json_file), str(tmp_path), pool, str(tmp_path))
 
-    # $4 = thumbnail_path should be the GIF filename
-    thumb = conn.fetchrow.call_args[0][4]
+    thumb = conn.executemany.call_args.args[1][0][3]
     assert thumb == "001_UI______94a9f160_angle45.gif"
 
 
@@ -264,7 +265,7 @@ async def test_import_effects_json_does_not_store_missing_thumbnail(tmp_path):
     )
 
     assert result["success"] == 1
-    assert conn.fetchrow.call_args.args[4] is None
+    assert conn.executemany.call_args.args[1][0][3] is None
     assert list((tmp_path / "runtime_data/logs/imports").glob("*_effect_errors.jsonl"))
 
 
@@ -304,7 +305,7 @@ async def test_import_effects_json_skips_preview_copy_when_svn_unchanged(tmp_pat
 
     assert result["success"] == 1
     assert existing_preview.read_bytes() == b"old"
-    assert conn.fetchrow.call_args.args[4] == "001_UI______94a9f160_angle45.gif"
+    assert conn.executemany.call_args.args[1][0][3] == "001_UI______94a9f160_angle45.gif"
     assert not list((tmp_path / "runtime_data/logs/imports").glob("*_effect_errors.jsonl"))
 
 
@@ -332,6 +333,7 @@ async def test_import_empty_resources(tmp_path):
     assert result["success"] == 0
     assert result["skipped"] == 0
     conn.fetchrow.assert_not_called()
+    conn.executemany.assert_not_called()
 
 
 @pytest.mark.asyncio
@@ -340,7 +342,7 @@ async def test_import_db_error_counted(tmp_path):
     json_file.write_text(json.dumps(_make_json_data([SAMPLE_RESOURCE_OK])), encoding="utf-8")
 
     pool, conn = _make_mock_pool()
-    conn.fetchrow.side_effect = Exception("DB down")
+    conn.executemany.side_effect = Exception("DB down")
     result = await import_effects_json(str(json_file), str(tmp_path), pool, str(tmp_path))
 
     assert result["failed"] == 1

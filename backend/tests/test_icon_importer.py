@@ -56,10 +56,20 @@ class _FakePool:
     def acquire(self):
         return _FakeAcquireCtx(self)
 
+    async def fetchval(self, query, *args):
+        return 1
+
     async def fetchrow(self, query, *args):
         if query.startswith("SELECT"):
             return None
         module_type, name, resource_path, thumbnail_path, tags_json = args
+        return self._append_row(module_type, name, resource_path, thumbnail_path, tags_json)
+
+    async def executemany(self, query, rows):
+        for module_type, name, resource_path, thumbnail_path, tags_json in rows:
+            self._append_row(module_type, name, resource_path, thumbnail_path, tags_json)
+
+    def _append_row(self, module_type, name, resource_path, thumbnail_path, tags_json):
         row = {
             "id": len(self.rows) + 1,
             "module_type": module_type,

@@ -49,6 +49,8 @@ def _make_mock_pool():
     }
     conn = AsyncMock()
     conn.fetchrow = AsyncMock(return_value=fake_row)
+    conn.fetchval = AsyncMock(return_value=1)
+    conn.executemany = AsyncMock()
     pool = MagicMock()
     pool.acquire.return_value = _FakeAcquireCtx(conn)
     return pool, conn
@@ -72,7 +74,7 @@ async def test_import_models_json_does_not_store_missing_thumbnail(tmp_path):
     )
 
     assert result["success"] == 1
-    assert conn.fetchrow.call_args.args[4] is None
+    assert conn.executemany.call_args.args[1][0][3] is None
     assert list((tmp_path / "runtime_data/logs/imports").glob("*_model_errors.jsonl"))
 
 
@@ -111,5 +113,5 @@ async def test_import_models_json_skips_preview_copy_when_svn_unchanged(tmp_path
 
     assert result["success"] == 1
     assert existing_preview.read_bytes() == b"old"
-    assert conn.fetchrow.call_args.args[4] == "P080001b_HD.png"
+    assert conn.executemany.call_args.args[1][0][3] == "P080001b_HD.png"
     assert not list((tmp_path / "runtime_data/logs/imports").glob("*_model_errors.jsonl"))

@@ -130,6 +130,31 @@ def preview_exists(project_root: Path, module_type: int, rel_path: str | None) -
     return bool(rel_path) and (preview_dir(project_root, module_type) / Path(rel_path)).exists()
 
 
+async def module_has_assets(pool: Any, module_type: int) -> bool:
+    async with pool.acquire() as conn:
+        count = await conn.fetchval(
+            "SELECT COUNT(*) FROM assets WHERE module_type=$1",
+            module_type,
+        )
+    return bool(count)
+
+
+async def upsert_asset_batch(pool: Any, rows: list[tuple[Any, ...]]) -> None:
+    if not rows:
+        return
+    async with pool.acquire() as conn:
+        await conn.executemany(
+            """INSERT INTO assets
+                   (module_type, name, resource_path, thumbnail_path, tags)
+               VALUES ($1, $2, $3, $4, $5::jsonb)
+               ON CONFLICT (module_type, resource_path)
+               DO UPDATE SET tags = $5::jsonb,
+                             thumbnail_path = COALESCE($4, assets.thumbnail_path),
+                             updated_at = NOW()""",
+            list(rows),
+        )
+
+
 def write_error(
     project_root: Path,
     module_name: str,
@@ -175,6 +200,20 @@ def copy_preview(
     source = source_root / Path(rel_path)
     target = target_root / Path(rel_path)
     try:
+        if target.exists():
+            if source.exists():
+                source_stat = source.stat()
+                target_stat = target.stat()
+                if (
+                    source.resolve() == target.resolve()
+                    or (
+                        source_stat.st_size == target_stat.st_size
+                        and source_stat.st_mtime_ns == target_stat.st_mtime_ns
+                    )
+                ):
+                    return True
+            elif target.is_file():
+                return True
         if not source.exists():
             raise FileNotFoundError(str(source))
         target.parent.mkdir(parents=True, exist_ok=True)

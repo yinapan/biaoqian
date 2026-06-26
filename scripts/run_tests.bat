@@ -26,9 +26,10 @@ for /L %%i in (1,1,30) do (
   timeout /t 2 > nul
 )
 echo Backend not ready after 60 seconds
+docker compose -f docker-compose.test.yml down
 exit /b 1
 :integration_run
-cd backend && set RUN_ID=local && python -m pytest tests/integration/ -v && cd ..
+cd backend && set RUN_ID=local && python -m pytest tests/integration/ -v --cov=app --cov-report=term && cd ..
 docker compose -f docker-compose.test.yml down
 goto end
 

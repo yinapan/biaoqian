@@ -12,6 +12,7 @@ case "$TARGET" in
   integration)
     echo "=== Starting fixture environment ==="
     docker compose -f docker-compose.test.yml up -d --build
+    trap 'docker compose -f docker-compose.test.yml down' EXIT
     echo "=== Waiting for backend health ==="
     READY=0
     for i in $(seq 1 30); do
@@ -25,8 +26,7 @@ case "$TARGET" in
       echo "Backend not ready after 60 seconds"
       exit 1
     fi
-    (cd backend && RUN_ID=local python -m pytest tests/integration/ -v)
-    docker compose -f docker-compose.test.yml down
+    (cd backend && RUN_ID=local python -m pytest tests/integration/ -v --cov=app --cov-report=term)
     ;;
   e2e|perf)
     echo "TODO: implement $TARGET"

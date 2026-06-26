@@ -36,9 +36,9 @@ const MODULE_BADGE: Record<number, { label: string; tone: string }> = {
 const badge = computed(() => MODULE_BADGE[store.moduleType] ?? { label: 'ASSET', tone: 'tone-default' })
 
 const dialogWidth = computed(() => {
-  if (isEffect.value || isAnimator.value) return 'min(1280px, 96vw)'
-  if (isIcon.value) return 'min(960px, 94vw)'
-  return 'min(980px, 94vw)'
+  if (isEffect.value || isAnimator.value) return 'min(1600px, 92vw)'
+  if (isIcon.value) return 'min(1000px, 90vw)'
+  return 'min(1000px, 90vw)'
 })
 
 const previewSrc = computed(() => {
@@ -426,7 +426,7 @@ function fallbackCopy(text: string) {
 /* ===== Detail grid: preview | meta ===== */
 .detail-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
+  grid-template-columns: minmax(0, 1fr) 280px;
   gap: 20px;
   max-height: calc(90vh - 80px);
 }
@@ -457,7 +457,7 @@ function fallbackCopy(text: string) {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px;
+  padding: 10px;
   border-radius: var(--radius-lg);
   background:
     radial-gradient(circle at 50% 35%, rgba(79, 156, 175, 0.06), transparent 65%),
@@ -467,7 +467,7 @@ function fallbackCopy(text: string) {
 }
 
 .preview-stage.is-paired .preview-canvas {
-  padding: 6px;
+  padding: 8px;
 }
 
 /* Single preview (model) — maximize within available height */
@@ -483,7 +483,7 @@ function fallbackCopy(text: string) {
   width: auto;
   height: auto;
   max-width: 100%;
-  max-height: calc(90vh - 130px);
+  max-height: calc(88vh - 130px);
   border-radius: var(--radius-sm);
 }
 
@@ -520,7 +520,7 @@ function fallbackCopy(text: string) {
   width: auto;
   height: auto;
   max-width: 100%;
-  max-height: calc(90vh - 150px);
+  max-height: calc(88vh - 150px);
 }
 
 .icon-preview-pair .preview-frame {

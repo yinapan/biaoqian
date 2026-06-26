@@ -1,0 +1,1311 @@
+{
+  "version": 1,
+  "generated_at": "2026-06-27 10:00:00",
+  "meta": {
+    "module": "icon",
+    "description": "icons fixture for integration tests",
+    "total": 45
+  },
+  "resources": [
+    {
+      "resource_id": "data/sources/icon/pngs/i001.png",
+      "source_path": "data/sources/icon/pngs/i001.png",
+      "size_bytes": 8256,
+      "svn": {
+        "last_changed_revision": "1395002",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i001.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "武器"
+          ],
+          "颜色": [
+            "蓝色"
+          ],
+          "语义": [
+            "防御"
+          ]
+        },
+        "description": "测试图标001 — 一个蓝色的武器图标，代表防御类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i002.png",
+      "source_path": "data/sources/icon/pngs/i002.png",
+      "size_bytes": 8320,
+      "svn": {
+        "last_changed_revision": "1395003",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i002.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "武器"
+          ],
+          "颜色": [
+            "紫色"
+          ],
+          "语义": [
+            "特效"
+          ]
+        },
+        "description": "测试图标002 — 一个紫色的武器图标，代表特效类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i003.png",
+      "source_path": "data/sources/icon/pngs/i003.png",
+      "size_bytes": 8384,
+      "svn": {
+        "last_changed_revision": "1395004",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i003.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": true,
+        "tags": {
+          "预定义标签": [
+            "武器"
+          ],
+          "颜色": [
+            "白色"
+          ],
+          "语义": [
+            "角色"
+          ]
+        },
+        "description": "测试图标003 — 一个白色的武器图标，代表角色类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i004.png",
+      "source_path": "data/sources/icon/pngs/i004.png",
+      "size_bytes": 8448,
+      "svn": {
+        "last_changed_revision": "1395005",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i004.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "武器"
+          ],
+          "颜色": [
+            "红色"
+          ],
+          "语义": [
+            "攻击"
+          ]
+        },
+        "description": "测试图标004 — 一个红色的武器图标，代表攻击类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i005.png",
+      "source_path": "data/sources/icon/pngs/i005.png",
+      "size_bytes": 8512,
+      "svn": {
+        "last_changed_revision": "1395006",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i005.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "武器"
+          ],
+          "颜色": [
+            "绿色"
+          ],
+          "语义": [
+            "辅助"
+          ]
+        },
+        "description": "测试图标005 — 一个绿色的武器图标，代表辅助类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i006.png",
+      "source_path": "data/sources/icon/pngs/i006.png",
+      "size_bytes": 8576,
+      "svn": {
+        "last_changed_revision": "1395007",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i006.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": true,
+        "tags": {
+          "预定义标签": [
+            "防具"
+          ],
+          "颜色": [
+            "黑色"
+          ],
+          "语义": [
+            "环境"
+          ]
+        },
+        "description": "测试图标006 — 一个黑色的防具图标，代表环境类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i007.png",
+      "source_path": "data/sources/icon/pngs/i007.png",
+      "size_bytes": 8640,
+      "svn": {
+        "last_changed_revision": "1395008",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i007.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "防具"
+          ],
+          "颜色": [
+            "蓝色"
+          ],
+          "语义": [
+            "防御"
+          ]
+        },
+        "description": "测试图标007 — 一个蓝色的防具图标，代表防御类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i008.png",
+      "source_path": "data/sources/icon/pngs/i008.png",
+      "size_bytes": 8704,
+      "svn": {
+        "last_changed_revision": "1395009",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i008.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "防具"
+          ],
+          "颜色": [
+            "紫色"
+          ],
+          "语义": [
+            "特效"
+          ]
+        },
+        "description": "测试图标008 — 一个紫色的防具图标，代表特效类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i009.png",
+      "source_path": "data/sources/icon/pngs/i009.png",
+      "size_bytes": 8768,
+      "svn": {
+        "last_changed_revision": "1395010",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i009.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": true,
+        "tags": {
+          "预定义标签": [
+            "防具"
+          ],
+          "颜色": [
+            "白色"
+          ],
+          "语义": [
+            "角色"
+          ]
+        },
+        "description": "测试图标009 — 一个白色的防具图标，代表角色类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i010.png",
+      "source_path": "data/sources/icon/pngs/i010.png",
+      "size_bytes": 8832,
+      "svn": {
+        "last_changed_revision": "1395011",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i010.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "防具"
+          ],
+          "颜色": [
+            "红色"
+          ],
+          "语义": [
+            "攻击"
+          ]
+        },
+        "description": "测试图标010 — 一个红色的防具图标，代表攻击类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i011.png",
+      "source_path": "data/sources/icon/pngs/i011.png",
+      "size_bytes": 8896,
+      "svn": {
+        "last_changed_revision": "1395012",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i011.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "道具"
+          ],
+          "颜色": [
+            "金色"
+          ],
+          "语义": [
+            "系统"
+          ]
+        },
+        "description": "测试图标011 — 一个金色的道具图标，代表系统类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i012.png",
+      "source_path": "data/sources/icon/pngs/i012.png",
+      "size_bytes": 8960,
+      "svn": {
+        "last_changed_revision": "1395013",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i012.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": true,
+        "tags": {
+          "预定义标签": [
+            "道具"
+          ],
+          "颜色": [
+            "黑色"
+          ],
+          "语义": [
+            "环境"
+          ]
+        },
+        "description": "测试图标012 — 一个黑色的道具图标，代表环境类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i013.png",
+      "source_path": "data/sources/icon/pngs/i013.png",
+      "size_bytes": 9024,
+      "svn": {
+        "last_changed_revision": "1395014",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i013.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "道具"
+          ],
+          "颜色": [
+            "蓝色"
+          ],
+          "语义": [
+            "防御"
+          ]
+        },
+        "description": "测试图标013 — 一个蓝色的道具图标，代表防御类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i014.png",
+      "source_path": "data/sources/icon/pngs/i014.png",
+      "size_bytes": 9088,
+      "svn": {
+        "last_changed_revision": "1395015",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i014.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "道具"
+          ],
+          "颜色": [
+            "紫色"
+          ],
+          "语义": [
+            "特效"
+          ]
+        },
+        "description": "测试图标014 — 一个紫色的道具图标，代表特效类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i015.png",
+      "source_path": "data/sources/icon/pngs/i015.png",
+      "size_bytes": 9152,
+      "svn": {
+        "last_changed_revision": "1395016",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i015.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": true,
+        "tags": {
+          "预定义标签": [
+            "道具"
+          ],
+          "颜色": [
+            "白色"
+          ],
+          "语义": [
+            "角色"
+          ]
+        },
+        "description": "测试图标015 — 一个白色的道具图标，代表角色类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i016.png",
+      "source_path": "data/sources/icon/pngs/i016.png",
+      "size_bytes": 9216,
+      "svn": {
+        "last_changed_revision": "1395017",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i016.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "材料"
+          ],
+          "颜色": [
+            "绿色"
+          ],
+          "语义": [
+            "辅助"
+          ]
+        },
+        "description": "测试图标016 — 一个绿色的材料图标，代表辅助类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i017.png",
+      "source_path": "data/sources/icon/pngs/i017.png",
+      "size_bytes": 9280,
+      "svn": {
+        "last_changed_revision": "1395018",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i017.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "材料"
+          ],
+          "颜色": [
+            "金色"
+          ],
+          "语义": [
+            "系统"
+          ]
+        },
+        "description": "测试图标017 — 一个金色的材料图标，代表系统类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i018.png",
+      "source_path": "data/sources/icon/pngs/i018.png",
+      "size_bytes": 9344,
+      "svn": {
+        "last_changed_revision": "1395019",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i018.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": true,
+        "tags": {
+          "预定义标签": [
+            "材料"
+          ],
+          "颜色": [
+            "黑色"
+          ],
+          "语义": [
+            "环境"
+          ]
+        },
+        "description": "测试图标018 — 一个黑色的材料图标，代表环境类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i019.png",
+      "source_path": "data/sources/icon/pngs/i019.png",
+      "size_bytes": 9408,
+      "svn": {
+        "last_changed_revision": "1395020",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i019.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "材料"
+          ],
+          "颜色": [
+            "蓝色"
+          ],
+          "语义": [
+            "防御"
+          ]
+        },
+        "description": "测试图标019 — 一个蓝色的材料图标，代表防御类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i020.png",
+      "source_path": "data/sources/icon/pngs/i020.png",
+      "size_bytes": 9472,
+      "svn": {
+        "last_changed_revision": "1395021",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i020.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "材料"
+          ],
+          "颜色": [
+            "紫色"
+          ],
+          "语义": [
+            "特效"
+          ]
+        },
+        "description": "测试图标020 — 一个紫色的材料图标，代表特效类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i021.png",
+      "source_path": "data/sources/icon/pngs/i021.png",
+      "size_bytes": 9536,
+      "svn": {
+        "last_changed_revision": "1395022",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i021.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": true,
+        "tags": {
+          "预定义标签": [
+            "技能"
+          ],
+          "颜色": [
+            "红色"
+          ],
+          "语义": [
+            "攻击"
+          ]
+        },
+        "description": "测试图标021 — 一个红色的技能图标，代表攻击类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i022.png",
+      "source_path": "data/sources/icon/pngs/i022.png",
+      "size_bytes": 9600,
+      "svn": {
+        "last_changed_revision": "1395023",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i022.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "技能"
+          ],
+          "颜色": [
+            "绿色"
+          ],
+          "语义": [
+            "辅助"
+          ]
+        },
+        "description": "测试图标022 — 一个绿色的技能图标，代表辅助类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i023.png",
+      "source_path": "data/sources/icon/pngs/i023.png",
+      "size_bytes": 9664,
+      "svn": {
+        "last_changed_revision": "1395024",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i023.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "技能"
+          ],
+          "颜色": [
+            "金色"
+          ],
+          "语义": [
+            "系统"
+          ]
+        },
+        "description": "测试图标023 — 一个金色的技能图标，代表系统类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i024.png",
+      "source_path": "data/sources/icon/pngs/i024.png",
+      "size_bytes": 9728,
+      "svn": {
+        "last_changed_revision": "1395025",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i024.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": true,
+        "tags": {
+          "预定义标签": [
+            "技能"
+          ],
+          "颜色": [
+            "黑色"
+          ],
+          "语义": [
+            "环境"
+          ]
+        },
+        "description": "测试图标024 — 一个黑色的技能图标，代表环境类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i025.png",
+      "source_path": "data/sources/icon/pngs/i025.png",
+      "size_bytes": 9792,
+      "svn": {
+        "last_changed_revision": "1395026",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i025.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "技能"
+          ],
+          "颜色": [
+            "蓝色"
+          ],
+          "语义": [
+            "防御"
+          ]
+        },
+        "description": "测试图标025 — 一个蓝色的技能图标，代表防御类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i026.png",
+      "source_path": "data/sources/icon/pngs/i026.png",
+      "size_bytes": 9856,
+      "svn": {
+        "last_changed_revision": "1395027",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i026.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "任务"
+          ],
+          "颜色": [
+            "白色"
+          ],
+          "语义": [
+            "角色"
+          ]
+        },
+        "description": "测试图标026 — 一个白色的任务图标，代表角色类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i027.png",
+      "source_path": "data/sources/icon/pngs/i027.png",
+      "size_bytes": 9920,
+      "svn": {
+        "last_changed_revision": "1395028",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i027.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": true,
+        "tags": {
+          "预定义标签": [
+            "任务"
+          ],
+          "颜色": [
+            "红色"
+          ],
+          "语义": [
+            "攻击"
+          ]
+        },
+        "description": "测试图标027 — 一个红色的任务图标，代表攻击类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i028.png",
+      "source_path": "data/sources/icon/pngs/i028.png",
+      "size_bytes": 9984,
+      "svn": {
+        "last_changed_revision": "1395029",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i028.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "任务"
+          ],
+          "颜色": [
+            "绿色"
+          ],
+          "语义": [
+            "辅助"
+          ]
+        },
+        "description": "测试图标028 — 一个绿色的任务图标，代表辅助类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i029.png",
+      "source_path": "data/sources/icon/pngs/i029.png",
+      "size_bytes": 10048,
+      "svn": {
+        "last_changed_revision": "1395030",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i029.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "任务"
+          ],
+          "颜色": [
+            "金色"
+          ],
+          "语义": [
+            "系统"
+          ]
+        },
+        "description": "测试图标029 — 一个金色的任务图标，代表系统类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i030.png",
+      "source_path": "data/sources/icon/pngs/i030.png",
+      "size_bytes": 10112,
+      "svn": {
+        "last_changed_revision": "1395031",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i030.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": true,
+        "tags": {
+          "预定义标签": [
+            "任务"
+          ],
+          "颜色": [
+            "黑色"
+          ],
+          "语义": [
+            "环境"
+          ]
+        },
+        "description": "测试图标030 — 一个黑色的任务图标，代表环境类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i031.png",
+      "source_path": "data/sources/icon/pngs/i031.png",
+      "size_bytes": 10176,
+      "svn": {
+        "last_changed_revision": "1395032",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i031.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "其他"
+          ],
+          "颜色": [
+            "紫色"
+          ],
+          "语义": [
+            "特效"
+          ]
+        },
+        "description": "测试图标031 — 一个紫色的其他图标，代表特效类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i032.png",
+      "source_path": "data/sources/icon/pngs/i032.png",
+      "size_bytes": 10240,
+      "svn": {
+        "last_changed_revision": "1395033",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i032.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "其他"
+          ],
+          "颜色": [
+            "白色"
+          ],
+          "语义": [
+            "角色"
+          ]
+        },
+        "description": "测试图标032 — 一个白色的其他图标，代表角色类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i033.png",
+      "source_path": "data/sources/icon/pngs/i033.png",
+      "size_bytes": 10304,
+      "svn": {
+        "last_changed_revision": "1395034",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i033.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": true,
+        "tags": {
+          "预定义标签": [
+            "其他"
+          ],
+          "颜色": [
+            "红色"
+          ],
+          "语义": [
+            "攻击"
+          ]
+        },
+        "description": "测试图标033 — 一个红色的其他图标，代表攻击类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i034.png",
+      "source_path": "data/sources/icon/pngs/i034.png",
+      "size_bytes": 10368,
+      "svn": {
+        "last_changed_revision": "1395035",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i034.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "其他"
+          ],
+          "颜色": [
+            "绿色"
+          ],
+          "语义": [
+            "辅助"
+          ]
+        },
+        "description": "测试图标034 — 一个绿色的其他图标，代表辅助类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i035.png",
+      "source_path": "data/sources/icon/pngs/i035.png",
+      "size_bytes": 10432,
+      "svn": {
+        "last_changed_revision": "1395036",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i035.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "其他"
+          ],
+          "颜色": [
+            "金色"
+          ],
+          "语义": [
+            "系统"
+          ]
+        },
+        "description": "测试图标035 — 一个金色的其他图标，代表系统类物品，用于游戏界面显示"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i036_long.png",
+      "source_path": "data/sources/icon/pngs/i036_long.png",
+      "size_bytes": 10240,
+      "svn": {
+        "last_changed_revision": "1395501",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i036_long.png",
+        "width_px": 128,
+        "height_px": 128,
+        "framed": true,
+        "tags": {
+          "预定义标签": [
+            "武器"
+          ],
+          "颜色": [
+            "红色"
+          ],
+          "语义": [
+            "攻击"
+          ]
+        },
+        "description": "这是一个超长描述用于测试截断功能。该图标在游戏中广泛使用，涵盖多个不同场景和系统模块。其设计风格严格符合游戏整体美术规范，色彩搭配和谐统一，线条流畅自然。在角色装备界面、商城展示、任务追踪、成就系统等多处均有出现。特别针对高分辨率屏幕进行了优化处理，支持2x和3x缩放显示，确保清晰度。该图标经过多轮美术评审，通过了严格的质量把关流程，可以放心使用。如有疑问请联系美术部门或查阅内部资源管理文档以获得更多信息。（图标编号：036，超长描述测试记录1）"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i037_long.png",
+      "source_path": "data/sources/icon/pngs/i037_long.png",
+      "size_bytes": 10240,
+      "svn": {
+        "last_changed_revision": "1395502",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i037_long.png",
+        "width_px": 128,
+        "height_px": 128,
+        "framed": true,
+        "tags": {
+          "预定义标签": [
+            "防具"
+          ],
+          "颜色": [
+            "蓝色"
+          ],
+          "语义": [
+            "防御"
+          ]
+        },
+        "description": "这是一个超长描述用于测试截断功能。该图标在游戏中广泛使用，涵盖多个不同场景和系统模块。其设计风格严格符合游戏整体美术规范，色彩搭配和谐统一，线条流畅自然。在角色装备界面、商城展示、任务追踪、成就系统等多处均有出现。特别针对高分辨率屏幕进行了优化处理，支持2x和3x缩放显示，确保清晰度。该图标经过多轮美术评审，通过了严格的质量把关流程，可以放心使用。如有疑问请联系美术部门或查阅内部资源管理文档以获得更多信息。（图标编号：037，超长描述测试记录2）"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i038_long.png",
+      "source_path": "data/sources/icon/pngs/i038_long.png",
+      "size_bytes": 10240,
+      "svn": {
+        "last_changed_revision": "1395503",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i038_long.png",
+        "width_px": 128,
+        "height_px": 128,
+        "framed": true,
+        "tags": {
+          "预定义标签": [
+            "道具"
+          ],
+          "颜色": [
+            "绿色"
+          ],
+          "语义": [
+            "辅助"
+          ]
+        },
+        "description": "这是一个超长描述用于测试截断功能。该图标在游戏中广泛使用，涵盖多个不同场景和系统模块。其设计风格严格符合游戏整体美术规范，色彩搭配和谐统一，线条流畅自然。在角色装备界面、商城展示、任务追踪、成就系统等多处均有出现。特别针对高分辨率屏幕进行了优化处理，支持2x和3x缩放显示，确保清晰度。该图标经过多轮美术评审，通过了严格的质量把关流程，可以放心使用。如有疑问请联系美术部门或查阅内部资源管理文档以获得更多信息。（图标编号：038，超长描述测试记录3）"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i039_long.png",
+      "source_path": "data/sources/icon/pngs/i039_long.png",
+      "size_bytes": 10240,
+      "svn": {
+        "last_changed_revision": "1395504",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i039_long.png",
+        "width_px": 128,
+        "height_px": 128,
+        "framed": true,
+        "tags": {
+          "预定义标签": [
+            "材料"
+          ],
+          "颜色": [
+            "紫色"
+          ],
+          "语义": [
+            "特效"
+          ]
+        },
+        "description": "这是一个超长描述用于测试截断功能。该图标在游戏中广泛使用，涵盖多个不同场景和系统模块。其设计风格严格符合游戏整体美术规范，色彩搭配和谐统一，线条流畅自然。在角色装备界面、商城展示、任务追踪、成就系统等多处均有出现。特别针对高分辨率屏幕进行了优化处理，支持2x和3x缩放显示，确保清晰度。该图标经过多轮美术评审，通过了严格的质量把关流程，可以放心使用。如有疑问请联系美术部门或查阅内部资源管理文档以获得更多信息。（图标编号：039，超长描述测试记录4）"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i040_long.png",
+      "source_path": "data/sources/icon/pngs/i040_long.png",
+      "size_bytes": 10240,
+      "svn": {
+        "last_changed_revision": "1395505",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i040_long.png",
+        "width_px": 128,
+        "height_px": 128,
+        "framed": true,
+        "tags": {
+          "预定义标签": [
+            "技能"
+          ],
+          "颜色": [
+            "金色"
+          ],
+          "语义": [
+            "系统"
+          ]
+        },
+        "description": "这是一个超长描述用于测试截断功能。该图标在游戏中广泛使用，涵盖多个不同场景和系统模块。其设计风格严格符合游戏整体美术规范，色彩搭配和谐统一，线条流畅自然。在角色装备界面、商城展示、任务追踪、成就系统等多处均有出现。特别针对高分辨率屏幕进行了优化处理，支持2x和3x缩放显示，确保清晰度。该图标经过多轮美术评审，通过了严格的质量把关流程，可以放心使用。如有疑问请联系美术部门或查阅内部资源管理文档以获得更多信息。（图标编号：040，超长描述测试记录5）"
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i041_nodesc.png",
+      "source_path": "data/sources/icon/pngs/i041_nodesc.png",
+      "size_bytes": 7168,
+      "svn": {
+        "last_changed_revision": "1395801",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i041_nodesc.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "武器"
+          ],
+          "颜色": [
+            "红色"
+          ],
+          "语义": [
+            "攻击"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i042_nodesc.png",
+      "source_path": "data/sources/icon/pngs/i042_nodesc.png",
+      "size_bytes": 7168,
+      "svn": {
+        "last_changed_revision": "1395802",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i042_nodesc.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "防具"
+          ],
+          "颜色": [
+            "蓝色"
+          ],
+          "语义": [
+            "防御"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i043_nodesc.png",
+      "source_path": "data/sources/icon/pngs/i043_nodesc.png",
+      "size_bytes": 7168,
+      "svn": {
+        "last_changed_revision": "1395803",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i043_nodesc.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "道具"
+          ],
+          "颜色": [
+            "绿色"
+          ],
+          "语义": [
+            "辅助"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i044_nodesc.png",
+      "source_path": "data/sources/icon/pngs/i044_nodesc.png",
+      "size_bytes": 7168,
+      "svn": {
+        "last_changed_revision": "1395804",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i044_nodesc.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "材料"
+          ],
+          "颜色": [
+            "紫色"
+          ],
+          "语义": [
+            "特效"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/icon/pngs/i045_nodesc.png",
+      "source_path": "data/sources/icon/pngs/i045_nodesc.png",
+      "size_bytes": 7168,
+      "svn": {
+        "last_changed_revision": "1395805",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "rel_path": "pngs/i045_nodesc.png",
+        "width_px": 64,
+        "height_px": 64,
+        "framed": false,
+        "tags": {
+          "预定义标签": [
+            "技能"
+          ],
+          "颜色": [
+            "金色"
+          ],
+          "语义": [
+            "系统"
+          ]
+        }
+      }
+    }
+  ]
+}

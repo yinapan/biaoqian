@@ -1,0 +1,1874 @@
+{
+  "version": 1,
+  "generated_at": "2026-06-27 10:00:00",
+  "meta": {
+    "module": "effect",
+    "description": "effects fixture for integration tests",
+    "total": 30
+  },
+  "resources": [
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e001.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e001.pss",
+      "size_bytes": 18938,
+      "svn": {
+        "last_changed_revision": "1395001",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e001.gif",
+        "gif_grid_rel_path": "gifs/e001_grid.gif",
+        "length_cm": 2100.0,
+        "width_cm": 1000.0,
+        "height_cm": 1000.0,
+        "effect_duration_sec": 2.0,
+        "gif_duration_sec": 2.0,
+        "camera_distance": 2211.92,
+        "camera_scale": 0.638,
+        "focus_offset": -0.42,
+        "area_ratio": 0.195,
+        "span_max": 0.874,
+        "center_x": 0.519,
+        "center_y": 0.481,
+        "clipped": true,
+        "fit_attempts": 10,
+        "fit_stop_reason": "best_effort",
+        "description": "特效001：火系系粒子特效，用于技能特效",
+        "tags": {
+          "颜色": [
+            "红色",
+            "蓝色"
+          ],
+          "形态结构": [
+            "粒子"
+          ],
+          "时间动态": [
+            "爆发"
+          ],
+          "元素属性": [
+            "火系"
+          ],
+          "战斗技能": [
+            "攻击"
+          ],
+          "场景环境": [
+            "战场"
+          ],
+          "状态Buff": [
+            "灼烧"
+          ],
+          "法阵地面": [
+            "普通阵法"
+          ],
+          "UI提示": [
+            "获得"
+          ],
+          "业务用途": [
+            "技能特效"
+          ],
+          "角色动作": [
+            "释放"
+          ],
+          "道具物品": [
+            "武器光效"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e002.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e002.pss",
+      "size_bytes": 19962,
+      "svn": {
+        "last_changed_revision": "1395002",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e002.gif",
+        "gif_grid_rel_path": "gifs/e002_grid.gif",
+        "length_cm": 2150.0,
+        "width_cm": 1030.0,
+        "height_cm": 1020.0,
+        "effect_duration_sec": 2.1,
+        "gif_duration_sec": 2.1,
+        "camera_distance": 2221.92,
+        "camera_scale": 0.633,
+        "focus_offset": -0.41,
+        "area_ratio": 0.198,
+        "span_max": 0.869,
+        "center_x": 0.521,
+        "center_y": 0.479,
+        "clipped": false,
+        "fit_attempts": 11,
+        "fit_stop_reason": "exact_fit",
+        "description": "特效002：冰系系光束特效，用于UI特效",
+        "tags": {
+          "颜色": [
+            "蓝色",
+            "绿色"
+          ],
+          "形态结构": [
+            "光束"
+          ],
+          "时间动态": [
+            "持续"
+          ],
+          "元素属性": [
+            "冰系"
+          ],
+          "战斗技能": [
+            "防御"
+          ],
+          "场景环境": [
+            "城镇"
+          ],
+          "状态Buff": [
+            "冰冻"
+          ],
+          "法阵地面": [
+            "召唤阵"
+          ],
+          "UI提示": [
+            "消耗"
+          ],
+          "业务用途": [
+            "UI特效"
+          ],
+          "角色动作": [
+            "受击"
+          ],
+          "道具物品": [
+            "道具闪光"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e003.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e003.pss",
+      "size_bytes": 20986,
+      "svn": {
+        "last_changed_revision": "1395003",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e003.gif",
+        "gif_grid_rel_path": "gifs/e003_grid.gif",
+        "length_cm": 2200.0,
+        "width_cm": 1060.0,
+        "height_cm": 1040.0,
+        "effect_duration_sec": 2.2,
+        "gif_duration_sec": 2.2,
+        "camera_distance": 2231.92,
+        "camera_scale": 0.628,
+        "focus_offset": -0.4,
+        "area_ratio": 0.201,
+        "span_max": 0.864,
+        "center_x": 0.523,
+        "center_y": 0.477,
+        "clipped": false,
+        "fit_attempts": 12,
+        "fit_stop_reason": "best_effort",
+        "description": "特效003：雷系系圆形特效，用于环境特效",
+        "tags": {
+          "颜色": [
+            "绿色",
+            "紫色"
+          ],
+          "形态结构": [
+            "圆形"
+          ],
+          "时间动态": [
+            "消散"
+          ],
+          "元素属性": [
+            "雷系"
+          ],
+          "战斗技能": [
+            "治疗"
+          ],
+          "场景环境": [
+            "野外"
+          ],
+          "状态Buff": [
+            "麻痹"
+          ],
+          "法阵地面": [
+            "封印阵"
+          ],
+          "UI提示": [
+            "强化"
+          ],
+          "业务用途": [
+            "环境特效"
+          ],
+          "角色动作": [
+            "移动"
+          ],
+          "道具物品": [
+            "材料光晕"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e004.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e004.pss",
+      "size_bytes": 22010,
+      "svn": {
+        "last_changed_revision": "1395004",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e004.gif",
+        "gif_grid_rel_path": "gifs/e004_grid.gif",
+        "length_cm": 2250.0,
+        "width_cm": 1090.0,
+        "height_cm": 1060.0,
+        "effect_duration_sec": 2.3,
+        "gif_duration_sec": 2.3,
+        "camera_distance": 2241.92,
+        "camera_scale": 0.623,
+        "focus_offset": -0.39,
+        "area_ratio": 0.204,
+        "span_max": 0.859,
+        "center_x": 0.525,
+        "center_y": 0.475,
+        "clipped": true,
+        "fit_attempts": 13,
+        "fit_stop_reason": "exact_fit",
+        "description": "特效004：风系系爆炸特效，用于剧情特效",
+        "tags": {
+          "颜色": [
+            "紫色",
+            "金色"
+          ],
+          "形态结构": [
+            "爆炸"
+          ],
+          "时间动态": [
+            "循环"
+          ],
+          "元素属性": [
+            "风系"
+          ],
+          "战斗技能": [
+            "控制"
+          ],
+          "场景环境": [
+            "地下城"
+          ],
+          "状态Buff": [
+            "沉默"
+          ],
+          "法阵地面": [
+            "无"
+          ],
+          "UI提示": [
+            "提示"
+          ],
+          "业务用途": [
+            "剧情特效"
+          ],
+          "角色动作": [
+            "待机"
+          ],
+          "道具物品": [
+            "无"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e005.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e005.pss",
+      "size_bytes": 23034,
+      "svn": {
+        "last_changed_revision": "1395005",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e005.gif",
+        "gif_grid_rel_path": "gifs/e005_grid.gif",
+        "length_cm": 2300.0,
+        "width_cm": 1120.0,
+        "height_cm": 1080.0,
+        "effect_duration_sec": 2.4,
+        "gif_duration_sec": 2.4,
+        "camera_distance": 2251.92,
+        "camera_scale": 0.618,
+        "focus_offset": -0.38,
+        "area_ratio": 0.207,
+        "span_max": 0.854,
+        "center_x": 0.527,
+        "center_y": 0.473,
+        "clipped": false,
+        "fit_attempts": 14,
+        "fit_stop_reason": "best_effort",
+        "description": "特效005：土系系波动特效，用于技能特效",
+        "tags": {
+          "颜色": [
+            "金色",
+            "白色"
+          ],
+          "形态结构": [
+            "波动"
+          ],
+          "时间动态": [
+            "爆发"
+          ],
+          "元素属性": [
+            "土系"
+          ],
+          "战斗技能": [
+            "位移"
+          ],
+          "场景环境": [
+            "空中"
+          ],
+          "状态Buff": [
+            "无"
+          ],
+          "法阵地面": [
+            "普通阵法"
+          ],
+          "UI提示": [
+            "无"
+          ],
+          "业务用途": [
+            "技能特效"
+          ],
+          "角色动作": [
+            "释放"
+          ],
+          "道具物品": [
+            "武器光效"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e006.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e006.pss",
+      "size_bytes": 24058,
+      "svn": {
+        "last_changed_revision": "1395006",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e006.gif",
+        "gif_grid_rel_path": "gifs/e006_grid.gif",
+        "length_cm": 2350.0,
+        "width_cm": 1150.0,
+        "height_cm": 1100.0,
+        "effect_duration_sec": 2.5,
+        "gif_duration_sec": 2.5,
+        "camera_distance": 2261.92,
+        "camera_scale": 0.613,
+        "focus_offset": -0.37,
+        "area_ratio": 0.21,
+        "span_max": 0.849,
+        "center_x": 0.529,
+        "center_y": 0.471,
+        "clipped": false,
+        "fit_attempts": 15,
+        "fit_stop_reason": "exact_fit",
+        "description": "特效006：光系系粒子特效，用于UI特效",
+        "tags": {
+          "颜色": [
+            "白色",
+            "黑色"
+          ],
+          "形态结构": [
+            "粒子"
+          ],
+          "时间动态": [
+            "持续"
+          ],
+          "元素属性": [
+            "光系"
+          ],
+          "战斗技能": [
+            "攻击"
+          ],
+          "场景环境": [
+            "战场"
+          ],
+          "状态Buff": [
+            "灼烧"
+          ],
+          "法阵地面": [
+            "召唤阵"
+          ],
+          "UI提示": [
+            "获得"
+          ],
+          "业务用途": [
+            "UI特效"
+          ],
+          "角色动作": [
+            "受击"
+          ],
+          "道具物品": [
+            "道具闪光"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e007.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e007.pss",
+      "size_bytes": 25082,
+      "svn": {
+        "last_changed_revision": "1395007",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e007.gif",
+        "gif_grid_rel_path": "gifs/e007_grid.gif",
+        "length_cm": 2400.0,
+        "width_cm": 1180.0,
+        "height_cm": 1120.0,
+        "effect_duration_sec": 2.6,
+        "gif_duration_sec": 2.6,
+        "camera_distance": 2271.92,
+        "camera_scale": 0.608,
+        "focus_offset": -0.36,
+        "area_ratio": 0.213,
+        "span_max": 0.844,
+        "center_x": 0.531,
+        "center_y": 0.469,
+        "clipped": true,
+        "fit_attempts": 16,
+        "fit_stop_reason": "best_effort",
+        "description": "特效007：暗系系光束特效，用于环境特效",
+        "tags": {
+          "颜色": [
+            "黑色",
+            "红色"
+          ],
+          "形态结构": [
+            "光束"
+          ],
+          "时间动态": [
+            "消散"
+          ],
+          "元素属性": [
+            "暗系"
+          ],
+          "战斗技能": [
+            "防御"
+          ],
+          "场景环境": [
+            "城镇"
+          ],
+          "状态Buff": [
+            "冰冻"
+          ],
+          "法阵地面": [
+            "封印阵"
+          ],
+          "UI提示": [
+            "消耗"
+          ],
+          "业务用途": [
+            "环境特效"
+          ],
+          "角色动作": [
+            "移动"
+          ],
+          "道具物品": [
+            "材料光晕"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e008.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e008.pss",
+      "size_bytes": 26106,
+      "svn": {
+        "last_changed_revision": "1395008",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e008.gif",
+        "gif_grid_rel_path": "gifs/e008_grid.gif",
+        "length_cm": 2450.0,
+        "width_cm": 1210.0,
+        "height_cm": 1140.0,
+        "effect_duration_sec": 2.7,
+        "gif_duration_sec": 2.7,
+        "camera_distance": 2281.92,
+        "camera_scale": 0.603,
+        "focus_offset": -0.35,
+        "area_ratio": 0.216,
+        "span_max": 0.839,
+        "center_x": 0.533,
+        "center_y": 0.467,
+        "clipped": false,
+        "fit_attempts": 17,
+        "fit_stop_reason": "exact_fit",
+        "description": "特效008：火系系圆形特效，用于剧情特效",
+        "tags": {
+          "颜色": [
+            "红色",
+            "蓝色"
+          ],
+          "形态结构": [
+            "圆形"
+          ],
+          "时间动态": [
+            "循环"
+          ],
+          "元素属性": [
+            "火系"
+          ],
+          "战斗技能": [
+            "治疗"
+          ],
+          "场景环境": [
+            "野外"
+          ],
+          "状态Buff": [
+            "麻痹"
+          ],
+          "法阵地面": [
+            "无"
+          ],
+          "UI提示": [
+            "强化"
+          ],
+          "业务用途": [
+            "剧情特效"
+          ],
+          "角色动作": [
+            "待机"
+          ],
+          "道具物品": [
+            "无"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e009.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e009.pss",
+      "size_bytes": 27130,
+      "svn": {
+        "last_changed_revision": "1395009",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e009.gif",
+        "gif_grid_rel_path": "gifs/e009_grid.gif",
+        "length_cm": 2500.0,
+        "width_cm": 1240.0,
+        "height_cm": 1160.0,
+        "effect_duration_sec": 2.8,
+        "gif_duration_sec": 2.8,
+        "camera_distance": 2291.92,
+        "camera_scale": 0.598,
+        "focus_offset": -0.34,
+        "area_ratio": 0.219,
+        "span_max": 0.834,
+        "center_x": 0.535,
+        "center_y": 0.465,
+        "clipped": false,
+        "fit_attempts": 18,
+        "fit_stop_reason": "best_effort",
+        "description": "特效009：冰系系爆炸特效，用于技能特效",
+        "tags": {
+          "颜色": [
+            "蓝色",
+            "绿色"
+          ],
+          "形态结构": [
+            "爆炸"
+          ],
+          "时间动态": [
+            "爆发"
+          ],
+          "元素属性": [
+            "冰系"
+          ],
+          "战斗技能": [
+            "控制"
+          ],
+          "场景环境": [
+            "地下城"
+          ],
+          "状态Buff": [
+            "沉默"
+          ],
+          "法阵地面": [
+            "普通阵法"
+          ],
+          "UI提示": [
+            "提示"
+          ],
+          "业务用途": [
+            "技能特效"
+          ],
+          "角色动作": [
+            "释放"
+          ],
+          "道具物品": [
+            "武器光效"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e010.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e010.pss",
+      "size_bytes": 28154,
+      "svn": {
+        "last_changed_revision": "1395010",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e010.gif",
+        "gif_grid_rel_path": "gifs/e010_grid.gif",
+        "length_cm": 2550.0,
+        "width_cm": 1270.0,
+        "height_cm": 1180.0,
+        "effect_duration_sec": 2.9,
+        "gif_duration_sec": 2.9,
+        "camera_distance": 2301.92,
+        "camera_scale": 0.593,
+        "focus_offset": -0.33,
+        "area_ratio": 0.222,
+        "span_max": 0.829,
+        "center_x": 0.537,
+        "center_y": 0.463,
+        "clipped": true,
+        "fit_attempts": 19,
+        "fit_stop_reason": "exact_fit",
+        "description": "特效010：雷系系波动特效，用于UI特效",
+        "tags": {
+          "颜色": [
+            "绿色",
+            "紫色"
+          ],
+          "形态结构": [
+            "波动"
+          ],
+          "时间动态": [
+            "持续"
+          ],
+          "元素属性": [
+            "雷系"
+          ],
+          "战斗技能": [
+            "位移"
+          ],
+          "场景环境": [
+            "空中"
+          ],
+          "状态Buff": [
+            "无"
+          ],
+          "法阵地面": [
+            "召唤阵"
+          ],
+          "UI提示": [
+            "无"
+          ],
+          "业务用途": [
+            "UI特效"
+          ],
+          "角色动作": [
+            "受击"
+          ],
+          "道具物品": [
+            "道具闪光"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e011.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e011.pss",
+      "size_bytes": 29178,
+      "svn": {
+        "last_changed_revision": "1395011",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e011.gif",
+        "gif_grid_rel_path": "gifs/e011_grid.gif",
+        "length_cm": 2600.0,
+        "width_cm": 1300.0,
+        "height_cm": 1200.0,
+        "effect_duration_sec": 3.0,
+        "gif_duration_sec": 3.0,
+        "camera_distance": 2311.92,
+        "camera_scale": 0.588,
+        "focus_offset": -0.32,
+        "area_ratio": 0.225,
+        "span_max": 0.824,
+        "center_x": 0.539,
+        "center_y": 0.461,
+        "clipped": false,
+        "fit_attempts": 20,
+        "fit_stop_reason": "best_effort",
+        "description": "特效011：风系系粒子特效，用于环境特效",
+        "tags": {
+          "颜色": [
+            "紫色",
+            "金色"
+          ],
+          "形态结构": [
+            "粒子"
+          ],
+          "时间动态": [
+            "消散"
+          ],
+          "元素属性": [
+            "风系"
+          ],
+          "战斗技能": [
+            "攻击"
+          ],
+          "场景环境": [
+            "战场"
+          ],
+          "状态Buff": [
+            "灼烧"
+          ],
+          "法阵地面": [
+            "封印阵"
+          ],
+          "UI提示": [
+            "获得"
+          ],
+          "业务用途": [
+            "环境特效"
+          ],
+          "角色动作": [
+            "移动"
+          ],
+          "道具物品": [
+            "材料光晕"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e012.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e012.pss",
+      "size_bytes": 30202,
+      "svn": {
+        "last_changed_revision": "1395012",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e012.gif",
+        "gif_grid_rel_path": "gifs/e012_grid.gif",
+        "length_cm": 2650.0,
+        "width_cm": 1330.0,
+        "height_cm": 1220.0,
+        "effect_duration_sec": 3.1,
+        "gif_duration_sec": 3.1,
+        "camera_distance": 2321.92,
+        "camera_scale": 0.583,
+        "focus_offset": -0.31,
+        "area_ratio": 0.228,
+        "span_max": 0.819,
+        "center_x": 0.541,
+        "center_y": 0.459,
+        "clipped": false,
+        "fit_attempts": 21,
+        "fit_stop_reason": "exact_fit",
+        "description": "特效012：土系系光束特效，用于剧情特效",
+        "tags": {
+          "颜色": [
+            "金色",
+            "白色"
+          ],
+          "形态结构": [
+            "光束"
+          ],
+          "时间动态": [
+            "循环"
+          ],
+          "元素属性": [
+            "土系"
+          ],
+          "战斗技能": [
+            "防御"
+          ],
+          "场景环境": [
+            "城镇"
+          ],
+          "状态Buff": [
+            "冰冻"
+          ],
+          "法阵地面": [
+            "无"
+          ],
+          "UI提示": [
+            "消耗"
+          ],
+          "业务用途": [
+            "剧情特效"
+          ],
+          "角色动作": [
+            "待机"
+          ],
+          "道具物品": [
+            "无"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e013.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e013.pss",
+      "size_bytes": 31226,
+      "svn": {
+        "last_changed_revision": "1395013",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e013.gif",
+        "gif_grid_rel_path": "gifs/e013_grid.gif",
+        "length_cm": 2700.0,
+        "width_cm": 1360.0,
+        "height_cm": 1240.0,
+        "effect_duration_sec": 3.2,
+        "gif_duration_sec": 3.2,
+        "camera_distance": 2331.92,
+        "camera_scale": 0.578,
+        "focus_offset": -0.3,
+        "area_ratio": 0.231,
+        "span_max": 0.814,
+        "center_x": 0.543,
+        "center_y": 0.457,
+        "clipped": true,
+        "fit_attempts": 22,
+        "fit_stop_reason": "best_effort",
+        "description": "特效013：光系系圆形特效，用于技能特效",
+        "tags": {
+          "颜色": [
+            "白色",
+            "黑色"
+          ],
+          "形态结构": [
+            "圆形"
+          ],
+          "时间动态": [
+            "爆发"
+          ],
+          "元素属性": [
+            "光系"
+          ],
+          "战斗技能": [
+            "治疗"
+          ],
+          "场景环境": [
+            "野外"
+          ],
+          "状态Buff": [
+            "麻痹"
+          ],
+          "法阵地面": [
+            "普通阵法"
+          ],
+          "UI提示": [
+            "强化"
+          ],
+          "业务用途": [
+            "技能特效"
+          ],
+          "角色动作": [
+            "释放"
+          ],
+          "道具物品": [
+            "武器光效"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e014.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e014.pss",
+      "size_bytes": 32250,
+      "svn": {
+        "last_changed_revision": "1395014",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e014.gif",
+        "gif_grid_rel_path": "gifs/e014_grid.gif",
+        "length_cm": 2750.0,
+        "width_cm": 1390.0,
+        "height_cm": 1260.0,
+        "effect_duration_sec": 3.3,
+        "gif_duration_sec": 3.3,
+        "camera_distance": 2341.92,
+        "camera_scale": 0.573,
+        "focus_offset": -0.29,
+        "area_ratio": 0.234,
+        "span_max": 0.809,
+        "center_x": 0.545,
+        "center_y": 0.455,
+        "clipped": false,
+        "fit_attempts": 23,
+        "fit_stop_reason": "exact_fit",
+        "description": "特效014：暗系系爆炸特效，用于UI特效",
+        "tags": {
+          "颜色": [
+            "黑色",
+            "红色"
+          ],
+          "形态结构": [
+            "爆炸"
+          ],
+          "时间动态": [
+            "持续"
+          ],
+          "元素属性": [
+            "暗系"
+          ],
+          "战斗技能": [
+            "控制"
+          ],
+          "场景环境": [
+            "地下城"
+          ],
+          "状态Buff": [
+            "沉默"
+          ],
+          "法阵地面": [
+            "召唤阵"
+          ],
+          "UI提示": [
+            "提示"
+          ],
+          "业务用途": [
+            "UI特效"
+          ],
+          "角色动作": [
+            "受击"
+          ],
+          "道具物品": [
+            "道具闪光"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e015.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e015.pss",
+      "size_bytes": 33274,
+      "svn": {
+        "last_changed_revision": "1395015",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e015.gif",
+        "gif_grid_rel_path": "gifs/e015_grid.gif",
+        "length_cm": 2800.0,
+        "width_cm": 1420.0,
+        "height_cm": 1280.0,
+        "effect_duration_sec": 3.4,
+        "gif_duration_sec": 3.4,
+        "camera_distance": 2351.92,
+        "camera_scale": 0.568,
+        "focus_offset": -0.28,
+        "area_ratio": 0.237,
+        "span_max": 0.804,
+        "center_x": 0.547,
+        "center_y": 0.453,
+        "clipped": false,
+        "fit_attempts": 24,
+        "fit_stop_reason": "best_effort",
+        "description": "特效015：火系系波动特效，用于环境特效",
+        "tags": {
+          "颜色": [
+            "红色",
+            "蓝色"
+          ],
+          "形态结构": [
+            "波动"
+          ],
+          "时间动态": [
+            "消散"
+          ],
+          "元素属性": [
+            "火系"
+          ],
+          "战斗技能": [
+            "位移"
+          ],
+          "场景环境": [
+            "空中"
+          ],
+          "状态Buff": [
+            "无"
+          ],
+          "法阵地面": [
+            "封印阵"
+          ],
+          "UI提示": [
+            "无"
+          ],
+          "业务用途": [
+            "环境特效"
+          ],
+          "角色动作": [
+            "移动"
+          ],
+          "道具物品": [
+            "材料光晕"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e016.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e016.pss",
+      "size_bytes": 34298,
+      "svn": {
+        "last_changed_revision": "1395016",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e016.gif",
+        "gif_grid_rel_path": "gifs/e016_grid.gif",
+        "length_cm": 2850.0,
+        "width_cm": 1450.0,
+        "height_cm": 1300.0,
+        "effect_duration_sec": 3.5,
+        "gif_duration_sec": 3.5,
+        "camera_distance": 2361.92,
+        "camera_scale": 0.563,
+        "focus_offset": -0.27,
+        "area_ratio": 0.24,
+        "span_max": 0.799,
+        "center_x": 0.549,
+        "center_y": 0.451,
+        "clipped": true,
+        "fit_attempts": 25,
+        "fit_stop_reason": "exact_fit",
+        "description": "特效016：冰系系粒子特效，用于剧情特效",
+        "tags": {
+          "颜色": [
+            "蓝色",
+            "绿色"
+          ],
+          "形态结构": [
+            "粒子"
+          ],
+          "时间动态": [
+            "循环"
+          ],
+          "元素属性": [
+            "冰系"
+          ],
+          "战斗技能": [
+            "攻击"
+          ],
+          "场景环境": [
+            "战场"
+          ],
+          "状态Buff": [
+            "灼烧"
+          ],
+          "法阵地面": [
+            "无"
+          ],
+          "UI提示": [
+            "获得"
+          ],
+          "业务用途": [
+            "剧情特效"
+          ],
+          "角色动作": [
+            "待机"
+          ],
+          "道具物品": [
+            "无"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e017.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e017.pss",
+      "size_bytes": 35322,
+      "svn": {
+        "last_changed_revision": "1395017",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e017.gif",
+        "gif_grid_rel_path": "gifs/e017_grid.gif",
+        "length_cm": 2900.0,
+        "width_cm": 1480.0,
+        "height_cm": 1320.0,
+        "effect_duration_sec": 3.6,
+        "gif_duration_sec": 3.6,
+        "camera_distance": 2371.92,
+        "camera_scale": 0.558,
+        "focus_offset": -0.26,
+        "area_ratio": 0.243,
+        "span_max": 0.794,
+        "center_x": 0.551,
+        "center_y": 0.449,
+        "clipped": false,
+        "fit_attempts": 26,
+        "fit_stop_reason": "best_effort",
+        "description": "特效017：雷系系光束特效，用于技能特效",
+        "tags": {
+          "颜色": [
+            "绿色",
+            "紫色"
+          ],
+          "形态结构": [
+            "光束"
+          ],
+          "时间动态": [
+            "爆发"
+          ],
+          "元素属性": [
+            "雷系"
+          ],
+          "战斗技能": [
+            "防御"
+          ],
+          "场景环境": [
+            "城镇"
+          ],
+          "状态Buff": [
+            "冰冻"
+          ],
+          "法阵地面": [
+            "普通阵法"
+          ],
+          "UI提示": [
+            "消耗"
+          ],
+          "业务用途": [
+            "技能特效"
+          ],
+          "角色动作": [
+            "释放"
+          ],
+          "道具物品": [
+            "武器光效"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e018.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e018.pss",
+      "size_bytes": 36346,
+      "svn": {
+        "last_changed_revision": "1395018",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e018.gif",
+        "gif_grid_rel_path": "gifs/e018_grid.gif",
+        "length_cm": 2950.0,
+        "width_cm": 1510.0,
+        "height_cm": 1340.0,
+        "effect_duration_sec": 3.7,
+        "gif_duration_sec": 3.7,
+        "camera_distance": 2381.92,
+        "camera_scale": 0.553,
+        "focus_offset": -0.25,
+        "area_ratio": 0.246,
+        "span_max": 0.789,
+        "center_x": 0.553,
+        "center_y": 0.447,
+        "clipped": false,
+        "fit_attempts": 27,
+        "fit_stop_reason": "exact_fit",
+        "description": "特效018：风系系圆形特效，用于UI特效",
+        "tags": {
+          "颜色": [
+            "紫色",
+            "金色"
+          ],
+          "形态结构": [
+            "圆形"
+          ],
+          "时间动态": [
+            "持续"
+          ],
+          "元素属性": [
+            "风系"
+          ],
+          "战斗技能": [
+            "治疗"
+          ],
+          "场景环境": [
+            "野外"
+          ],
+          "状态Buff": [
+            "麻痹"
+          ],
+          "法阵地面": [
+            "召唤阵"
+          ],
+          "UI提示": [
+            "强化"
+          ],
+          "业务用途": [
+            "UI特效"
+          ],
+          "角色动作": [
+            "受击"
+          ],
+          "道具物品": [
+            "道具闪光"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e019.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e019.pss",
+      "size_bytes": 37370,
+      "svn": {
+        "last_changed_revision": "1395019",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e019.gif",
+        "gif_grid_rel_path": "gifs/e019_grid.gif",
+        "length_cm": 3000.0,
+        "width_cm": 1540.0,
+        "height_cm": 1360.0,
+        "effect_duration_sec": 3.8,
+        "gif_duration_sec": 3.8,
+        "camera_distance": 2391.92,
+        "camera_scale": 0.548,
+        "focus_offset": -0.24,
+        "area_ratio": 0.249,
+        "span_max": 0.784,
+        "center_x": 0.555,
+        "center_y": 0.445,
+        "clipped": true,
+        "fit_attempts": 28,
+        "fit_stop_reason": "best_effort",
+        "description": "特效019：土系系爆炸特效，用于环境特效",
+        "tags": {
+          "颜色": [
+            "金色",
+            "白色"
+          ],
+          "形态结构": [
+            "爆炸"
+          ],
+          "时间动态": [
+            "消散"
+          ],
+          "元素属性": [
+            "土系"
+          ],
+          "战斗技能": [
+            "控制"
+          ],
+          "场景环境": [
+            "地下城"
+          ],
+          "状态Buff": [
+            "沉默"
+          ],
+          "法阵地面": [
+            "封印阵"
+          ],
+          "UI提示": [
+            "提示"
+          ],
+          "业务用途": [
+            "环境特效"
+          ],
+          "角色动作": [
+            "移动"
+          ],
+          "道具物品": [
+            "材料光晕"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e020.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e020.pss",
+      "size_bytes": 38394,
+      "svn": {
+        "last_changed_revision": "1395020",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e020.gif",
+        "gif_grid_rel_path": "gifs/e020_grid.gif",
+        "length_cm": 3050.0,
+        "width_cm": 1570.0,
+        "height_cm": 1380.0,
+        "effect_duration_sec": 3.9,
+        "gif_duration_sec": 3.9,
+        "camera_distance": 2401.92,
+        "camera_scale": 0.543,
+        "focus_offset": -0.23,
+        "area_ratio": 0.252,
+        "span_max": 0.779,
+        "center_x": 0.557,
+        "center_y": 0.443,
+        "clipped": false,
+        "fit_attempts": 29,
+        "fit_stop_reason": "exact_fit",
+        "description": "特效020：光系系波动特效，用于剧情特效",
+        "tags": {
+          "颜色": [
+            "白色",
+            "黑色"
+          ],
+          "形态结构": [
+            "波动"
+          ],
+          "时间动态": [
+            "循环"
+          ],
+          "元素属性": [
+            "光系"
+          ],
+          "战斗技能": [
+            "位移"
+          ],
+          "场景环境": [
+            "空中"
+          ],
+          "状态Buff": [
+            "无"
+          ],
+          "法阵地面": [
+            "无"
+          ],
+          "UI提示": [
+            "无"
+          ],
+          "业务用途": [
+            "剧情特效"
+          ],
+          "角色动作": [
+            "待机"
+          ],
+          "道具物品": [
+            "无"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e021.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e021.pss",
+      "size_bytes": 39418,
+      "svn": {
+        "last_changed_revision": "1395021",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e021.gif",
+        "gif_grid_rel_path": "gifs/e021_grid.gif",
+        "length_cm": 3100.0,
+        "width_cm": 1600.0,
+        "height_cm": 1400.0,
+        "effect_duration_sec": 4.0,
+        "gif_duration_sec": 4.0,
+        "camera_distance": 2411.92,
+        "camera_scale": 0.538,
+        "focus_offset": -0.22,
+        "area_ratio": 0.255,
+        "span_max": 0.774,
+        "center_x": 0.559,
+        "center_y": 0.441,
+        "clipped": false,
+        "fit_attempts": 30,
+        "fit_stop_reason": "best_effort",
+        "description": "特效021：暗系系粒子特效，用于技能特效",
+        "tags": {
+          "颜色": [
+            "黑色",
+            "红色"
+          ],
+          "形态结构": [
+            "粒子"
+          ],
+          "时间动态": [
+            "爆发"
+          ],
+          "元素属性": [
+            "暗系"
+          ],
+          "战斗技能": [
+            "攻击"
+          ],
+          "场景环境": [
+            "战场"
+          ],
+          "状态Buff": [
+            "灼烧"
+          ],
+          "法阵地面": [
+            "普通阵法"
+          ],
+          "UI提示": [
+            "获得"
+          ],
+          "业务用途": [
+            "技能特效"
+          ],
+          "角色动作": [
+            "释放"
+          ],
+          "道具物品": [
+            "武器光效"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e022.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e022.pss",
+      "size_bytes": 40442,
+      "svn": {
+        "last_changed_revision": "1395022",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e022.gif",
+        "gif_grid_rel_path": "gifs/e022_grid.gif",
+        "length_cm": 3150.0,
+        "width_cm": 1630.0,
+        "height_cm": 1420.0,
+        "effect_duration_sec": 4.1,
+        "gif_duration_sec": 4.1,
+        "camera_distance": 2421.92,
+        "camera_scale": 0.533,
+        "focus_offset": -0.21,
+        "area_ratio": 0.258,
+        "span_max": 0.769,
+        "center_x": 0.561,
+        "center_y": 0.439,
+        "clipped": true,
+        "fit_attempts": 31,
+        "fit_stop_reason": "exact_fit",
+        "description": "特效022：火系系光束特效，用于UI特效",
+        "tags": {
+          "颜色": [
+            "红色",
+            "蓝色"
+          ],
+          "形态结构": [
+            "光束"
+          ],
+          "时间动态": [
+            "持续"
+          ],
+          "元素属性": [
+            "火系"
+          ],
+          "战斗技能": [
+            "防御"
+          ],
+          "场景环境": [
+            "城镇"
+          ],
+          "状态Buff": [
+            "冰冻"
+          ],
+          "法阵地面": [
+            "召唤阵"
+          ],
+          "UI提示": [
+            "消耗"
+          ],
+          "业务用途": [
+            "UI特效"
+          ],
+          "角色动作": [
+            "受击"
+          ],
+          "道具物品": [
+            "道具闪光"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e023.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e023.pss",
+      "size_bytes": 16384,
+      "svn": {
+        "last_changed_revision": "1395201",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e023.gif",
+        "description": "部分量化字段缺失测试1",
+        "tags": {
+          "颜色": [
+            "紫色"
+          ],
+          "形态结构": [
+            "粒子"
+          ],
+          "时间动态": [
+            "爆发"
+          ],
+          "元素属性": [
+            "火系"
+          ],
+          "战斗技能": [
+            "攻击"
+          ],
+          "场景环境": [
+            "战场"
+          ],
+          "状态Buff": [
+            "灼烧"
+          ],
+          "法阵地面": [
+            "普通阵法"
+          ],
+          "UI提示": [
+            "获得"
+          ],
+          "业务用途": [
+            "技能特效"
+          ],
+          "角色动作": [
+            "释放"
+          ],
+          "道具物品": [
+            "武器光效"
+          ]
+        },
+        "length_cm": 1500.0
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e024.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e024.pss",
+      "size_bytes": 16384,
+      "svn": {
+        "last_changed_revision": "1395202",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e024.gif",
+        "description": "部分量化字段缺失测试2",
+        "tags": {
+          "颜色": [
+            "金色"
+          ],
+          "形态结构": [
+            "光束"
+          ],
+          "时间动态": [
+            "持续"
+          ],
+          "元素属性": [
+            "冰系"
+          ],
+          "战斗技能": [
+            "防御"
+          ],
+          "场景环境": [
+            "城镇"
+          ],
+          "状态Buff": [
+            "冰冻"
+          ],
+          "法阵地面": [
+            "召唤阵"
+          ],
+          "UI提示": [
+            "消耗"
+          ],
+          "业务用途": [
+            "UI特效"
+          ],
+          "角色动作": [
+            "受击"
+          ],
+          "道具物品": [
+            "道具闪光"
+          ]
+        },
+        "width_cm": 800.0,
+        "height_cm": 600.0
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e025.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e025.pss",
+      "size_bytes": 16384,
+      "svn": {
+        "last_changed_revision": "1395203",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e025.gif",
+        "description": "部分量化字段缺失测试3",
+        "tags": {
+          "颜色": [
+            "白色"
+          ],
+          "形态结构": [
+            "圆形"
+          ],
+          "时间动态": [
+            "消散"
+          ],
+          "元素属性": [
+            "雷系"
+          ],
+          "战斗技能": [
+            "治疗"
+          ],
+          "场景环境": [
+            "野外"
+          ],
+          "状态Buff": [
+            "麻痹"
+          ],
+          "法阵地面": [
+            "封印阵"
+          ],
+          "UI提示": [
+            "强化"
+          ],
+          "业务用途": [
+            "环境特效"
+          ],
+          "角色动作": [
+            "移动"
+          ],
+          "道具物品": [
+            "材料光晕"
+          ]
+        },
+        "effect_duration_sec": 1.5,
+        "camera_distance": 1800.0
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e026.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e026.pss",
+      "size_bytes": 16384,
+      "svn": {
+        "last_changed_revision": "1395204",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e026.gif",
+        "description": "部分量化字段缺失测试4",
+        "tags": {
+          "颜色": [
+            "黑色"
+          ],
+          "形态结构": [
+            "爆炸"
+          ],
+          "时间动态": [
+            "循环"
+          ],
+          "元素属性": [
+            "风系"
+          ],
+          "战斗技能": [
+            "控制"
+          ],
+          "场景环境": [
+            "地下城"
+          ],
+          "状态Buff": [
+            "沉默"
+          ],
+          "法阵地面": [
+            "无"
+          ],
+          "UI提示": [
+            "提示"
+          ],
+          "业务用途": [
+            "剧情特效"
+          ],
+          "角色动作": [
+            "待机"
+          ],
+          "道具物品": [
+            "无"
+          ]
+        },
+        "length_cm": 2000.0,
+        "area_ratio": 0.25
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e027.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e027.pss",
+      "size_bytes": 16384,
+      "svn": {
+        "last_changed_revision": "1395205",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e027.gif",
+        "description": "部分量化字段缺失测试5",
+        "tags": {
+          "颜色": [
+            "红色"
+          ],
+          "形态结构": [
+            "波动"
+          ],
+          "时间动态": [
+            "爆发"
+          ],
+          "元素属性": [
+            "土系"
+          ],
+          "战斗技能": [
+            "位移"
+          ],
+          "场景环境": [
+            "空中"
+          ],
+          "状态Buff": [
+            "无"
+          ],
+          "法阵地面": [
+            "普通阵法"
+          ],
+          "UI提示": [
+            "无"
+          ],
+          "业务用途": [
+            "技能特效"
+          ],
+          "角色动作": [
+            "释放"
+          ],
+          "道具物品": [
+            "武器光效"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e028_notag.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e028_notag.pss",
+      "size_bytes": 12288,
+      "svn": {
+        "last_changed_revision": "1395301",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e028_notag.gif",
+        "length_cm": 1000.0,
+        "effect_duration_sec": 1.0,
+        "tags": {}
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e029_notag.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e029_notag.pss",
+      "size_bytes": 12288,
+      "svn": {
+        "last_changed_revision": "1395302",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e029_notag.gif",
+        "length_cm": 1000.0,
+        "effect_duration_sec": 1.0,
+        "tags": {}
+      }
+    },
+    {
+      "resource_id": "data/source/other/hd特效/ui_m/pss/e030_notag.pss",
+      "source_path": "data/source/other/hd特效/ui_m/pss/e030_notag.pss",
+      "size_bytes": 12288,
+      "svn": {
+        "last_changed_revision": "1395303",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path": "gifs/e030_notag.gif",
+        "length_cm": 1000.0,
+        "effect_duration_sec": 1.0,
+        "tags": {}
+      }
+    }
+  ]
+}

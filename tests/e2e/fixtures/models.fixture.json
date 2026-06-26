@@ -1,0 +1,2351 @@
+{
+  "version": 1,
+  "generated_at": "2026-06-27 10:00:00",
+  "meta": {
+    "module": "model",
+    "description": "models fixture for integration tests",
+    "total": 50
+  },
+  "resources": [
+    {
+      "resource_id": "data/sources/model/pngs/m001.png",
+      "source_path": "data/sources/model/pngs/m001.png",
+      "size_bytes": 51712,
+      "svn": {
+        "last_changed_revision": "1395002",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m001.png",
+        "tags": {
+          "物种": [
+            "人类"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "地域": [
+            "西域"
+          ],
+          "势力": [
+            "邪道"
+          ],
+          "职业": [
+            "法师"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "年龄": [
+            "中年"
+          ],
+          "衣着": [
+            "布衣"
+          ],
+          "特征": [
+            "秀气"
+          ],
+          "专属NPC": [
+            "是"
+          ],
+          "备注": [
+            "测试模型001"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m002.png",
+      "source_path": "data/sources/model/pngs/m002.png",
+      "size_bytes": 52224,
+      "svn": {
+        "last_changed_revision": "1395003",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m002.png",
+        "tags": {
+          "物种": [
+            "人类"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "地域": [
+            "北境"
+          ],
+          "势力": [
+            "中立"
+          ],
+          "职业": [
+            "弓手"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "年龄": [
+            "老年"
+          ],
+          "衣着": [
+            "长袍"
+          ],
+          "特征": [
+            "魁梧"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "测试模型002"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m003.png",
+      "source_path": "data/sources/model/pngs/m003.png",
+      "size_bytes": 52736,
+      "svn": {
+        "last_changed_revision": "1395004",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m003.png",
+        "tags": {
+          "物种": [
+            "人类"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "地域": [
+            "南疆"
+          ],
+          "势力": [
+            "正道"
+          ],
+          "职业": [
+            "战士"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "年龄": [
+            "少年"
+          ],
+          "衣着": [
+            "轻甲"
+          ],
+          "特征": [
+            "苗条"
+          ],
+          "专属NPC": [
+            "是"
+          ],
+          "备注": [
+            "测试模型003"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m004.png",
+      "source_path": "data/sources/model/pngs/m004.png",
+      "size_bytes": 53248,
+      "svn": {
+        "last_changed_revision": "1395005",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m004.png",
+        "tags": {
+          "物种": [
+            "人类"
+          ],
+          "性别": [
+            "女性"
+          ],
+          "地域": [
+            "东海"
+          ],
+          "势力": [
+            "邪道"
+          ],
+          "职业": [
+            "刺客"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "年龄": [
+            "青年"
+          ],
+          "衣着": [
+            "铠甲"
+          ],
+          "特征": [
+            "威严"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "测试模型004"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m005.png",
+      "source_path": "data/sources/model/pngs/m005.png",
+      "size_bytes": 53760,
+      "svn": {
+        "last_changed_revision": "1395006",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m005.png",
+        "tags": {
+          "物种": [
+            "人类"
+          ],
+          "性别": [
+            "女性"
+          ],
+          "地域": [
+            "中原"
+          ],
+          "势力": [
+            "中立"
+          ],
+          "职业": [
+            "剑客"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "年龄": [
+            "中年"
+          ],
+          "衣着": [
+            "布衣"
+          ],
+          "特征": [
+            "秀气"
+          ],
+          "专属NPC": [
+            "是"
+          ],
+          "备注": [
+            "测试模型005"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m006.png",
+      "source_path": "data/sources/model/pngs/m006.png",
+      "size_bytes": 54272,
+      "svn": {
+        "last_changed_revision": "1395007",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m006.png",
+        "tags": {
+          "物种": [
+            "人类"
+          ],
+          "性别": [
+            "女性"
+          ],
+          "地域": [
+            "西域"
+          ],
+          "势力": [
+            "正道"
+          ],
+          "职业": [
+            "法师"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "年龄": [
+            "老年"
+          ],
+          "衣着": [
+            "长袍"
+          ],
+          "特征": [
+            "魁梧"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "测试模型006"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m007.png",
+      "source_path": "data/sources/model/pngs/m007.png",
+      "size_bytes": 54784,
+      "svn": {
+        "last_changed_revision": "1395008",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m007.png",
+        "tags": {
+          "物种": [
+            "精灵"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "地域": [
+            "北境"
+          ],
+          "势力": [
+            "邪道"
+          ],
+          "职业": [
+            "弓手"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "年龄": [
+            "少年"
+          ],
+          "衣着": [
+            "轻甲"
+          ],
+          "特征": [
+            "苗条"
+          ],
+          "专属NPC": [
+            "是"
+          ],
+          "备注": [
+            "测试模型007"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m008.png",
+      "source_path": "data/sources/model/pngs/m008.png",
+      "size_bytes": 55296,
+      "svn": {
+        "last_changed_revision": "1395009",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m008.png",
+        "tags": {
+          "物种": [
+            "精灵"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "地域": [
+            "南疆"
+          ],
+          "势力": [
+            "中立"
+          ],
+          "职业": [
+            "战士"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "年龄": [
+            "青年"
+          ],
+          "衣着": [
+            "铠甲"
+          ],
+          "特征": [
+            "威严"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "测试模型008"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m009.png",
+      "source_path": "data/sources/model/pngs/m009.png",
+      "size_bytes": 55808,
+      "svn": {
+        "last_changed_revision": "1395010",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m009.png",
+        "tags": {
+          "物种": [
+            "精灵"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "地域": [
+            "东海"
+          ],
+          "势力": [
+            "正道"
+          ],
+          "职业": [
+            "刺客"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "年龄": [
+            "中年"
+          ],
+          "衣着": [
+            "布衣"
+          ],
+          "特征": [
+            "秀气"
+          ],
+          "专属NPC": [
+            "是"
+          ],
+          "备注": [
+            "测试模型009"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m010.png",
+      "source_path": "data/sources/model/pngs/m010.png",
+      "size_bytes": 56320,
+      "svn": {
+        "last_changed_revision": "1395011",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m010.png",
+        "tags": {
+          "物种": [
+            "精灵"
+          ],
+          "性别": [
+            "女性"
+          ],
+          "地域": [
+            "中原"
+          ],
+          "势力": [
+            "邪道"
+          ],
+          "职业": [
+            "剑客"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "年龄": [
+            "老年"
+          ],
+          "衣着": [
+            "长袍"
+          ],
+          "特征": [
+            "魁梧"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "测试模型010"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m011.png",
+      "source_path": "data/sources/model/pngs/m011.png",
+      "size_bytes": 56832,
+      "svn": {
+        "last_changed_revision": "1395012",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m011.png",
+        "tags": {
+          "物种": [
+            "精灵"
+          ],
+          "性别": [
+            "女性"
+          ],
+          "地域": [
+            "西域"
+          ],
+          "势力": [
+            "中立"
+          ],
+          "职业": [
+            "法师"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "年龄": [
+            "少年"
+          ],
+          "衣着": [
+            "轻甲"
+          ],
+          "特征": [
+            "苗条"
+          ],
+          "专属NPC": [
+            "是"
+          ],
+          "备注": [
+            "测试模型011"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m012.png",
+      "source_path": "data/sources/model/pngs/m012.png",
+      "size_bytes": 57344,
+      "svn": {
+        "last_changed_revision": "1395013",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m012.png",
+        "tags": {
+          "物种": [
+            "精灵"
+          ],
+          "性别": [
+            "女性"
+          ],
+          "地域": [
+            "北境"
+          ],
+          "势力": [
+            "正道"
+          ],
+          "职业": [
+            "弓手"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "年龄": [
+            "青年"
+          ],
+          "衣着": [
+            "铠甲"
+          ],
+          "特征": [
+            "威严"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "测试模型012"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m013.png",
+      "source_path": "data/sources/model/pngs/m013.png",
+      "size_bytes": 57856,
+      "svn": {
+        "last_changed_revision": "1395014",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m013.png",
+        "tags": {
+          "物种": [
+            "兽人"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "地域": [
+            "南疆"
+          ],
+          "势力": [
+            "邪道"
+          ],
+          "职业": [
+            "战士"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "年龄": [
+            "中年"
+          ],
+          "衣着": [
+            "布衣"
+          ],
+          "特征": [
+            "秀气"
+          ],
+          "专属NPC": [
+            "是"
+          ],
+          "备注": [
+            "测试模型013"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m014.png",
+      "source_path": "data/sources/model/pngs/m014.png",
+      "size_bytes": 58368,
+      "svn": {
+        "last_changed_revision": "1395015",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m014.png",
+        "tags": {
+          "物种": [
+            "兽人"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "地域": [
+            "东海"
+          ],
+          "势力": [
+            "中立"
+          ],
+          "职业": [
+            "刺客"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "年龄": [
+            "老年"
+          ],
+          "衣着": [
+            "长袍"
+          ],
+          "特征": [
+            "魁梧"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "测试模型014"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m015.png",
+      "source_path": "data/sources/model/pngs/m015.png",
+      "size_bytes": 58880,
+      "svn": {
+        "last_changed_revision": "1395016",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m015.png",
+        "tags": {
+          "物种": [
+            "兽人"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "地域": [
+            "中原"
+          ],
+          "势力": [
+            "正道"
+          ],
+          "职业": [
+            "剑客"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "年龄": [
+            "少年"
+          ],
+          "衣着": [
+            "轻甲"
+          ],
+          "特征": [
+            "苗条"
+          ],
+          "专属NPC": [
+            "是"
+          ],
+          "备注": [
+            "测试模型015"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m016.png",
+      "source_path": "data/sources/model/pngs/m016.png",
+      "size_bytes": 59392,
+      "svn": {
+        "last_changed_revision": "1395017",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m016.png",
+        "tags": {
+          "物种": [
+            "兽人"
+          ],
+          "性别": [
+            "女性"
+          ],
+          "地域": [
+            "西域"
+          ],
+          "势力": [
+            "邪道"
+          ],
+          "职业": [
+            "法师"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "年龄": [
+            "青年"
+          ],
+          "衣着": [
+            "铠甲"
+          ],
+          "特征": [
+            "威严"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "测试模型016"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m017.png",
+      "source_path": "data/sources/model/pngs/m017.png",
+      "size_bytes": 59904,
+      "svn": {
+        "last_changed_revision": "1395018",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m017.png",
+        "tags": {
+          "物种": [
+            "兽人"
+          ],
+          "性别": [
+            "女性"
+          ],
+          "地域": [
+            "北境"
+          ],
+          "势力": [
+            "中立"
+          ],
+          "职业": [
+            "弓手"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "年龄": [
+            "中年"
+          ],
+          "衣着": [
+            "布衣"
+          ],
+          "特征": [
+            "秀气"
+          ],
+          "专属NPC": [
+            "是"
+          ],
+          "备注": [
+            "测试模型017"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m018.png",
+      "source_path": "data/sources/model/pngs/m018.png",
+      "size_bytes": 60416,
+      "svn": {
+        "last_changed_revision": "1395019",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m018.png",
+        "tags": {
+          "物种": [
+            "兽人"
+          ],
+          "性别": [
+            "女性"
+          ],
+          "地域": [
+            "南疆"
+          ],
+          "势力": [
+            "正道"
+          ],
+          "职业": [
+            "战士"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "年龄": [
+            "老年"
+          ],
+          "衣着": [
+            "长袍"
+          ],
+          "特征": [
+            "魁梧"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "测试模型018"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m019.png",
+      "source_path": "data/sources/model/pngs/m019.png",
+      "size_bytes": 60928,
+      "svn": {
+        "last_changed_revision": "1395020",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m019.png",
+        "tags": {
+          "物种": [
+            "魔族"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "地域": [
+            "东海"
+          ],
+          "势力": [
+            "邪道"
+          ],
+          "职业": [
+            "刺客"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "年龄": [
+            "少年"
+          ],
+          "衣着": [
+            "轻甲"
+          ],
+          "特征": [
+            "苗条"
+          ],
+          "专属NPC": [
+            "是"
+          ],
+          "备注": [
+            "测试模型019"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m020.png",
+      "source_path": "data/sources/model/pngs/m020.png",
+      "size_bytes": 61440,
+      "svn": {
+        "last_changed_revision": "1395021",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m020.png",
+        "tags": {
+          "物种": [
+            "魔族"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "地域": [
+            "中原"
+          ],
+          "势力": [
+            "中立"
+          ],
+          "职业": [
+            "剑客"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "年龄": [
+            "青年"
+          ],
+          "衣着": [
+            "铠甲"
+          ],
+          "特征": [
+            "威严"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "测试模型020"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m021.png",
+      "source_path": "data/sources/model/pngs/m021.png",
+      "size_bytes": 61952,
+      "svn": {
+        "last_changed_revision": "1395022",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m021.png",
+        "tags": {
+          "物种": [
+            "魔族"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "地域": [
+            "西域"
+          ],
+          "势力": [
+            "正道"
+          ],
+          "职业": [
+            "法师"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "年龄": [
+            "中年"
+          ],
+          "衣着": [
+            "布衣"
+          ],
+          "特征": [
+            "秀气"
+          ],
+          "专属NPC": [
+            "是"
+          ],
+          "备注": [
+            "测试模型021"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m022.png",
+      "source_path": "data/sources/model/pngs/m022.png",
+      "size_bytes": 62464,
+      "svn": {
+        "last_changed_revision": "1395023",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m022.png",
+        "tags": {
+          "物种": [
+            "魔族"
+          ],
+          "性别": [
+            "女性"
+          ],
+          "地域": [
+            "北境"
+          ],
+          "势力": [
+            "邪道"
+          ],
+          "职业": [
+            "弓手"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "年龄": [
+            "老年"
+          ],
+          "衣着": [
+            "长袍"
+          ],
+          "特征": [
+            "魁梧"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "测试模型022"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m023.png",
+      "source_path": "data/sources/model/pngs/m023.png",
+      "size_bytes": 62976,
+      "svn": {
+        "last_changed_revision": "1395024",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m023.png",
+        "tags": {
+          "物种": [
+            "魔族"
+          ],
+          "性别": [
+            "女性"
+          ],
+          "地域": [
+            "南疆"
+          ],
+          "势力": [
+            "中立"
+          ],
+          "职业": [
+            "战士"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "年龄": [
+            "少年"
+          ],
+          "衣着": [
+            "轻甲"
+          ],
+          "特征": [
+            "苗条"
+          ],
+          "专属NPC": [
+            "是"
+          ],
+          "备注": [
+            "测试模型023"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m024.png",
+      "source_path": "data/sources/model/pngs/m024.png",
+      "size_bytes": 63488,
+      "svn": {
+        "last_changed_revision": "1395025",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m024.png",
+        "tags": {
+          "物种": [
+            "魔族"
+          ],
+          "性别": [
+            "女性"
+          ],
+          "地域": [
+            "东海"
+          ],
+          "势力": [
+            "正道"
+          ],
+          "职业": [
+            "刺客"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "年龄": [
+            "青年"
+          ],
+          "衣着": [
+            "铠甲"
+          ],
+          "特征": [
+            "威严"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "测试模型024"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m025.png",
+      "source_path": "data/sources/model/pngs/m025.png",
+      "size_bytes": 64000,
+      "svn": {
+        "last_changed_revision": "1395026",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m025.png",
+        "tags": {
+          "物种": [
+            "龙族"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "地域": [
+            "中原"
+          ],
+          "势力": [
+            "邪道"
+          ],
+          "职业": [
+            "剑客"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "年龄": [
+            "中年"
+          ],
+          "衣着": [
+            "布衣"
+          ],
+          "特征": [
+            "秀气"
+          ],
+          "专属NPC": [
+            "是"
+          ],
+          "备注": [
+            "测试模型025"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m026.png",
+      "source_path": "data/sources/model/pngs/m026.png",
+      "size_bytes": 64512,
+      "svn": {
+        "last_changed_revision": "1395027",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m026.png",
+        "tags": {
+          "物种": [
+            "龙族"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "地域": [
+            "西域"
+          ],
+          "势力": [
+            "中立"
+          ],
+          "职业": [
+            "法师"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "年龄": [
+            "老年"
+          ],
+          "衣着": [
+            "长袍"
+          ],
+          "特征": [
+            "魁梧"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "测试模型026"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m027.png",
+      "source_path": "data/sources/model/pngs/m027.png",
+      "size_bytes": 65024,
+      "svn": {
+        "last_changed_revision": "1395028",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m027.png",
+        "tags": {
+          "物种": [
+            "龙族"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "地域": [
+            "北境"
+          ],
+          "势力": [
+            "正道"
+          ],
+          "职业": [
+            "弓手"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "年龄": [
+            "少年"
+          ],
+          "衣着": [
+            "轻甲"
+          ],
+          "特征": [
+            "苗条"
+          ],
+          "专属NPC": [
+            "是"
+          ],
+          "备注": [
+            "测试模型027"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m028.png",
+      "source_path": "data/sources/model/pngs/m028.png",
+      "size_bytes": 65536,
+      "svn": {
+        "last_changed_revision": "1395029",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m028.png",
+        "tags": {
+          "物种": [
+            "龙族"
+          ],
+          "性别": [
+            "女性"
+          ],
+          "地域": [
+            "南疆"
+          ],
+          "势力": [
+            "邪道"
+          ],
+          "职业": [
+            "战士"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "年龄": [
+            "青年"
+          ],
+          "衣着": [
+            "铠甲"
+          ],
+          "特征": [
+            "威严"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "测试模型028"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m029.png",
+      "source_path": "data/sources/model/pngs/m029.png",
+      "size_bytes": 66048,
+      "svn": {
+        "last_changed_revision": "1395030",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m029.png",
+        "tags": {
+          "物种": [
+            "龙族"
+          ],
+          "性别": [
+            "女性"
+          ],
+          "地域": [
+            "东海"
+          ],
+          "势力": [
+            "中立"
+          ],
+          "职业": [
+            "刺客"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "年龄": [
+            "中年"
+          ],
+          "衣着": [
+            "布衣"
+          ],
+          "特征": [
+            "秀气"
+          ],
+          "专属NPC": [
+            "是"
+          ],
+          "备注": [
+            "测试模型029"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m030.png",
+      "source_path": "data/sources/model/pngs/m030.png",
+      "size_bytes": 66560,
+      "svn": {
+        "last_changed_revision": "1395031",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m030.png",
+        "tags": {
+          "物种": [
+            "龙族"
+          ],
+          "性别": [
+            "女性"
+          ],
+          "地域": [
+            "中原"
+          ],
+          "势力": [
+            "正道"
+          ],
+          "职业": [
+            "剑客"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "年龄": [
+            "老年"
+          ],
+          "衣着": [
+            "长袍"
+          ],
+          "特征": [
+            "魁梧"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "测试模型030"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m031_noprev.png",
+      "source_path": "data/sources/model/pngs/m031_noprev.png",
+      "size_bytes": 40960,
+      "svn": {
+        "last_changed_revision": "1395032",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "tags": {
+          "物种": [
+            "人类"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "备注": [
+            "无预览图测试1"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m032_noprev.png",
+      "source_path": "data/sources/model/pngs/m032_noprev.png",
+      "size_bytes": 40960,
+      "svn": {
+        "last_changed_revision": "1395033",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "tags": {
+          "物种": [
+            "精灵"
+          ],
+          "性别": [
+            "女性"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "备注": [
+            "无预览图测试2"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m033_noprev.png",
+      "source_path": "data/sources/model/pngs/m033_noprev.png",
+      "size_bytes": 40960,
+      "svn": {
+        "last_changed_revision": "1395034",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "tags": {
+          "物种": [
+            "兽人"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "备注": [
+            "无预览图测试3"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m034_noprev.png",
+      "source_path": "data/sources/model/pngs/m034_noprev.png",
+      "size_bytes": 40960,
+      "svn": {
+        "last_changed_revision": "1395035",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "tags": {
+          "物种": [
+            "魔族"
+          ],
+          "性别": [
+            "女性"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "备注": [
+            "无预览图测试4"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m035_noprev.png",
+      "source_path": "data/sources/model/pngs/m035_noprev.png",
+      "size_bytes": 40960,
+      "svn": {
+        "last_changed_revision": "1395036",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "tags": {
+          "物种": [
+            "龙族"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "备注": [
+            "无预览图测试5"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m036_extra.png",
+      "source_path": "data/sources/model/pngs/m036_extra.png",
+      "size_bytes": 53760,
+      "svn": {
+        "last_changed_revision": "1395037",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m036_extra.png",
+        "tags": {
+          "物种": [
+            "精灵"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "地域": [
+            "西域"
+          ],
+          "势力": [
+            "正道"
+          ],
+          "职业": [
+            "法师"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "年龄": [
+            "青年"
+          ],
+          "衣着": [
+            "铠甲"
+          ],
+          "特征": [
+            "威严"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "补充模型036"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m037_extra.png",
+      "source_path": "data/sources/model/pngs/m037_extra.png",
+      "size_bytes": 53888,
+      "svn": {
+        "last_changed_revision": "1395038",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m037_extra.png",
+        "tags": {
+          "物种": [
+            "兽人"
+          ],
+          "性别": [
+            "女性"
+          ],
+          "地域": [
+            "北境"
+          ],
+          "势力": [
+            "邪道"
+          ],
+          "职业": [
+            "弓手"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "年龄": [
+            "中年"
+          ],
+          "衣着": [
+            "布衣"
+          ],
+          "特征": [
+            "秀气"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "补充模型037"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m038_extra.png",
+      "source_path": "data/sources/model/pngs/m038_extra.png",
+      "size_bytes": 54016,
+      "svn": {
+        "last_changed_revision": "1395039",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m038_extra.png",
+        "tags": {
+          "物种": [
+            "魔族"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "地域": [
+            "南疆"
+          ],
+          "势力": [
+            "中立"
+          ],
+          "职业": [
+            "战士"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "年龄": [
+            "老年"
+          ],
+          "衣着": [
+            "长袍"
+          ],
+          "特征": [
+            "魁梧"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "补充模型038"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m039_extra.png",
+      "source_path": "data/sources/model/pngs/m039_extra.png",
+      "size_bytes": 54144,
+      "svn": {
+        "last_changed_revision": "1395040",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m039_extra.png",
+        "tags": {
+          "物种": [
+            "龙族"
+          ],
+          "性别": [
+            "女性"
+          ],
+          "地域": [
+            "东海"
+          ],
+          "势力": [
+            "正道"
+          ],
+          "职业": [
+            "刺客"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "年龄": [
+            "少年"
+          ],
+          "衣着": [
+            "轻甲"
+          ],
+          "特征": [
+            "苗条"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "补充模型039"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m040_extra.png",
+      "source_path": "data/sources/model/pngs/m040_extra.png",
+      "size_bytes": 54272,
+      "svn": {
+        "last_changed_revision": "1395041",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m040_extra.png",
+        "tags": {
+          "物种": [
+            "人类"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "地域": [
+            "中原"
+          ],
+          "势力": [
+            "邪道"
+          ],
+          "职业": [
+            "剑客"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "年龄": [
+            "青年"
+          ],
+          "衣着": [
+            "铠甲"
+          ],
+          "特征": [
+            "威严"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "补充模型040"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m041_extra.png",
+      "source_path": "data/sources/model/pngs/m041_extra.png",
+      "size_bytes": 54400,
+      "svn": {
+        "last_changed_revision": "1395042",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m041_extra.png",
+        "tags": {
+          "物种": [
+            "精灵"
+          ],
+          "性别": [
+            "女性"
+          ],
+          "地域": [
+            "西域"
+          ],
+          "势力": [
+            "中立"
+          ],
+          "职业": [
+            "法师"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "年龄": [
+            "中年"
+          ],
+          "衣着": [
+            "布衣"
+          ],
+          "特征": [
+            "秀气"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "补充模型041"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m042_extra.png",
+      "source_path": "data/sources/model/pngs/m042_extra.png",
+      "size_bytes": 54528,
+      "svn": {
+        "last_changed_revision": "1395043",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m042_extra.png",
+        "tags": {
+          "物种": [
+            "兽人"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "地域": [
+            "北境"
+          ],
+          "势力": [
+            "正道"
+          ],
+          "职业": [
+            "弓手"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "年龄": [
+            "老年"
+          ],
+          "衣着": [
+            "长袍"
+          ],
+          "特征": [
+            "魁梧"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "补充模型042"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m043_extra.png",
+      "source_path": "data/sources/model/pngs/m043_extra.png",
+      "size_bytes": 54656,
+      "svn": {
+        "last_changed_revision": "1395044",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m043_extra.png",
+        "tags": {
+          "物种": [
+            "魔族"
+          ],
+          "性别": [
+            "女性"
+          ],
+          "地域": [
+            "南疆"
+          ],
+          "势力": [
+            "邪道"
+          ],
+          "职业": [
+            "战士"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "年龄": [
+            "少年"
+          ],
+          "衣着": [
+            "轻甲"
+          ],
+          "特征": [
+            "苗条"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "补充模型043"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m044_extra.png",
+      "source_path": "data/sources/model/pngs/m044_extra.png",
+      "size_bytes": 54784,
+      "svn": {
+        "last_changed_revision": "1395045",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m044_extra.png",
+        "tags": {
+          "物种": [
+            "龙族"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "地域": [
+            "东海"
+          ],
+          "势力": [
+            "中立"
+          ],
+          "职业": [
+            "刺客"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "年龄": [
+            "青年"
+          ],
+          "衣着": [
+            "铠甲"
+          ],
+          "特征": [
+            "威严"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "补充模型044"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m045_extra.png",
+      "source_path": "data/sources/model/pngs/m045_extra.png",
+      "size_bytes": 54912,
+      "svn": {
+        "last_changed_revision": "1395046",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m045_extra.png",
+        "tags": {
+          "物种": [
+            "人类"
+          ],
+          "性别": [
+            "女性"
+          ],
+          "地域": [
+            "中原"
+          ],
+          "势力": [
+            "正道"
+          ],
+          "职业": [
+            "剑客"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "年龄": [
+            "中年"
+          ],
+          "衣着": [
+            "布衣"
+          ],
+          "特征": [
+            "秀气"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "补充模型045"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m046_extra.png",
+      "source_path": "data/sources/model/pngs/m046_extra.png",
+      "size_bytes": 55040,
+      "svn": {
+        "last_changed_revision": "1395047",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m046_extra.png",
+        "tags": {
+          "物种": [
+            "精灵"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "地域": [
+            "西域"
+          ],
+          "势力": [
+            "邪道"
+          ],
+          "职业": [
+            "法师"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "年龄": [
+            "老年"
+          ],
+          "衣着": [
+            "长袍"
+          ],
+          "特征": [
+            "魁梧"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "补充模型046"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m047_extra.png",
+      "source_path": "data/sources/model/pngs/m047_extra.png",
+      "size_bytes": 55168,
+      "svn": {
+        "last_changed_revision": "1395048",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m047_extra.png",
+        "tags": {
+          "物种": [
+            "兽人"
+          ],
+          "性别": [
+            "女性"
+          ],
+          "地域": [
+            "北境"
+          ],
+          "势力": [
+            "中立"
+          ],
+          "职业": [
+            "弓手"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "年龄": [
+            "少年"
+          ],
+          "衣着": [
+            "轻甲"
+          ],
+          "特征": [
+            "苗条"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "补充模型047"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m048_extra.png",
+      "source_path": "data/sources/model/pngs/m048_extra.png",
+      "size_bytes": 55296,
+      "svn": {
+        "last_changed_revision": "1395049",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m048_extra.png",
+        "tags": {
+          "物种": [
+            "魔族"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "地域": [
+            "南疆"
+          ],
+          "势力": [
+            "正道"
+          ],
+          "职业": [
+            "战士"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "年龄": [
+            "青年"
+          ],
+          "衣着": [
+            "铠甲"
+          ],
+          "特征": [
+            "威严"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "补充模型048"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m049_extra.png",
+      "source_path": "data/sources/model/pngs/m049_extra.png",
+      "size_bytes": 55424,
+      "svn": {
+        "last_changed_revision": "1395050",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m049_extra.png",
+        "tags": {
+          "物种": [
+            "龙族"
+          ],
+          "性别": [
+            "女性"
+          ],
+          "地域": [
+            "东海"
+          ],
+          "势力": [
+            "邪道"
+          ],
+          "职业": [
+            "刺客"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "年龄": [
+            "中年"
+          ],
+          "衣着": [
+            "布衣"
+          ],
+          "特征": [
+            "秀气"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "补充模型049"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/model/pngs/m050_extra.png",
+      "source_path": "data/sources/model/pngs/m050_extra.png",
+      "size_bytes": 55552,
+      "svn": {
+        "last_changed_revision": "1395051",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "png_rel_path": "pngs/m050_extra.png",
+        "tags": {
+          "物种": [
+            "人类"
+          ],
+          "性别": [
+            "男性"
+          ],
+          "地域": [
+            "中原"
+          ],
+          "势力": [
+            "中立"
+          ],
+          "职业": [
+            "剑客"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "年龄": [
+            "老年"
+          ],
+          "衣着": [
+            "长袍"
+          ],
+          "特征": [
+            "魁梧"
+          ],
+          "专属NPC": [
+            "否"
+          ],
+          "备注": [
+            "补充模型050"
+          ]
+        }
+      }
+    }
+  ]
+}

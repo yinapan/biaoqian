@@ -1,0 +1,1507 @@
+{
+  "version": 1,
+  "generated_at": "2026-06-27 10:00:00",
+  "meta": {
+    "module": "animator",
+    "description": "animator fixture for integration tests",
+    "total": 30
+  },
+  "resources": [
+    {
+      "resource_id": "data/sources/animator/gifs/a001_front.gif",
+      "source_path": "data/sources/animator/gifs/a001_front.gif",
+      "size_bytes": 102400,
+      "svn": {
+        "last_changed_revision": "1395001",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a001_front.gif",
+        "gif_rel_path_left": "gifs/a001_left.gif",
+        "tags": {
+          "资源类型": [
+            "角色动作"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "动作类型": [
+            "攻击"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "少林"
+          ],
+          "武器类型": [
+            "剑"
+          ],
+          "通用动作分类": [
+            "普攻"
+          ],
+          "骑乘类型": [
+            "马"
+          ],
+          "轻功类型": [
+            "轻身"
+          ],
+          "核心动作": [
+            "挥砍"
+          ],
+          "文件类型": [
+            "FBX"
+          ],
+          "AI分析的标签": [
+            "ai标签1a",
+            "ai标签1b"
+          ]
+        },
+        "action_id": 1,
+        "description": "动作序列001，角色执行攻击动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a002_front.gif",
+      "source_path": "data/sources/animator/gifs/a002_front.gif",
+      "size_bytes": 104448,
+      "svn": {
+        "last_changed_revision": "1395002",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a002_front.gif",
+        "gif_rel_path_left": "gifs/a002_left.gif",
+        "tags": {
+          "资源类型": [
+            "骑乘动作"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "动作类型": [
+            "防御"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "武当"
+          ],
+          "武器类型": [
+            "刀"
+          ],
+          "通用动作分类": [
+            "技能1"
+          ],
+          "骑乘类型": [],
+          "轻功类型": [],
+          "核心动作": [
+            "突刺"
+          ],
+          "文件类型": [
+            "MAX"
+          ],
+          "AI分析的标签": [
+            "ai标签2a",
+            "ai标签2b"
+          ]
+        },
+        "action_id": 2,
+        "description": "动作序列002，角色执行防御动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a003_front.gif",
+      "source_path": "data/sources/animator/gifs/a003_front.gif",
+      "size_bytes": 106496,
+      "svn": {
+        "last_changed_revision": "1395003",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a003_front.gif",
+        "gif_rel_path_left": "gifs/a003_left.gif",
+        "tags": {
+          "资源类型": [
+            "技能动作"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "动作类型": [
+            "移动"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "峨眉"
+          ],
+          "武器类型": [
+            "棍"
+          ],
+          "通用动作分类": [
+            "技能2"
+          ],
+          "骑乘类型": [],
+          "轻功类型": [],
+          "核心动作": [
+            "格挡"
+          ],
+          "文件类型": [
+            "FBX"
+          ],
+          "AI分析的标签": [
+            "ai标签3a",
+            "ai标签3b"
+          ]
+        },
+        "action_id": 3,
+        "description": "动作序列003，角色执行移动动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a004_front.gif",
+      "source_path": "data/sources/animator/gifs/a004_front.gif",
+      "size_bytes": 108544,
+      "svn": {
+        "last_changed_revision": "1395004",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a004_front.gif",
+        "gif_rel_path_left": "gifs/a004_left.gif",
+        "tags": {
+          "资源类型": [
+            "角色动作"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "动作类型": [
+            "技能"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "丐帮"
+          ],
+          "武器类型": [
+            "弓"
+          ],
+          "通用动作分类": [
+            "被击"
+          ],
+          "骑乘类型": [],
+          "轻功类型": [],
+          "核心动作": [
+            "跳跃"
+          ],
+          "文件类型": [
+            "MAX"
+          ],
+          "AI分析的标签": [
+            "ai标签4a",
+            "ai标签4b"
+          ]
+        },
+        "action_id": 4,
+        "description": "动作序列004，角色执行技能动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a005_front.gif",
+      "source_path": "data/sources/animator/gifs/a005_front.gif",
+      "size_bytes": 110592,
+      "svn": {
+        "last_changed_revision": "1395005",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a005_front.gif",
+        "gif_rel_path_left": "gifs/a005_left.gif",
+        "tags": {
+          "资源类型": [
+            "骑乘动作"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "动作类型": [
+            "待机"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "明教"
+          ],
+          "武器类型": [
+            "拳"
+          ],
+          "通用动作分类": [
+            "死亡"
+          ],
+          "骑乘类型": [],
+          "轻功类型": [
+            "御剑"
+          ],
+          "核心动作": [
+            "翻滚"
+          ],
+          "文件类型": [
+            "FBX"
+          ],
+          "AI分析的标签": [
+            "ai标签5a",
+            "ai标签5b"
+          ]
+        },
+        "action_id": 5,
+        "description": "动作序列005，角色执行待机动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a006_front.gif",
+      "source_path": "data/sources/animator/gifs/a006_front.gif",
+      "size_bytes": 112640,
+      "svn": {
+        "last_changed_revision": "1395006",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a006_front.gif",
+        "gif_rel_path_left": "gifs/a006_left.gif",
+        "tags": {
+          "资源类型": [
+            "技能动作"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "动作类型": [
+            "死亡"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "少林"
+          ],
+          "武器类型": [
+            "剑"
+          ],
+          "通用动作分类": [
+            "普攻"
+          ],
+          "骑乘类型": [
+            "异兽"
+          ],
+          "轻功类型": [],
+          "核心动作": [
+            "挥砍"
+          ],
+          "文件类型": [
+            "MAX"
+          ],
+          "AI分析的标签": [
+            "ai标签6a",
+            "ai标签6b"
+          ]
+        },
+        "action_id": 6,
+        "description": "动作序列006，角色执行死亡动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a007_front.gif",
+      "source_path": "data/sources/animator/gifs/a007_front.gif",
+      "size_bytes": 114688,
+      "svn": {
+        "last_changed_revision": "1395007",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a007_front.gif",
+        "gif_rel_path_left": "gifs/a007_left.gif",
+        "tags": {
+          "资源类型": [
+            "角色动作"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "动作类型": [
+            "攻击"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "武当"
+          ],
+          "武器类型": [
+            "刀"
+          ],
+          "通用动作分类": [
+            "技能1"
+          ],
+          "骑乘类型": [],
+          "轻功类型": [],
+          "核心动作": [
+            "突刺"
+          ],
+          "文件类型": [
+            "FBX"
+          ],
+          "AI分析的标签": [
+            "ai标签7a",
+            "ai标签7b"
+          ]
+        },
+        "action_id": 7,
+        "description": "动作序列007，角色执行攻击动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a008_front.gif",
+      "source_path": "data/sources/animator/gifs/a008_front.gif",
+      "size_bytes": 116736,
+      "svn": {
+        "last_changed_revision": "1395008",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a008_front.gif",
+        "gif_rel_path_left": "gifs/a008_left.gif",
+        "tags": {
+          "资源类型": [
+            "骑乘动作"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "动作类型": [
+            "防御"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "峨眉"
+          ],
+          "武器类型": [
+            "棍"
+          ],
+          "通用动作分类": [
+            "技能2"
+          ],
+          "骑乘类型": [],
+          "轻功类型": [],
+          "核心动作": [
+            "格挡"
+          ],
+          "文件类型": [
+            "MAX"
+          ],
+          "AI分析的标签": [
+            "ai标签8a",
+            "ai标签8b"
+          ]
+        },
+        "action_id": 8,
+        "description": "动作序列008，角色执行防御动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a009_front.gif",
+      "source_path": "data/sources/animator/gifs/a009_front.gif",
+      "size_bytes": 118784,
+      "svn": {
+        "last_changed_revision": "1395009",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a009_front.gif",
+        "gif_rel_path_left": "gifs/a009_left.gif",
+        "tags": {
+          "资源类型": [
+            "技能动作"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "动作类型": [
+            "移动"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "丐帮"
+          ],
+          "武器类型": [
+            "弓"
+          ],
+          "通用动作分类": [
+            "被击"
+          ],
+          "骑乘类型": [],
+          "轻功类型": [
+            "踏云"
+          ],
+          "核心动作": [
+            "跳跃"
+          ],
+          "文件类型": [
+            "FBX"
+          ],
+          "AI分析的标签": [
+            "ai标签9a",
+            "ai标签9b"
+          ]
+        },
+        "action_id": 9,
+        "description": "动作序列009，角色执行移动动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a010_front.gif",
+      "source_path": "data/sources/animator/gifs/a010_front.gif",
+      "size_bytes": 120832,
+      "svn": {
+        "last_changed_revision": "1395010",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a010_front.gif",
+        "gif_rel_path_left": "gifs/a010_left.gif",
+        "tags": {
+          "资源类型": [
+            "角色动作"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "动作类型": [
+            "技能"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "明教"
+          ],
+          "武器类型": [
+            "拳"
+          ],
+          "通用动作分类": [
+            "死亡"
+          ],
+          "骑乘类型": [],
+          "轻功类型": [],
+          "核心动作": [
+            "翻滚"
+          ],
+          "文件类型": [
+            "MAX"
+          ],
+          "AI分析的标签": [
+            "ai标签10a",
+            "ai标签10b"
+          ]
+        },
+        "action_id": 10,
+        "description": "动作序列010，角色执行技能动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a011_front.gif",
+      "source_path": "data/sources/animator/gifs/a011_front.gif",
+      "size_bytes": 122880,
+      "svn": {
+        "last_changed_revision": "1395011",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a011_front.gif",
+        "gif_rel_path_left": "gifs/a011_left.gif",
+        "tags": {
+          "资源类型": [
+            "骑乘动作"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "动作类型": [
+            "待机"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "少林"
+          ],
+          "武器类型": [
+            "剑"
+          ],
+          "通用动作分类": [
+            "普攻"
+          ],
+          "骑乘类型": [
+            "飞鸟"
+          ],
+          "轻功类型": [],
+          "核心动作": [
+            "挥砍"
+          ],
+          "文件类型": [
+            "FBX"
+          ],
+          "AI分析的标签": [
+            "ai标签11a",
+            "ai标签11b"
+          ]
+        },
+        "action_id": 11,
+        "description": "动作序列011，角色执行待机动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a012_front.gif",
+      "source_path": "data/sources/animator/gifs/a012_front.gif",
+      "size_bytes": 124928,
+      "svn": {
+        "last_changed_revision": "1395012",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a012_front.gif",
+        "gif_rel_path_left": "gifs/a012_left.gif",
+        "tags": {
+          "资源类型": [
+            "技能动作"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "动作类型": [
+            "死亡"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "武当"
+          ],
+          "武器类型": [
+            "刀"
+          ],
+          "通用动作分类": [
+            "技能1"
+          ],
+          "骑乘类型": [],
+          "轻功类型": [],
+          "核心动作": [
+            "突刺"
+          ],
+          "文件类型": [
+            "MAX"
+          ],
+          "AI分析的标签": [
+            "ai标签12a",
+            "ai标签12b"
+          ]
+        },
+        "action_id": 12,
+        "description": "动作序列012，角色执行死亡动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a013_front.gif",
+      "source_path": "data/sources/animator/gifs/a013_front.gif",
+      "size_bytes": 126976,
+      "svn": {
+        "last_changed_revision": "1395013",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a013_front.gif",
+        "gif_rel_path_left": "gifs/a013_left.gif",
+        "tags": {
+          "资源类型": [
+            "角色动作"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "动作类型": [
+            "攻击"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "峨眉"
+          ],
+          "武器类型": [
+            "棍"
+          ],
+          "通用动作分类": [
+            "技能2"
+          ],
+          "骑乘类型": [],
+          "轻功类型": [
+            "轻身"
+          ],
+          "核心动作": [
+            "格挡"
+          ],
+          "文件类型": [
+            "FBX"
+          ],
+          "AI分析的标签": [
+            "ai标签13a",
+            "ai标签13b"
+          ]
+        },
+        "action_id": 13,
+        "description": "动作序列013，角色执行攻击动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a014_front.gif",
+      "source_path": "data/sources/animator/gifs/a014_front.gif",
+      "size_bytes": 129024,
+      "svn": {
+        "last_changed_revision": "1395014",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a014_front.gif",
+        "gif_rel_path_left": "gifs/a014_left.gif",
+        "tags": {
+          "资源类型": [
+            "骑乘动作"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "动作类型": [
+            "防御"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "丐帮"
+          ],
+          "武器类型": [
+            "弓"
+          ],
+          "通用动作分类": [
+            "被击"
+          ],
+          "骑乘类型": [],
+          "轻功类型": [],
+          "核心动作": [
+            "跳跃"
+          ],
+          "文件类型": [
+            "MAX"
+          ],
+          "AI分析的标签": [
+            "ai标签14a",
+            "ai标签14b"
+          ]
+        },
+        "action_id": 14,
+        "description": "动作序列014，角色执行防御动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a015_front.gif",
+      "source_path": "data/sources/animator/gifs/a015_front.gif",
+      "size_bytes": 131072,
+      "svn": {
+        "last_changed_revision": "1395015",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a015_front.gif",
+        "gif_rel_path_left": "gifs/a015_left.gif",
+        "tags": {
+          "资源类型": [
+            "技能动作"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "动作类型": [
+            "移动"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "明教"
+          ],
+          "武器类型": [
+            "拳"
+          ],
+          "通用动作分类": [
+            "死亡"
+          ],
+          "骑乘类型": [],
+          "轻功类型": [],
+          "核心动作": [
+            "翻滚"
+          ],
+          "文件类型": [
+            "FBX"
+          ],
+          "AI分析的标签": [
+            "ai标签15a",
+            "ai标签15b"
+          ]
+        },
+        "action_id": 15,
+        "description": "动作序列015，角色执行移动动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a016_front.gif",
+      "source_path": "data/sources/animator/gifs/a016_front.gif",
+      "size_bytes": 133120,
+      "svn": {
+        "last_changed_revision": "1395016",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a016_front.gif",
+        "gif_rel_path_left": "gifs/a016_left.gif",
+        "tags": {
+          "资源类型": [
+            "角色动作"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "动作类型": [
+            "技能"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "少林"
+          ],
+          "武器类型": [
+            "剑"
+          ],
+          "通用动作分类": [
+            "普攻"
+          ],
+          "骑乘类型": [
+            "马"
+          ],
+          "轻功类型": [],
+          "核心动作": [
+            "挥砍"
+          ],
+          "文件类型": [
+            "MAX"
+          ],
+          "AI分析的标签": [
+            "ai标签16a",
+            "ai标签16b"
+          ]
+        },
+        "action_id": 16,
+        "description": "动作序列016，角色执行技能动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a017_front.gif",
+      "source_path": "data/sources/animator/gifs/a017_front.gif",
+      "size_bytes": 135168,
+      "svn": {
+        "last_changed_revision": "1395017",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a017_front.gif",
+        "gif_rel_path_left": "gifs/a017_left.gif",
+        "tags": {
+          "资源类型": [
+            "骑乘动作"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "动作类型": [
+            "待机"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "武当"
+          ],
+          "武器类型": [
+            "刀"
+          ],
+          "通用动作分类": [
+            "技能1"
+          ],
+          "骑乘类型": [],
+          "轻功类型": [
+            "御剑"
+          ],
+          "核心动作": [
+            "突刺"
+          ],
+          "文件类型": [
+            "FBX"
+          ],
+          "AI分析的标签": [
+            "ai标签17a",
+            "ai标签17b"
+          ]
+        },
+        "action_id": 17,
+        "description": "动作序列017，角色执行待机动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a018_front.gif",
+      "source_path": "data/sources/animator/gifs/a018_front.gif",
+      "size_bytes": 137216,
+      "svn": {
+        "last_changed_revision": "1395018",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a018_front.gif",
+        "gif_rel_path_left": "gifs/a018_left.gif",
+        "tags": {
+          "资源类型": [
+            "技能动作"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "动作类型": [
+            "死亡"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "峨眉"
+          ],
+          "武器类型": [
+            "棍"
+          ],
+          "通用动作分类": [
+            "技能2"
+          ],
+          "骑乘类型": [],
+          "轻功类型": [],
+          "核心动作": [
+            "格挡"
+          ],
+          "文件类型": [
+            "MAX"
+          ],
+          "AI分析的标签": [
+            "ai标签18a",
+            "ai标签18b"
+          ]
+        },
+        "action_id": 18,
+        "description": "动作序列018，角色执行死亡动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a019_front.gif",
+      "source_path": "data/sources/animator/gifs/a019_front.gif",
+      "size_bytes": 139264,
+      "svn": {
+        "last_changed_revision": "1395019",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a019_front.gif",
+        "gif_rel_path_left": "gifs/a019_left.gif",
+        "tags": {
+          "资源类型": [
+            "角色动作"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "动作类型": [
+            "攻击"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "丐帮"
+          ],
+          "武器类型": [
+            "弓"
+          ],
+          "通用动作分类": [
+            "被击"
+          ],
+          "骑乘类型": [],
+          "轻功类型": [],
+          "核心动作": [
+            "跳跃"
+          ],
+          "文件类型": [
+            "FBX"
+          ],
+          "AI分析的标签": [
+            "ai标签19a",
+            "ai标签19b"
+          ]
+        },
+        "action_id": 19,
+        "description": "动作序列019，角色执行攻击动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a020_front.gif",
+      "source_path": "data/sources/animator/gifs/a020_front.gif",
+      "size_bytes": 141312,
+      "svn": {
+        "last_changed_revision": "1395020",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a020_front.gif",
+        "gif_rel_path_left": "gifs/a020_left.gif",
+        "tags": {
+          "资源类型": [
+            "骑乘动作"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "动作类型": [
+            "防御"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "明教"
+          ],
+          "武器类型": [
+            "拳"
+          ],
+          "通用动作分类": [
+            "死亡"
+          ],
+          "骑乘类型": [],
+          "轻功类型": [],
+          "核心动作": [
+            "翻滚"
+          ],
+          "文件类型": [
+            "MAX"
+          ],
+          "AI分析的标签": [
+            "ai标签20a",
+            "ai标签20b"
+          ]
+        },
+        "action_id": 20,
+        "description": "动作序列020，角色执行防御动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a021_front.gif",
+      "source_path": "data/sources/animator/gifs/a021_front.gif",
+      "size_bytes": 143360,
+      "svn": {
+        "last_changed_revision": "1395021",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a021_front.gif",
+        "gif_rel_path_left": "gifs/a021_left.gif",
+        "tags": {
+          "资源类型": [
+            "技能动作"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "动作类型": [
+            "移动"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "少林"
+          ],
+          "武器类型": [
+            "剑"
+          ],
+          "通用动作分类": [
+            "普攻"
+          ],
+          "骑乘类型": [
+            "异兽"
+          ],
+          "轻功类型": [
+            "踏云"
+          ],
+          "核心动作": [
+            "挥砍"
+          ],
+          "文件类型": [
+            "FBX"
+          ],
+          "AI分析的标签": [
+            "ai标签21a",
+            "ai标签21b"
+          ]
+        },
+        "action_id": 21,
+        "description": "动作序列021，角色执行移动动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a022_front.gif",
+      "source_path": "data/sources/animator/gifs/a022_front.gif",
+      "size_bytes": 145408,
+      "svn": {
+        "last_changed_revision": "1395022",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a022_front.gif",
+        "gif_rel_path_left": "gifs/a022_left.gif",
+        "tags": {
+          "资源类型": [
+            "角色动作"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "动作类型": [
+            "技能"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "武当"
+          ],
+          "武器类型": [
+            "刀"
+          ],
+          "通用动作分类": [
+            "技能1"
+          ],
+          "骑乘类型": [],
+          "轻功类型": [],
+          "核心动作": [
+            "突刺"
+          ],
+          "文件类型": [
+            "MAX"
+          ],
+          "AI分析的标签": [
+            "ai标签22a",
+            "ai标签22b"
+          ]
+        },
+        "action_id": 22,
+        "description": "动作序列022，角色执行技能动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a023_front.gif",
+      "source_path": "data/sources/animator/gifs/a023_front.gif",
+      "size_bytes": 147456,
+      "svn": {
+        "last_changed_revision": "1395023",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a023_front.gif",
+        "gif_rel_path_left": "gifs/a023_left.gif",
+        "tags": {
+          "资源类型": [
+            "骑乘动作"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "动作类型": [
+            "待机"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "峨眉"
+          ],
+          "武器类型": [
+            "棍"
+          ],
+          "通用动作分类": [
+            "技能2"
+          ],
+          "骑乘类型": [],
+          "轻功类型": [],
+          "核心动作": [
+            "格挡"
+          ],
+          "文件类型": [
+            "FBX"
+          ],
+          "AI分析的标签": [
+            "ai标签23a",
+            "ai标签23b"
+          ]
+        },
+        "action_id": 23,
+        "description": "动作序列023，角色执行待机动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a024_front.gif",
+      "source_path": "data/sources/animator/gifs/a024_front.gif",
+      "size_bytes": 149504,
+      "svn": {
+        "last_changed_revision": "1395024",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a024_front.gif",
+        "gif_rel_path_left": "gifs/a024_left.gif",
+        "tags": {
+          "资源类型": [
+            "技能动作"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "动作类型": [
+            "死亡"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "丐帮"
+          ],
+          "武器类型": [
+            "弓"
+          ],
+          "通用动作分类": [
+            "被击"
+          ],
+          "骑乘类型": [],
+          "轻功类型": [],
+          "核心动作": [
+            "跳跃"
+          ],
+          "文件类型": [
+            "MAX"
+          ],
+          "AI分析的标签": [
+            "ai标签24a",
+            "ai标签24b"
+          ]
+        },
+        "action_id": 24,
+        "description": "动作序列024，角色执行死亡动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a025_front.gif",
+      "source_path": "data/sources/animator/gifs/a025_front.gif",
+      "size_bytes": 151552,
+      "svn": {
+        "last_changed_revision": "1395025",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a025_front.gif",
+        "gif_rel_path_left": "gifs/a025_left.gif",
+        "tags": {
+          "资源类型": [
+            "角色动作"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "动作类型": [
+            "攻击"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "明教"
+          ],
+          "武器类型": [
+            "拳"
+          ],
+          "通用动作分类": [
+            "死亡"
+          ],
+          "骑乘类型": [],
+          "轻功类型": [
+            "轻身"
+          ],
+          "核心动作": [
+            "翻滚"
+          ],
+          "文件类型": [
+            "FBX"
+          ],
+          "AI分析的标签": [
+            "ai标签25a",
+            "ai标签25b"
+          ]
+        },
+        "action_id": 25,
+        "description": "动作序列025，角色执行攻击动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a026_front.gif",
+      "source_path": "data/sources/animator/gifs/a026_front.gif",
+      "size_bytes": 153600,
+      "svn": {
+        "last_changed_revision": "1395026",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a026_front.gif",
+        "gif_rel_path_left": "gifs/a026_left.gif",
+        "tags": {
+          "资源类型": [
+            "骑乘动作"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "动作类型": [
+            "防御"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "少林"
+          ],
+          "武器类型": [
+            "剑"
+          ],
+          "通用动作分类": [
+            "普攻"
+          ],
+          "骑乘类型": [
+            "飞鸟"
+          ],
+          "轻功类型": [],
+          "核心动作": [
+            "挥砍"
+          ],
+          "文件类型": [
+            "MAX"
+          ],
+          "AI分析的标签": [
+            "ai标签26a",
+            "ai标签26b"
+          ]
+        },
+        "action_id": 26,
+        "description": "动作序列026，角色执行防御动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a027_front.gif",
+      "source_path": "data/sources/animator/gifs/a027_front.gif",
+      "size_bytes": 155648,
+      "svn": {
+        "last_changed_revision": "1395027",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a027_front.gif",
+        "gif_rel_path_left": "gifs/a027_left.gif",
+        "tags": {
+          "资源类型": [
+            "技能动作"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "动作类型": [
+            "移动"
+          ],
+          "特殊系统": [],
+          "门派": [
+            "武当"
+          ],
+          "武器类型": [
+            "刀"
+          ],
+          "通用动作分类": [
+            "技能1"
+          ],
+          "骑乘类型": [],
+          "轻功类型": [],
+          "核心动作": [
+            "突刺"
+          ],
+          "文件类型": [
+            "FBX"
+          ],
+          "AI分析的标签": [
+            "ai标签27a",
+            "ai标签27b"
+          ]
+        },
+        "action_id": 27,
+        "description": "动作序列027，角色执行移动动作"
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a028_front_only.gif",
+      "source_path": "data/sources/animator/gifs/a028_front_only.gif",
+      "size_bytes": 81920,
+      "svn": {
+        "last_changed_revision": "1395101",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a028_front.gif",
+        "tags": {
+          "资源类型": [
+            "角色动作"
+          ],
+          "体型": [
+            "壮硕"
+          ],
+          "动作类型": [
+            "待机"
+          ],
+          "门派": [
+            "少林"
+          ],
+          "武器类型": [
+            "剑"
+          ],
+          "核心动作": [
+            "待机"
+          ],
+          "文件类型": [
+            "FBX"
+          ],
+          "AI分析的标签": [
+            "仅正视角1"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a029_front_only.gif",
+      "source_path": "data/sources/animator/gifs/a029_front_only.gif",
+      "size_bytes": 81920,
+      "svn": {
+        "last_changed_revision": "1395102",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a029_front.gif",
+        "tags": {
+          "资源类型": [
+            "角色动作"
+          ],
+          "体型": [
+            "纤细"
+          ],
+          "动作类型": [
+            "待机"
+          ],
+          "门派": [
+            "武当"
+          ],
+          "武器类型": [
+            "剑"
+          ],
+          "核心动作": [
+            "待机"
+          ],
+          "文件类型": [
+            "FBX"
+          ],
+          "AI分析的标签": [
+            "仅正视角2"
+          ]
+        }
+      }
+    },
+    {
+      "resource_id": "data/sources/animator/gifs/a030_front_only.gif",
+      "source_path": "data/sources/animator/gifs/a030_front_only.gif",
+      "size_bytes": 81920,
+      "svn": {
+        "last_changed_revision": "1395103",
+        "last_changed_author": "xiaomi-ai",
+        "last_changed_date": "2024-05-10 15:30:25"
+      },
+      "result": {
+        "status": "ok",
+        "gif_rel_path_front": "gifs/a030_front.gif",
+        "tags": {
+          "资源类型": [
+            "角色动作"
+          ],
+          "体型": [
+            "标准"
+          ],
+          "动作类型": [
+            "待机"
+          ],
+          "门派": [
+            "峨眉"
+          ],
+          "武器类型": [
+            "剑"
+          ],
+          "核心动作": [
+            "待机"
+          ],
+          "文件类型": [
+            "FBX"
+          ],
+          "AI分析的标签": [
+            "仅正视角3"
+          ]
+        }
+      }
+    }
+  ]
+}

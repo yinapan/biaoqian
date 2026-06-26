@@ -1,0 +1,43 @@
+services:
+  postgres-test:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: biaoqiao_test
+      POSTGRES_USER: biaoqiao
+      POSTGRES_PASSWORD: biaoqiao_test
+    ports: ["15432:5432"]
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d
+      - ./runtime_data_test:/runtime_data
+  elasticsearch-test:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+    environment:
+      discovery.type: single-node
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      xpack.security.enabled: "false"
+    ports: ["19200:9200"]
+  backend-test:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql://biaoqiao:biaoqiao_test@postgres-test:5432/biaoqiao_test
+      ELASTICSEARCH_URL: http://elasticsearch-test:9200
+      ADMIN_API_KEY: test-key-12345
+      ES_INDEX_ALIAS: test_assets_${RUN_ID:-local}
+      DB_SCHEMA: biaoqiao_test_${RUN_ID:-local}
+    ports: ["18000:8000"]
+    volumes:
+      - ./runtime_data_test:/runtime_data
+      - ./runtime_data_test/model/previews:/data/previews/model
+      - ./runtime_data_test/animator/previews:/data/previews/animator
+      - ./runtime_data_test/effect/gifs:/data/gifs
+      - ./runtime_data_test/ui/pngs:/data/icons
+  nginx-test:
+    image: nginx:alpine
+    ports: ["18081:80"]
+    volumes:
+      - ./frontend/dist:/usr/share/nginx/html
+      - ./nginx.test.conf:/etc/nginx/conf.d/default.conf
+      - ./runtime_data_test/model/previews:/data/previews/model:ro
+      - ./runtime_data_test/animator/previews:/data/previews/animator:ro
+      - ./runtime_data_test/effect/gifs:/data/gifs:ro
+      - ./runtime_data_test/ui/pngs:/data/icons:ro

@@ -71,8 +71,10 @@ exit /b %E2E_EXIT%
 :perf
 echo === Performance baseline ===
 k6 run tests/performance/k6-baseline.js
+if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
 echo === Performance load ===
 k6 run tests/performance/k6-load.js
+if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
 goto end
 
 :all

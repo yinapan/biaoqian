@@ -447,6 +447,22 @@ def test_module_switch_raises_loading_flag_synchronously():
     assert "loading.value = true" in set_module_block
 
 
+def test_filter_group_caps_rendered_pills_for_huge_enums():
+    # Regression: icon module `semantic` field has 10,838 enum values. Rendering
+    # all of them as <button> DOM nodes locked the UI on module switch. Cap
+    # rendered pills to first RENDER_CAP when no search text is entered; users
+    # can type in the search box to surface values beyond the cap.
+    text = (ROOT / "frontend/src/components/FilterGroup.vue").read_text(encoding="utf-8")
+    assert "const RENDER_CAP = 200" in text
+    # Slicing logic kicks in only when no search text and values exceed the cap
+    filtered_block = text[text.index("const filteredValues"):text.index("const RENDER_CAP")]
+    assert "vals.length > RENDER_CAP" in filtered_block
+    assert "vals.slice(0, RENDER_CAP)" in filtered_block
+    # UI hint surfaces the cap so users know to search for hidden values
+    assert "cappedCount" in text
+    assert "输入关键词筛选全部" in text
+
+
 def test_result_grid_batches_card_mounting_for_all_modules():
     text = (ROOT / "frontend/src/components/ResultGrid.vue").read_text(encoding="utf-8")
     assert "INITIAL_RENDER_LIMIT" in text

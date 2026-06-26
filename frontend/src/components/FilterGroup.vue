@@ -17,11 +17,26 @@ let textTimer: ReturnType<typeof setTimeout> | null = null
 
 const filteredValues = computed(() => {
   const vals = props.definition.values
-  if (!vals || !searchText.value) return vals
-  const q = searchText.value.toLowerCase()
-  return vals.filter(
-    (v) => (v.display_name || v.value).toLowerCase().includes(q),
-  )
+  if (!vals) return vals
+  if (searchText.value) {
+    const q = searchText.value.toLowerCase()
+    return vals.filter(
+      (v) => (v.display_name || v.value).toLowerCase().includes(q),
+    )
+  }
+  // No search text: cap rendered pills to avoid locking the UI when a field
+  // has thousands of enum values (e.g. icon module `semantic` has 10,838).
+  // User can type in the search box to surface values beyond the cap.
+  return vals.length > RENDER_CAP ? vals.slice(0, RENDER_CAP) : vals
+})
+
+const RENDER_CAP = 200
+
+const cappedCount = computed(() => {
+  const vals = props.definition.values
+  if (!vals) return 0
+  if (searchText.value) return 0
+  return Math.max(0, vals.length - RENDER_CAP)
 })
 
 const field = computed(() => props.definition.field_name)
@@ -215,6 +230,9 @@ function setGroupRangeValue(def: TagDefinition, val: [number, number]) {
           </div>
           <span v-if="filteredValues && filteredValues.length === 0" class="no-match">
             无匹配项
+          </span>
+          <span v-if="cappedCount > 0" class="cap-hint">
+            显示前 {{ filteredValues?.length }} 项，共 {{ definition.values?.length }} 项，输入关键词筛选全部
           </span>
         </div>
       </template>
@@ -524,6 +542,18 @@ function setGroupRangeValue(def: TagDefinition, val: [number, number]) {
   color: var(--text-muted);
   padding: 8px 2px;
   display: block;
+}
+
+.cap-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  background: var(--bg-surface-hover);
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: block;
+  margin-top: 4px;
+  text-align: center;
+  font-family: var(--font-mono);
 }
 
 /* --- Range / Bool wrappers --- */

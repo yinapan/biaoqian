@@ -5,9 +5,9 @@ TARGET=${1:-all}
 case "$TARGET" in
   unit)
     echo "=== Frontend unit tests ==="
-    cd frontend && npm run test:unit && cd ..
+    (cd frontend && npm run test:unit)
     echo "=== Backend unit tests ==="
-    cd backend && python -m pytest tests/ -k "not integration" && cd ..
+    (cd backend && python -m pytest tests/ -k "not integration")
     ;;
   integration)
     echo "=== Starting fixture environment ==="
@@ -60,6 +60,15 @@ case "$TARGET" in
       echo "Backend not ready after 60 seconds"
       exit 1
     fi
+    echo "=== Seeding fixture data ==="
+    ADMIN_API_KEY="${ADMIN_API_KEY:-test-key-12345}"
+    for ep in models animator effects icons; do
+      curl -sf -X POST "http://localhost:18000/api/v1/admin/import-${ep}-json" \
+        -H "X-Admin-Key: ${ADMIN_API_KEY}" \
+        -F "file=@tests/e2e/fixtures/${ep}.fixture.json"
+    done
+    curl -sf -X POST "http://localhost:18000/api/v1/admin/reindex-es" \
+      -H "X-Admin-Key: ${ADMIN_API_KEY}"
     echo "=== Installing Playwright chromium ==="
     (cd tests/e2e && npx playwright install --with-deps chromium)
     echo "=== Running E2E tests ==="

@@ -36,7 +36,7 @@ test.describe('视觉与图片质量', () => {
         expect(Math.abs(naturalRatio - renderedRatio)).toBeLessThan(0.05)
       }
     } catch (e) {
-      await attachVisualFailureArtifacts(page, info, 'model-png')
+      await attachVisualFailureArtifacts(page, info, undefined, 'model-png')
       throw e
     }
   })
@@ -58,7 +58,7 @@ test.describe('视觉与图片质量', () => {
         expect(Math.abs(naturalRatio - renderedRatio)).toBeLessThan(0.05)
       }
     } catch (e) {
-      await attachVisualFailureArtifacts(page, info, 'animator-gif')
+      await attachVisualFailureArtifacts(page, info, undefined, 'animator-gif')
       throw e
     }
   })
@@ -80,7 +80,7 @@ test.describe('视觉与图片质量', () => {
         expect(Math.abs(naturalRatio - renderedRatio)).toBeLessThan(0.05)
       }
     } catch (e) {
-      await attachVisualFailureArtifacts(page, info, 'effects-gif')
+      await attachVisualFailureArtifacts(page, info, undefined, 'effects-gif')
       throw e
     }
   })
@@ -102,7 +102,7 @@ test.describe('视觉与图片质量', () => {
         expect(Math.abs(naturalRatio - renderedRatio)).toBeLessThan(0.05)
       }
     } catch (e) {
-      await attachVisualFailureArtifacts(page, info, 'icon-png')
+      await attachVisualFailureArtifacts(page, info, undefined, 'icon-png')
       throw e
     }
   })
@@ -123,7 +123,7 @@ test.describe('视觉与图片质量', () => {
       const fit = await getObjectFit(page, previewSel)
       expect(['cover', 'contain']).toContain(fit)
     } catch (e) {
-      await attachVisualFailureArtifacts(page, info, 'object-fit')
+      await attachVisualFailureArtifacts(page, info, undefined, 'object-fit')
       throw e
     }
   })
@@ -156,7 +156,7 @@ test.describe('视觉与图片质量', () => {
       })
       expect(cls).toBeLessThan(0.1)
     } catch (e) {
-      await attachVisualFailureArtifacts(page, info, 'cls-measure')
+      await attachVisualFailureArtifacts(page, info, undefined, 'cls-measure')
       throw e
     }
   })

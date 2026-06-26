@@ -2,12 +2,13 @@
 backend/tests/conftest.py
 Session-scoped schema lifecycle + test fixtures for parallel CI isolation.
 
-- test_schema : creates an isolated PG schema and sets DB_SCHEMA env var
+- test_schema : creates an isolated PG schema, runs migrations, sets DB_SCHEMA env var
 - test_client : httpx AsyncClient against the ASGI app (lazy app import)
 - seeded_db   : imports 4 fixture JSON files via admin endpoints
 - admin_key   : ADMIN_API_KEY from environment
 """
 import os
+from pathlib import Path
 from urllib.parse import urlparse, urlunparse
 
 import asyncpg
@@ -16,6 +17,11 @@ import pytest_asyncio
 from httpx import AsyncClient, ASGITransport
 
 from app.config import settings
+
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+SQL_DIR = REPO_ROOT / "sql"
+FIXTURES_DIR = REPO_ROOT / "tests" / "e2e" / "fixtures"
 
 
 # ---------------------------------------------------------------------------
@@ -41,12 +47,17 @@ def env_run_id():
 
 @pytest_asyncio.fixture(scope="session")
 async def test_schema(env_run_id):
-    """Create an isolated schema; teardown drops it."""
+    """Create an isolated schema with migrated tables; teardown drops it."""
     schema_name = f"biaoqiao_test_{env_run_id}"
     admin_url = _postgres_admin_url(settings.database_url)
 
     admin_conn = await asyncpg.connect(admin_url)
     await admin_conn.execute(f"CREATE SCHEMA IF NOT EXISTS {schema_name}")
+    # Apply migrations to the new schema so tables exist for parallel isolation
+    await admin_conn.execute(f"SET search_path TO {schema_name}, public")
+    for sql_file in ("001_init_schema.sql", "002_init_tags.sql"):
+        sql_text = (SQL_DIR / sql_file).read_text(encoding="utf-8")
+        await admin_conn.execute(sql_text)
     await admin_conn.close()
 
     # Set env var BEFORE any app import so pydantic-settings picks it up
@@ -85,7 +96,7 @@ async def seeded_db(test_client):
     admin_hdr = {"X-Admin-Key": os.environ["ADMIN_API_KEY"]}
 
     for endpoint, fname in zip(endpoints, fixture_files):
-        fixture_path = f"tests/e2e/fixtures/{fname}"
+        fixture_path = FIXTURES_DIR / fname
         with open(fixture_path, "rb") as f:
             resp = await test_client.post(
                 f"/api/v1/admin/import-{endpoint}-json",

@@ -20,7 +20,7 @@ const totalPages = computed(() =>
 <template>
   <div v-if="store.total > store.pageSize" class="pagination-bar">
     <div class="page-info">
-      <span class="page-current">{{ currentPage }}</span>
+      <span class="page-current" data-testid="page-current">{{ currentPage }}</span>
       <span class="page-sep">/</span>
       <span class="page-total">{{ totalPages }}</span>
     </div>

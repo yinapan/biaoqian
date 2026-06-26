@@ -106,12 +106,14 @@ onBeforeUnmount(() => {
             :definition="entry.items[0]"
             :grouped-definitions="entry.items"
             :group-label="entry.group"
+            :data-testid="`filter-group-${entry.key}`"
             :style="{ animationDelay: `${idx * 30}ms` }"
           />
           <!-- Single filter -->
           <FilterGroup
             v-else
             :definition="entry.items[0]"
+            :data-testid="`filter-group-${entry.key}`"
             :style="{ animationDelay: `${idx * 30}ms` }"
           />
         </template>

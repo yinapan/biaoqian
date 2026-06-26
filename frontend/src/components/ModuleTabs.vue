@@ -24,6 +24,7 @@ function selectModule(mod: number) {
       v-for="m in modules"
       :key="m.type"
       class="module-btn"
+      :data-testid="`module-tab-${m.type}`"
       :class="{ active: store.moduleType === m.type }"
       @click="selectModule(m.type)"
     >

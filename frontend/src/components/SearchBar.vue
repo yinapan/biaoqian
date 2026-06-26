@@ -72,6 +72,7 @@ function onBlur() {
       </svg>
       <input
         v-model="localQuery"
+        data-testid="search-input"
         type="text"
         class="search-input"
         placeholder="搜索名称、标签，支持排除语法如 不要红色"
@@ -156,6 +157,7 @@ function onBlur() {
       <span
         v-for="[field, value] in filterEntries(store.parseInfo)"
         :key="field"
+        :data-testid="`parse-chip-${field}`"
         class="pill pill--match"
       >
         <svg class="pill-icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
@@ -168,6 +170,7 @@ function onBlur() {
       <span
         v-for="[field, value] in excludeEntries(store.parseInfo)"
         :key="'ex-' + field"
+        :data-testid="`parse-chip-${field}`"
         class="pill pill--exclude"
       >
         <svg class="pill-icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">

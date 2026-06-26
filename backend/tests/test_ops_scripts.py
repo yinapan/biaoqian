@@ -433,3 +433,30 @@ def test_result_grid_batches_card_mounting_for_all_modules():
     assert "visibleItems" in text
     assert "requestAnimationFrame" in text
     assert "v-for=\"item in visibleItems\"" in text
+
+
+def test_detail_preview_keeps_original_image_size():
+    text = (ROOT / "frontend/src/components/AssetDetailModal.vue").read_text(encoding="utf-8")
+    preview_css = text[text.index(".preview-frame img"):text.index(".icon-preview-pair")]
+    assert "width: auto" in preview_css
+    assert "height: auto" in preview_css
+    assert "max-width: none" in preview_css
+    assert "max-height: none" in preview_css
+    assert "object-fit" not in preview_css
+    assert "overflow: auto" in text[text.index(".detail-preview"):text.index(".effect-previews")]
+    assert 'v-if="isIcon"' in text
+    assert "icon-preview-pair" in text
+    assert "is-icon-original" in text
+    assert "is-icon-zoom" in text
+
+
+def test_detail_gif_previews_stay_side_by_side():
+    text = (ROOT / "frontend/src/components/AssetDetailModal.vue").read_text(encoding="utf-8")
+    effect_css = text[text.index(".effect-previews"):text.index(".effect-previews .preview-frame")]
+    frame_css = text[text.index(".effect-previews .preview-frame"):text.index(".preview-label")]
+    assert ':width="dialogWidth"' in text
+    assert "const dialogWidth = computed" in text
+    assert "96vw" in text
+    assert "flex-wrap: nowrap" in effect_css
+    assert "overflow-x: visible" in effect_css
+    assert "flex: 0 0 auto" in frame_css

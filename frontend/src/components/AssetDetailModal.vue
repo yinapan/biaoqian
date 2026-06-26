@@ -60,6 +60,7 @@ function fallbackCopy(text: string) {
 const isEffect = computed(() => store.moduleType === 2)
 const isModel = computed(() => store.moduleType === 1)
 const isAnimator = computed(() => store.moduleType === 3)
+const dialogWidth = computed(() => (isEffect.value || isAnimator.value ? '96vw' : '720px'))
 
 const previewSrc = computed(() => {
   if (!props.item.thumbnail_path) return ''
@@ -227,14 +228,24 @@ function formatValue(key: string, val: any): string {
   <el-dialog
     v-model="visible"
     :title="item.name"
-    width="720px"
+    :width="dialogWidth"
     destroy-on-close
     :append-to-body="true"
   >
     <div class="detail-layout">
       <!-- Preview -->
       <div v-if="previewSrc" class="detail-preview">
-        <div v-if="isEffect || isAnimator" class="effect-previews">
+        <div v-if="isIcon" class="icon-preview-pair">
+          <div class="preview-frame is-icon-original">
+            <div class="preview-label">原始大小</div>
+            <img :src="previewSrc" :alt="item.name" />
+          </div>
+          <div class="preview-frame is-icon-zoom">
+            <div class="preview-label">放大查看</div>
+            <img :src="previewSrc" :alt="item.name + ' zoom'" />
+          </div>
+        </div>
+        <div v-else-if="isEffect || isAnimator" class="effect-previews">
           <div class="preview-frame">
             <div class="preview-label">{{ isEffect ? '普通视角' : '前视角' }}</div>
             <img :src="previewSrc" :alt="item.name" />
@@ -335,19 +346,23 @@ function formatValue(key: string, val: any): string {
 .detail-preview {
   display: flex;
   justify-content: center;
+  overflow: auto;
+  max-height: 70vh;
 }
 
 .effect-previews {
   display: flex;
   gap: 16px;
-  justify-content: center;
-  flex-wrap: wrap;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  overflow-x: visible;
+  max-width: 100%;
 }
 
 .effect-previews .preview-frame {
-  flex: 1;
-  min-width: 200px;
-  max-width: 320px;
+  flex: 0 0 auto;
+  min-width: max-content;
+  max-width: none;
 }
 
 .preview-label {
@@ -361,7 +376,6 @@ function formatValue(key: string, val: any): string {
 }
 
 .preview-frame {
-  max-width: 400px;
   border-radius: var(--radius-md);
   overflow: hidden;
   background: var(--bg-root);
@@ -370,9 +384,33 @@ function formatValue(key: string, val: any): string {
 
 .preview-frame img {
   display: block;
-  max-width: 100%;
-  max-height: 380px;
+  width: auto;
+  height: auto;
+  max-width: none;
+  max-height: none;
+}
+
+.icon-preview-pair {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.icon-preview-pair .preview-frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.is-icon-zoom img {
+  width: 220px;
+  height: 220px;
+  max-width: 220px;
+  max-height: 220px;
   object-fit: contain;
+  image-rendering: auto;
 }
 
 /* --- Meta grid --- */

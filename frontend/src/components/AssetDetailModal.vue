@@ -60,7 +60,7 @@ function fallbackCopy(text: string) {
 const isEffect = computed(() => store.moduleType === 2)
 const isModel = computed(() => store.moduleType === 1)
 const isAnimator = computed(() => store.moduleType === 3)
-const dialogWidth = computed(() => (isEffect.value || isAnimator.value ? '96vw' : '720px'))
+const dialogWidth = computed(() => (isEffect.value || isAnimator.value ? 'min(1120px, 92vw)' : '720px'))
 
 const previewSrc = computed(() => {
   if (!props.item.thumbnail_path) return ''
@@ -346,23 +346,22 @@ function formatValue(key: string, val: any): string {
 .detail-preview {
   display: flex;
   justify-content: center;
-  overflow: auto;
-  max-height: 70vh;
+  overflow: visible;
 }
 
 .effect-previews {
   display: flex;
   gap: 16px;
-  justify-content: flex-start;
+  justify-content: center;
   flex-wrap: nowrap;
   overflow-x: visible;
+  width: max-content;
   max-width: 100%;
 }
 
 .effect-previews .preview-frame {
   flex: 0 0 auto;
-  min-width: max-content;
-  max-width: none;
+  max-width: calc((100% - 16px) / 2);
 }
 
 .preview-label {
@@ -386,8 +385,8 @@ function formatValue(key: string, val: any): string {
   display: block;
   width: auto;
   height: auto;
-  max-width: none;
-  max-height: none;
+  max-width: 100%;
+  max-height: 70vh;
 }
 
 .icon-preview-pair {
@@ -396,18 +395,20 @@ function formatValue(key: string, val: any): string {
   justify-content: center;
   gap: 24px;
   flex-wrap: wrap;
+  max-width: 100%;
 }
 
 .icon-preview-pair .preview-frame {
   display: flex;
   flex-direction: column;
   align-items: center;
+  max-width: min(100%, 320px);
 }
 
 .is-icon-zoom img {
   width: 220px;
   height: 220px;
-  max-width: 220px;
+  max-width: 100%;
   max-height: 220px;
   object-fit: contain;
   image-rendering: auto;

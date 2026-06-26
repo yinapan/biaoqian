@@ -435,15 +435,24 @@ def test_result_grid_batches_card_mounting_for_all_modules():
     assert "v-for=\"item in visibleItems\"" in text
 
 
-def test_detail_preview_keeps_original_image_size():
+def test_result_grid_explains_zero_result_search_state():
+    text = (ROOT / "frontend/src/components/ResultGrid.vue").read_text(encoding="utf-8")
+    assert "emptyChips" in text
+    assert "当前条件没有匹配资源" in text
+    assert "搜索已执行" in text
+    assert "clearSearchContext" in text
+    assert "只清空搜索词" in text
+
+
+def test_detail_preview_adapts_to_screen_size():
     text = (ROOT / "frontend/src/components/AssetDetailModal.vue").read_text(encoding="utf-8")
     preview_css = text[text.index(".preview-frame img"):text.index(".icon-preview-pair")]
     assert "width: auto" in preview_css
     assert "height: auto" in preview_css
-    assert "max-width: none" in preview_css
-    assert "max-height: none" in preview_css
+    assert "max-width: 100%" in preview_css
+    assert "max-height: 70vh" in preview_css
     assert "object-fit" not in preview_css
-    assert "overflow: auto" in text[text.index(".detail-preview"):text.index(".effect-previews")]
+    assert "overflow: visible" in text[text.index(".detail-preview"):text.index(".effect-previews")]
     assert 'v-if="isIcon"' in text
     assert "icon-preview-pair" in text
     assert "is-icon-original" in text
@@ -456,7 +465,9 @@ def test_detail_gif_previews_stay_side_by_side():
     frame_css = text[text.index(".effect-previews .preview-frame"):text.index(".preview-label")]
     assert ':width="dialogWidth"' in text
     assert "const dialogWidth = computed" in text
-    assert "96vw" in text
+    assert "min(1120px, 92vw)" in text
+    assert "width: max-content" in effect_css
     assert "flex-wrap: nowrap" in effect_css
     assert "overflow-x: visible" in effect_css
     assert "flex: 0 0 auto" in frame_css
+    assert "max-width: calc((100% - 16px) / 2)" in frame_css

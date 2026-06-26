@@ -446,13 +446,19 @@ def test_result_grid_explains_zero_result_search_state():
 
 def test_detail_preview_adapts_to_screen_size():
     text = (ROOT / "frontend/src/components/AssetDetailModal.vue").read_text(encoding="utf-8")
-    preview_css = text[text.index(".preview-frame img"):text.index(".icon-preview-pair")]
-    assert "width: auto" in preview_css
-    assert "height: auto" in preview_css
-    assert "max-width: 100%" in preview_css
-    assert "max-height: 70vh" in preview_css
-    assert "object-fit" not in preview_css
-    assert "overflow: visible" in text[text.index(".detail-preview"):text.index(".effect-previews")]
+    preview_frame_img_css = text[text.index(".preview-frame img"):text.index(".preview-label")]
+    # Image preserves aspect ratio (width/height auto), capped by viewport height
+    assert "width: auto" in preview_frame_img_css
+    assert "height: auto" in preview_frame_img_css
+    assert "max-width: 100%" in preview_frame_img_css
+    assert "max-height: calc(90vh - 150px)" in preview_frame_img_css
+    # Single-preview branch keeps its own viewport-aware cap
+    single_css = text[text.index(".preview-frame.is-single img"):text.index("/* Paired previews")]
+    assert "max-height: calc(90vh - 130px)" in single_css
+    # Two-column grid so preview + metadata fit one screen
+    assert "grid-template-columns: minmax(0, 1fr) 320px" in text
+    # Stacks vertically on narrow viewports
+    assert "@media (max-width: 880px)" in text
     assert 'v-if="isIcon"' in text
     assert "icon-preview-pair" in text
     assert "is-icon-original" in text
@@ -461,13 +467,17 @@ def test_detail_preview_adapts_to_screen_size():
 
 def test_detail_gif_previews_stay_side_by_side():
     text = (ROOT / "frontend/src/components/AssetDetailModal.vue").read_text(encoding="utf-8")
-    effect_css = text[text.index(".effect-previews"):text.index(".effect-previews .preview-frame")]
-    frame_css = text[text.index(".effect-previews .preview-frame"):text.index(".preview-label")]
+    effect_css = text[text.index(".effect-previews,"):text.index(".effect-previews .preview-frame")]
+    frame_css = text[text.index(".effect-previews .preview-frame,"):text.index(".preview-frame img")]
+    # Dialog widens for paired GIF modules so both fit at natural size when viewport allows
     assert ':width="dialogWidth"' in text
     assert "const dialogWidth = computed" in text
-    assert "min(1120px, 92vw)" in text
+    assert "min(1280px, 96vw)" in text
+    # Container tries natural size but caps at 100% — GIFs stay side by side
     assert "width: max-content" in effect_css
     assert "flex-wrap: nowrap" in effect_css
-    assert "overflow-x: visible" in effect_css
-    assert "flex: 0 0 auto" in frame_css
-    assert "max-width: calc((100% - 16px) / 2)" in frame_css
+    assert "justify-content: center" in effect_css
+    # Frames shrink together (flex-shrink enabled, min-width: 0) when viewport too narrow
+    assert "flex: 0 1 auto" in frame_css
+    assert "min-width: 0" in frame_css
+    assert "max-width: calc((100% - 10px) / 2)" in frame_css

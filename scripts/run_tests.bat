@@ -18,7 +18,18 @@ echo === Backend unit tests ===&& cd backend && python -m pytest tests/ -k "not 
 goto end
 
 :integration
-echo TODO: implement in phase 2
+echo === Starting fixture environment ===
+docker compose -f docker-compose.test.yml up -d --build
+echo === Waiting for backend health ===
+for /L %%i in (1,1,30) do (
+  curl -sf http://localhost:18000/api/v1/health > nul 2>&1 && goto :integration_run
+  timeout /t 2 > nul
+)
+echo Backend not ready after 60 seconds
+exit /b 1
+:integration_run
+cd backend && set RUN_ID=local && python -m pytest tests/integration/ -v && cd ..
+docker compose -f docker-compose.test.yml down
 goto end
 
 :e2e

@@ -12,6 +12,9 @@ async def get_pool() -> asyncpg.Pool:
             min_size=5,
             max_size=20,
         )
+        if settings.db_schema:
+            async with _pool.acquire() as conn:
+                await conn.execute(f"SET search_path TO {settings.db_schema}, public")
     return _pool
 
 

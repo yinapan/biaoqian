@@ -32,3 +32,26 @@ read_excel.py
 
 # Backups
 backups/
+
+# Test fixture images — force-include despite global *.png / *.gif / dir-name ignores
+# (negate the 'previews/', 'animator/', 'model/' directory rules for test paths)
+!tests/
+!tests/e2e/
+!tests/e2e/fixtures/
+!tests/e2e/fixtures/previews/
+!tests/e2e/fixtures/previews/*.png
+!tests/e2e/fixtures/previews/*.gif
+!tests/e2e/fixtures/previews/.gitkeep
+!runtime_data_test/
+!runtime_data_test/model/
+!runtime_data_test/model/previews/
+!runtime_data_test/model/previews/*.png
+!runtime_data_test/animator/
+!runtime_data_test/animator/previews/
+!runtime_data_test/animator/previews/*.png
+!runtime_data_test/effect/
+!runtime_data_test/effect/gifs/
+!runtime_data_test/effect/gifs/*.gif
+!runtime_data_test/ui/
+!runtime_data_test/ui/pngs/
+!runtime_data_test/ui/pngs/*.png

@@ -5,6 +5,7 @@ class Settings(BaseSettings):
     database_url: str = "postgresql://biaoqiao:biaoqiao_dev@localhost:5432/biaoqiao"
     es_url: str = "http://localhost:9200"
     es_index_alias: str = "assets"
+    db_schema: str = ""  # 空 = 用默认 search_path；非空 = SET search_path TO {schema}, public
     admin_api_key: str = "dev-admin-key-change-in-prod"
     llm_api_key: str = ""
     llm_base_url: str = ""

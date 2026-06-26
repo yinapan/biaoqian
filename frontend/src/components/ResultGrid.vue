@@ -117,7 +117,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="result-grid">
+  <div class="result-grid" data-testid="result-grid">
     <div class="result-bar">
       <div class="result-stats">
         <template v-if="!store.loading && store.response">

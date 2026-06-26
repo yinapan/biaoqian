@@ -125,6 +125,7 @@ function fallbackCopy(text: string) {
 <template>
   <div
     class="asset-card"
+    :data-testid="`asset-card-${item.id}`"
     @click="showDetail = true"
     @mouseenter="hovering = true"
     @mouseleave="hovering = false"
@@ -134,6 +135,7 @@ function fallbackCopy(text: string) {
       <img
         :src="displaySrc"
         :alt="item.name"
+        :data-testid="`asset-preview-${item.id}`"
         loading="lazy"
         decoding="async"
         fetchpriority="low"
@@ -165,7 +167,7 @@ function fallbackCopy(text: string) {
       <div class="card-name" :title="item.name">{{ item.name }}</div>
 
       <!-- Asset ID row (icon & animator) -->
-      <div v-if="showIdRow" class="card-icon-id" @click.stop="copyAssetId($event)">
+      <div v-if="showIdRow" class="card-icon-id" :data-testid="`asset-id-row-${item.id}`" @click.stop="copyAssetId($event)">
         <div class="id-pill">
           <span class="id-pill-label">ID</span>
           <code class="id-pill-value">{{ assetId }}</code>

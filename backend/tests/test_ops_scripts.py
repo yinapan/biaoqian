@@ -446,17 +446,30 @@ def test_result_grid_explains_zero_result_search_state():
 
 def test_detail_preview_adapts_to_screen_size():
     text = (ROOT / "frontend/src/components/AssetDetailModal.vue").read_text(encoding="utf-8")
+    # Collapsible meta column: default visible for single-preview modules,
+    # collapsed for paired-GIF modules (effect/animator) so previews get full width
+    assert "const metaVisible = ref(!(isEffect.value || isAnimator.value))" in text
+    assert "function toggleMeta" in text
+    assert ".detail-grid.with-meta" in text
+    assert ".detail-grid.preview-only" in text
+    assert "grid-template-columns: minmax(0, 1fr) 320px" in text
+    assert "grid-template-columns: minmax(0, 1fr)" in text
+    # Dialog widened so two 1024px GIFs fit at near-natural size
+    assert "min(1800px, 98vw)" in text
+    # Preview-canvas padding stripped when meta collapsed — GIFs use every pixel
+    assert ".detail-grid.preview-only .preview-canvas" in text
+    assert "padding: 0" in text
+    # Labels float as overlay chips when meta collapsed — no vertical space stolen
+    assert ".detail-grid.preview-only .preview-label" in text
+    assert "position: absolute" in text
+    # Image preserves aspect ratio, capped by viewport height
     preview_frame_img_css = text[text.index(".preview-frame img"):text.index(".preview-label")]
-    # Image preserves aspect ratio (width/height auto), capped by viewport height
     assert "width: auto" in preview_frame_img_css
     assert "height: auto" in preview_frame_img_css
     assert "max-width: 100%" in preview_frame_img_css
-    assert "max-height: calc(90vh - 150px)" in preview_frame_img_css
-    # Single-preview branch keeps its own viewport-aware cap
-    single_css = text[text.index(".preview-frame.is-single img"):text.index("/* Paired previews")]
-    assert "max-height: calc(90vh - 130px)" in single_css
-    # Two-column grid so preview + metadata fit one screen
-    assert "grid-template-columns: minmax(0, 1fr) 320px" in text
+    # Max height grows when meta collapsed (more vertical room)
+    assert "max-height: calc(95vh - 150px)" in preview_frame_img_css
+    assert "max-height: calc(95vh - 110px)" in text
     # Stacks vertically on narrow viewports
     assert "@media (max-width: 880px)" in text
     assert 'v-if="isIcon"' in text
@@ -469,10 +482,10 @@ def test_detail_gif_previews_stay_side_by_side():
     text = (ROOT / "frontend/src/components/AssetDetailModal.vue").read_text(encoding="utf-8")
     effect_css = text[text.index(".effect-previews,"):text.index(".effect-previews .preview-frame")]
     frame_css = text[text.index(".effect-previews .preview-frame,"):text.index(".preview-frame img")]
-    # Dialog widens for paired GIF modules so both fit at natural size when viewport allows
+    # Dialog widens for paired GIF modules so both fit at near-natural size
     assert ':width="dialogWidth"' in text
     assert "const dialogWidth = computed" in text
-    assert "min(1280px, 96vw)" in text
+    assert "min(1800px, 98vw)" in text
     # Container tries natural size but caps at 100% — GIFs stay side by side
     assert "width: max-content" in effect_css
     assert "flex-wrap: nowrap" in effect_css

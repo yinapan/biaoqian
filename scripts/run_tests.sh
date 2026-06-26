@@ -9,7 +9,26 @@ case "$TARGET" in
     echo "=== Backend unit tests ==="
     cd backend && python -m pytest tests/ -k "not integration" && cd ..
     ;;
-  integration|e2e|perf)
+  integration)
+    echo "=== Starting fixture environment ==="
+    docker compose -f docker-compose.test.yml up -d --build
+    echo "=== Waiting for backend health ==="
+    READY=0
+    for i in $(seq 1 30); do
+      if curl -sf http://localhost:18000/api/v1/health > /dev/null 2>&1; then
+        READY=1
+        break
+      fi
+      sleep 2
+    done
+    if [ "$READY" -ne 1 ]; then
+      echo "Backend not ready after 60 seconds"
+      exit 1
+    fi
+    (cd backend && RUN_ID=local python -m pytest tests/integration/ -v)
+    docker compose -f docker-compose.test.yml down
+    ;;
+  e2e|perf)
     echo "TODO: implement $TARGET"
     ;;
   all)

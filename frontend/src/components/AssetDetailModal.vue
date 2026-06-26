@@ -35,17 +35,10 @@ const MODULE_BADGE: Record<number, { label: string; tone: string }> = {
 }
 const badge = computed(() => MODULE_BADGE[store.moduleType] ?? { label: 'ASSET', tone: 'tone-default' })
 
-// Meta column is collapsed by default for paired-GIF modules (effect/animator)
-// so previews can use the full dialog width. User can toggle it open.
-const metaVisible = ref(!(isEffect.value || isAnimator.value))
-function toggleMeta() {
-  metaVisible.value = !metaVisible.value
-}
-
 const dialogWidth = computed(() => {
-  if (isEffect.value || isAnimator.value) return 'min(1800px, 98vw)'
-  if (isIcon.value) return 'min(1100px, 96vw)'
-  return 'min(1100px, 96vw)'
+  if (isEffect.value || isAnimator.value) return 'min(1280px, 96vw)'
+  if (isIcon.value) return 'min(960px, 94vw)'
+  return 'min(980px, 94vw)'
 })
 
 const previewSrc = computed(() => {
@@ -261,16 +254,12 @@ function fallbackCopy(text: string) {
       <div class="dialog-header">
         <span class="module-badge" :class="badge.tone">{{ badge.label }}</span>
         <h2 class="asset-title" :title="item.name">{{ item.name }}</h2>
-        <button class="meta-toggle" :class="{ active: metaVisible }" @click="toggleMeta" :title="metaVisible ? '收起详情以放大预览' : '展开详情信息'">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
-          <span>{{ metaVisible ? '收起详情' : '展开详情' }}</span>
-        </button>
       </div>
     </template>
 
-    <div class="detail-grid" :class="metaVisible ? 'with-meta' : 'preview-only'">
+    <div class="detail-grid">
       <!-- Preview stage -->
-      <section class="preview-stage" :class="{ 'is-paired': hasPairedPreviews, 'is-full': !metaVisible }">
+      <section class="preview-stage" :class="{ 'is-paired': hasPairedPreviews }">
         <div v-if="previewSrc" class="preview-canvas">
           <div v-if="isIcon" class="icon-preview-pair">
             <div class="preview-frame is-icon-original">
@@ -383,7 +372,7 @@ function fallbackCopy(text: string) {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding-right: 32px;
+  padding-right: 24px;
   min-width: 0;
 }
 
@@ -434,46 +423,12 @@ function fallbackCopy(text: string) {
   text-overflow: ellipsis;
 }
 
-.meta-toggle {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 10px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-.meta-toggle:hover {
-  color: var(--accent-text);
-  border-color: var(--border-accent);
-  background: var(--accent-soft);
-}
-.meta-toggle.active {
-  color: var(--accent-text);
-  border-color: var(--border-accent);
-  background: var(--accent-soft);
-}
-
 /* ===== Detail grid: preview | meta ===== */
 .detail-grid {
   display: grid;
-  gap: 20px;
-  max-height: calc(95vh - 80px);
-}
-.detail-grid.with-meta {
   grid-template-columns: minmax(0, 1fr) 320px;
-}
-.detail-grid.preview-only {
-  grid-template-columns: minmax(0, 1fr);
-  gap: 0;
+  gap: 20px;
+  max-height: calc(90vh - 80px);
 }
 
 .meta-column {
@@ -511,19 +466,8 @@ function fallbackCopy(text: string) {
   overflow: hidden;
 }
 
-/* When meta is collapsed, preview takes full width — strip padding so GIFs use every pixel */
-.detail-grid.preview-only .preview-canvas {
-  padding: 0;
-  border: none;
-  border-radius: 0;
-  background: var(--bg-root);
-}
-
 .preview-stage.is-paired .preview-canvas {
   padding: 6px;
-}
-.detail-grid.preview-only .preview-stage.is-paired .preview-canvas {
-  padding: 0;
 }
 
 /* Single preview (model) — maximize within available height */
@@ -539,11 +483,8 @@ function fallbackCopy(text: string) {
   width: auto;
   height: auto;
   max-width: 100%;
-  max-height: calc(95vh - 130px);
+  max-height: calc(90vh - 130px);
   border-radius: var(--radius-sm);
-}
-.detail-grid.preview-only .preview-frame.is-single img {
-  max-height: calc(95vh - 110px);
 }
 
 /* Paired previews (effect, animator, icon) */
@@ -561,7 +502,6 @@ function fallbackCopy(text: string) {
 
 .effect-previews .preview-frame,
 .icon-preview-pair .preview-frame {
-  position: relative;
   flex: 0 1 auto;
   min-width: 0;
   max-width: calc((100% - 10px) / 2);
@@ -575,38 +515,23 @@ function fallbackCopy(text: string) {
   backdrop-filter: blur(4px);
 }
 
-/* When meta is collapsed, frames go borderless to maximize image area */
-.detail-grid.preview-only .effect-previews .preview-frame,
-.detail-grid.preview-only .icon-preview-pair .preview-frame {
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  backdrop-filter: none;
-}
-
 .preview-frame img {
   display: block;
   width: auto;
   height: auto;
   max-width: 100%;
-  max-height: calc(95vh - 150px);
-}
-.detail-grid.preview-only .preview-frame img {
-  max-height: calc(95vh - 110px);
+  max-height: calc(90vh - 150px);
 }
 
 .icon-preview-pair .preview-frame {
-  max-width: min(100%, 380px);
-}
-.detail-grid.preview-only .icon-preview-pair .preview-frame {
-  max-width: calc((100% - 10px) / 2);
+  max-width: min(100%, 360px);
 }
 
 .is-icon-zoom img {
-  width: 260px;
-  height: 260px;
+  width: 240px;
+  height: 240px;
   max-width: 100%;
-  max-height: 260px;
+  max-height: 240px;
   object-fit: contain;
   image-rendering: auto;
 }
@@ -623,23 +548,6 @@ function fallbackCopy(text: string) {
   padding: 5px 8px 4px;
   border-bottom: 1px solid var(--border-subtle);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent);
-}
-
-/* When meta is collapsed, labels float as overlay chips so they don't steal vertical space */
-.detail-grid.preview-only .preview-label {
-  position: absolute;
-  top: 6px;
-  left: 6px;
-  z-index: 1;
-  align-self: auto;
-  padding: 3px 8px;
-  background: rgba(0, 0, 0, 0.62);
-  color: rgba(255, 255, 255, 0.92);
-  border: none;
-  border-radius: 3px;
-  backdrop-filter: blur(6px);
-  font-size: 9.5px;
-  letter-spacing: 0.1em;
 }
 
 /* ===== Stage score (under preview) ===== */

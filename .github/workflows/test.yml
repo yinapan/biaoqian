@@ -91,6 +91,20 @@ jobs:
             curl -sf http://localhost:18000/api/v1/health && break
             sleep 2
           done
+          # Fail if backend never came up
+          curl -sf http://localhost:18000/api/v1/health || exit 1
+      - name: Seed fixture data
+        env:
+          ADMIN_API_KEY: test-key-12345
+        run: |
+          set -e
+          for ep in models animator effects icons; do
+            curl -sf -X POST "http://localhost:18000/api/v1/admin/import-${ep}-json" \
+              -H "X-Admin-Key: ${ADMIN_API_KEY}" \
+              -F "file=@tests/e2e/fixtures/${ep}.fixture.json"
+          done
+          curl -sf -X POST "http://localhost:18000/api/v1/admin/reindex-es" \
+            -H "X-Admin-Key: ${ADMIN_API_KEY}"
       - run: npx playwright install --with-deps chromium
       - run: cd tests/e2e && npx playwright test
       - uses: actions/upload-artifact@v4

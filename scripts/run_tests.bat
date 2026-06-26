@@ -58,6 +58,14 @@ echo Backend not ready after 60 seconds
 docker compose -f docker-compose.test.yml down
 exit /b 1
 :e2e_run
+echo === Seeding fixture data ===
+if "%ADMIN_API_KEY%"=="" set ADMIN_API_KEY=test-key-12345
+for %%ep in (models animator effects icons) do (
+  curl -sf -X POST "http://localhost:18000/api/v1/admin/import-%%ep-json" -H "X-Admin-Key: %ADMIN_API_KEY%" -F "file=@tests/e2e/fixtures/%%ep.fixture.json"
+  if %ERRORLEVEL% neq 0 ( echo Seed %%ep failed & docker compose -f docker-compose.test.yml down & exit /b 1 )
+)
+curl -sf -X POST "http://localhost:18000/api/v1/admin/reindex-es" -H "X-Admin-Key: %ADMIN_API_KEY%"
+if %ERRORLEVEL% neq 0 ( echo Reindex failed & docker compose -f docker-compose.test.yml down & exit /b 1 )
 echo === Installing Playwright chromium ===
 cd tests/e2e && npx playwright install --with-deps chromium
 if %ERRORLEVEL% neq 0 ( cd ../.. & docker compose -f docker-compose.test.yml down & exit /b 1 )

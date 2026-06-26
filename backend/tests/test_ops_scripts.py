@@ -425,3 +425,11 @@ def test_asset_cards_mount_detail_modal_only_when_opened():
     text = (ROOT / "frontend/src/components/AssetCard.vue").read_text(encoding="utf-8")
     assert '<AssetDetailModal v-if="showDetail"' in text
     assert 'fetchpriority="low"' in text
+
+
+def test_result_grid_batches_card_mounting_for_all_modules():
+    text = (ROOT / "frontend/src/components/ResultGrid.vue").read_text(encoding="utf-8")
+    assert "INITIAL_RENDER_LIMIT" in text
+    assert "visibleItems" in text
+    assert "requestAnimationFrame" in text
+    assert "v-for=\"item in visibleItems\"" in text

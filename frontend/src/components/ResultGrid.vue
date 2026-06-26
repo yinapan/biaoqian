@@ -1,8 +1,35 @@
 <script setup lang="ts">
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useSearchStore } from '@/stores/searchStore'
 import AssetCard from './AssetCard.vue'
 
 const store = useSearchStore()
+const INITIAL_RENDER_LIMIT = 18
+const renderLimit = ref(INITIAL_RENDER_LIMIT)
+let frameId: number | null = null
+
+const visibleItems = computed(() => store.items.slice(0, renderLimit.value))
+
+watch(
+  () => store.items,
+  async (items) => {
+    if (frameId !== null) {
+      cancelAnimationFrame(frameId)
+      frameId = null
+    }
+    renderLimit.value = Math.min(INITIAL_RENDER_LIMIT, items.length)
+    await nextTick()
+    frameId = requestAnimationFrame(() => {
+      renderLimit.value = items.length
+      frameId = null
+    })
+  },
+  { immediate: true },
+)
+
+onBeforeUnmount(() => {
+  if (frameId !== null) cancelAnimationFrame(frameId)
+})
 </script>
 
 <template>
@@ -32,7 +59,7 @@ const store = useSearchStore()
     <!-- Results grid -->
     <div v-else-if="store.items.length" class="grid">
       <AssetCard
-        v-for="item in store.items"
+        v-for="item in visibleItems"
         :key="item.id"
         :item="item"
       />

@@ -472,7 +472,7 @@ def test_detail_gif_previews_stay_side_by_side():
     # Dialog widens for paired GIF modules but caps at 92vw so it never overflows the viewport
     assert ':width="dialogWidth"' in text
     assert "const dialogWidth = computed" in text
-    assert "min(1600px, 92vw)" in text
+    assert "min(2400px, 92vw)" in text
     # Container tries natural size but caps at 100% — GIFs stay side by side
     assert "width: max-content" in effect_css
     assert "flex-wrap: nowrap" in effect_css

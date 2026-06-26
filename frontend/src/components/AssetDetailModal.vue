@@ -36,7 +36,7 @@ const MODULE_BADGE: Record<number, { label: string; tone: string }> = {
 const badge = computed(() => MODULE_BADGE[store.moduleType] ?? { label: 'ASSET', tone: 'tone-default' })
 
 const dialogWidth = computed(() => {
-  if (isEffect.value || isAnimator.value) return 'min(1600px, 92vw)'
+  if (isEffect.value || isAnimator.value) return 'min(2400px, 92vw)'
   if (isIcon.value) return 'min(1000px, 90vw)'
   return 'min(1000px, 90vw)'
 })

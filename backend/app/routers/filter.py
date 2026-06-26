@@ -10,6 +10,10 @@ router = APIRouter(prefix="/api/v1/filter", tags=["filter"])
 
 HIDDEN_FILTER_FIELDS_BY_MODULE = {
     3: {"action_id", "ai_tags", "size_bytes"},
+    # 图标模块的 `semantic` 字段有 10,838 个枚举值，作为筛选 UI 不实用
+    # （用户无法在万级列表里找到目标值），且渲染开销大。保留 is_searchable
+    # 让关键词搜索仍可命中 semantic 值，只是不在左侧筛选面板显示。
+    4: {"semantic"},
 }
 
 ENUM_FIELD_TYPES = {"enum_single", "enum_multi"}

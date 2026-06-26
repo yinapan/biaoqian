@@ -463,6 +463,17 @@ def test_filter_group_caps_rendered_pills_for_huge_enums():
     assert "输入关键词筛选全部" in text
 
 
+def test_icon_semantic_field_hidden_from_filter_panel():
+    # 用户反馈：图标模块左侧筛选面板的「语义」筛选组无用（10,838 个枚举值
+    # 在 UI 上无法筛选）。后端在 /api/v1/filter/definitions 接口直接隐藏该字段，
+    # 前端自然不渲染对应 FilterGroup。is_searchable 仍为 true，关键词搜索
+    # 仍可命中 semantic 值。
+    text = (ROOT / "backend/app/routers/filter.py").read_text(encoding="utf-8")
+    hidden_block = text[text.index("HIDDEN_FILTER_FIELDS_BY_MODULE"):text.index("ENUM_FIELD_TYPES")]
+    assert '"semantic"' in hidden_block
+    assert "4:" in hidden_block
+
+
 def test_result_grid_batches_card_mounting_for_all_modules():
     text = (ROOT / "frontend/src/components/ResultGrid.vue").read_text(encoding="utf-8")
     assert "INITIAL_RENDER_LIMIT" in text

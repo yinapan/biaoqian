@@ -7,6 +7,7 @@ import json
 import sys
 import urllib.request
 from pathlib import Path
+from urllib.parse import quote
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "backend"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -350,12 +351,21 @@ async def restore_from_canonical(pool: asyncpg.Pool) -> dict:
     return stats
 
 
+def quote_preview_path(path: str) -> str:
+    return quote(path.replace("\\", "/"), safe="/")
+
+
 def preview_url(module_type: int, thumbnail_path: str) -> str:
+    encoded_path = quote_preview_path(thumbnail_path)
     if module_type == 2:
-        return f"/data/gifs/{thumbnail_path}"
+        return f"/data/gifs/{encoded_path}"
     if module_type == 4:
-        return f"/data/icons/{thumbnail_path}"
-    return f"/static/previews/{thumbnail_path}"
+        return f"/data/icons/{encoded_path}"
+    if module_type == 1:
+        return f"/static/previews/model/{encoded_path}"
+    if module_type == 3:
+        return f"/static/previews/animator/{encoded_path}"
+    return f"/static/previews/{encoded_path}"
 
 
 async def verify_previews(pool: asyncpg.Pool, backend_url: str, sample_size: int) -> dict:

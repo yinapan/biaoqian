@@ -571,3 +571,14 @@ def test_detail_modal_shows_svn_metadata_as_dedicated_section():
     assert "SVN 信息" in text
     hidden_block = text[text.index("const HIDDEN_FIELDS"):text.index("const DEDICATED_FIELDS")]
     assert "'__svn'" in hidden_block
+
+
+def test_preview_verification_uses_frontend_preview_paths_and_url_encoding():
+    text = (ROOT / "scripts/import_data.py").read_text(encoding="utf-8")
+    preview_block = text[text.index("def preview_url"):text.index("async def verify_previews")]
+    assert "quote_preview_path(thumbnail_path)" in preview_block
+    assert 'quote(path.replace("\\\\", "/"), safe="/")' in text
+    assert 'return f"/static/previews/model/{encoded_path}"' in preview_block
+    assert 'return f"/static/previews/animator/{encoded_path}"' in preview_block
+    assert 'return f"/data/gifs/{encoded_path}"' in preview_block
+    assert 'return f"/data/icons/{encoded_path}"' in preview_block

@@ -69,7 +69,10 @@ docker compose -f docker-compose.test.yml down
 exit /b %E2E_EXIT%
 
 :perf
-echo TODO: implement in phase 4
+echo === Performance baseline ===
+k6 run tests/performance/k6-baseline.js
+echo === Performance load ===
+k6 run tests/performance/k6-load.js
 goto end
 
 :all

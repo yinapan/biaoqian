@@ -68,7 +68,10 @@ case "$TARGET" in
     exit $E2E_EXIT
     ;;
   perf)
-    echo "TODO: implement perf in phase 4"
+    echo "=== Performance baseline ==="
+    k6 run tests/performance/k6-baseline.js
+    echo "=== Performance load ==="
+    k6 run tests/performance/k6-load.js
     ;;
   all)
     "$0" unit && "$0" integration && "$0" e2e

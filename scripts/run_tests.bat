@@ -34,8 +34,39 @@ docker compose -f docker-compose.test.yml down
 goto end
 
 :e2e
-echo TODO: implement in phase 3
-goto end
+echo === Building frontend ===
+cd frontend && npm run build
+if %ERRORLEVEL% neq 0 ( echo Frontend build failed & exit /b 1 )
+cd ..
+echo === Starting fixture environment ===
+docker compose -f docker-compose.test.yml up -d --build
+echo === Waiting for nginx health (port 18081) ===
+for /L %%i in (1,1,30) do (
+  curl -sf http://localhost:18081 > nul 2>&1 && goto :e2e_ready
+  timeout /t 2 > nul
+)
+echo Nginx not ready after 60 seconds
+docker compose -f docker-compose.test.yml down
+exit /b 1
+:e2e_ready
+echo === Waiting for backend health ===
+for /L %%i in (1,1,30) do (
+  curl -sf http://localhost:18000/api/v1/health > nul 2>&1 && goto :e2e_run
+  timeout /t 2 > nul
+)
+echo Backend not ready after 60 seconds
+docker compose -f docker-compose.test.yml down
+exit /b 1
+:e2e_run
+echo === Installing Playwright chromium ===
+cd tests/e2e && npx playwright install --with-deps chromium
+if %ERRORLEVEL% neq 0 ( cd ../.. & docker compose -f docker-compose.test.yml down & exit /b 1 )
+echo === Running E2E tests ===
+npx playwright test
+set E2E_EXIT=%ERRORLEVEL%
+cd ../..
+docker compose -f docker-compose.test.yml down
+exit /b %E2E_EXIT%
 
 :perf
 echo TODO: implement in phase 4

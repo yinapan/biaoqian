@@ -582,3 +582,11 @@ def test_preview_verification_uses_frontend_preview_paths_and_url_encoding():
     assert 'return f"/static/previews/animator/{encoded_path}"' in preview_block
     assert 'return f"/data/gifs/{encoded_path}"' in preview_block
     assert 'return f"/data/icons/{encoded_path}"' in preview_block
+
+
+def test_frontend_production_tsconfig_excludes_unit_tests():
+    text = (ROOT / "frontend/tsconfig.app.json").read_text(encoding="utf-8")
+    assert '"exclude"' in text
+    assert '"src/**/__tests__/**"' in text
+    assert '"src/**/*.spec.ts"' in text
+    assert '"src/**/*.test.ts"' in text

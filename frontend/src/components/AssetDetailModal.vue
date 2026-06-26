@@ -84,6 +84,17 @@ const hasPairedPreviews = computed(() => {
 })
 
 const tagEntries = computed(() => Object.entries(props.item.tags))
+const svnEntries = computed(() => {
+  const svn = props.item.tags?.__svn
+  if (!svn || typeof svn !== 'object' || Array.isArray(svn)) return []
+  return Object.entries(svn)
+    .filter(([, val]) => val !== undefined && val !== null && String(val) !== '')
+    .map(([key, val]) => ({
+      key,
+      label: SVN_LABELS[key] || key,
+      value: String(val),
+    }))
+})
 
 const TAG_LABELS: Record<string, string> = {
   species: '物种',
@@ -165,6 +176,19 @@ const HIDDEN_FIELDS = new Set([
 ])
 
 const DEDICATED_FIELDS = new Set(['icon_id'])
+
+const SVN_LABELS: Record<string, string> = {
+  path: 'SVN 路径',
+  url: 'SVN 地址',
+  repo: '仓库',
+  repository: '仓库',
+  revision: '版本号',
+  rev: '版本号',
+  commit: '提交号',
+  author: '提交人',
+  date: '提交时间',
+  branch: '分支',
+}
 
 const FIELD_SHORT_LABELS: Record<string, string> = {
   length_cm: '长', width_cm: '宽', height_cm: '高',
@@ -348,6 +372,16 @@ function fallbackCopy(text: string) {
               <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               <span class="id-copy-text" :class="{ visible: iconIdCopied }">已复制</span>
             </button>
+          </div>
+        </div>
+
+        <div v-if="svnEntries.length" class="meta-card svn-section">
+          <span class="card-label">SVN 信息</span>
+          <div class="svn-grid">
+            <div v-for="entry in svnEntries" :key="entry.key" class="svn-item">
+              <span class="svn-label">{{ entry.label }}</span>
+              <code class="svn-value" :title="entry.value">{{ entry.value }}</code>
+            </div>
           </div>
         </div>
 
@@ -644,6 +678,38 @@ function fallbackCopy(text: string) {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--text-muted);
+}
+
+.svn-section {
+  gap: 10px;
+}
+.svn-grid {
+  display: grid;
+  gap: 8px;
+}
+.svn-item {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 8px;
+  align-items: baseline;
+}
+.svn-label {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+.svn-value {
+  min-width: 0;
+  padding: 5px 7px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--bg-root);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .path-row {

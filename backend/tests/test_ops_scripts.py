@@ -546,3 +546,28 @@ def test_detail_gif_previews_stay_side_by_side():
     assert "flex: 0 1 auto" in frame_css
     assert "min-width: 0" in frame_css
     assert "max-width: calc((100% - 10px) / 2)" in frame_css
+
+
+def test_all_importers_attach_svn_version_metadata():
+    importer_paths = [
+        "backend/app/importers/model_importer.py",
+        "backend/app/importers/effects_importer.py",
+        "backend/app/importers/animator_importer.py",
+        "backend/app/importers/icon_importer.py",
+    ]
+    helper_text = (ROOT / "backend/app/importers/canonical_data.py").read_text(encoding="utf-8")
+    assert 'svn = resource.get("svn")' in helper_text
+    assert 'return "__svn"' in helper_text
+    for path in importer_paths:
+        text = (ROOT / path).read_text(encoding="utf-8")
+        assert "attach_resource_version" in text
+        assert "tags = attach_resource_version" in text
+
+
+def test_detail_modal_shows_svn_metadata_as_dedicated_section():
+    text = (ROOT / "frontend/src/components/AssetDetailModal.vue").read_text(encoding="utf-8")
+    assert "svnEntries" in text
+    assert "svn-section" in text
+    assert "SVN 信息" in text
+    hidden_block = text[text.index("const HIDDEN_FIELDS"):text.index("const DEDICATED_FIELDS")]
+    assert "'__svn'" in hidden_block

@@ -12,7 +12,9 @@ const modules = [
 
 function selectModule(mod: number) {
   store.setModuleType(mod)
-  store.loadDefinitions().then(() => store.doSearch())
+  // Definitions and search are independent (search doesn't read tagDefinitions).
+  // Run in parallel to cut switch latency by ~one network RTT.
+  Promise.all([store.loadDefinitions(), store.doSearch()])
 }
 </script>
 

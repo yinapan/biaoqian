@@ -427,6 +427,26 @@ def test_asset_cards_mount_detail_modal_only_when_opened():
     assert 'fetchpriority="low"' in text
 
 
+def test_module_switch_runs_definitions_and_search_in_parallel():
+    # Regression: switching modules used to await loadDefinitions() before
+    # firing doSearch(), adding a network RTT to perceived switch latency.
+    # Search does not read tagDefinitions, so the two requests are independent
+    # and can be issued together via Promise.all.
+    text = (ROOT / "frontend/src/components/ModuleTabs.vue").read_text(encoding="utf-8")
+    assert "Promise.all([store.loadDefinitions(), store.doSearch()])" in text
+    assert "store.loadDefinitions().then(() => store.doSearch())" not in text
+
+
+def test_module_switch_raises_loading_flag_synchronously():
+    # Regression: setModuleType cleared response but left loading=false,
+    # leaving a brief window where ResultGrid rendered neither items nor
+    # skeleton (blank gap), perceived as "switch feels slow".
+    text = (ROOT / "frontend/src/stores/searchStore.ts").read_text(encoding="utf-8")
+    set_module_block = text[text.index("function setModuleType"):text.index("function setFilter")]
+    assert "response.value = null" in set_module_block
+    assert "loading.value = true" in set_module_block
+
+
 def test_result_grid_batches_card_mounting_for_all_modules():
     text = (ROOT / "frontend/src/components/ResultGrid.vue").read_text(encoding="utf-8")
     assert "INITIAL_RENDER_LIMIT" in text

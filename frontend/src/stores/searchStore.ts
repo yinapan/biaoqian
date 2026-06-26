@@ -83,7 +83,11 @@ export const useSearchStore = defineStore('search', () => {
     dismissedFields.value = new Set()
     query.value = ''
     page.value = 1
+    // Clear stale results AND raise loading flag synchronously so ResultGrid
+    // shows skeleton immediately instead of a blank non-loading state during
+    // the gap before doSearch() runs.
     response.value = null
+    loading.value = true
   }
 
   function setFilter(field: string, value: any) {

@@ -2,7 +2,7 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 const BASE = __ENV.BASE_URL || 'http://localhost:8081';
-const THRESHOLD = parseFloat(__ENV.THRESHOLD || '500');
+const THRESHOLD = parseFloat(__ENV.THRESHOLD || '500'); // Day 2 实测后填入
 
 export const options = {
   scenarios: {

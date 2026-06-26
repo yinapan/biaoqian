@@ -447,6 +447,24 @@ def test_module_switch_raises_loading_flag_synchronously():
     assert "loading.value = true" in set_module_block
 
 
+def test_filter_definitions_ignore_stale_module_switch_responses():
+    # Fast module switching can leave older definition requests in flight.
+    # Only the latest response should update the sidebar; otherwise stale
+    # definitions trigger extra renders and can make switching feel stuck.
+    text = (ROOT / "frontend/src/stores/searchStore.ts").read_text(encoding="utf-8")
+    assert "latestDefinitionsId" in text
+    assert "const definitionsId = ++latestDefinitionsId" in text
+    assert "if (definitionsId === latestDefinitionsId" in text
+
+
+def test_filter_panel_batches_filter_group_mounting():
+    text = (ROOT / "frontend/src/components/FilterPanel.vue").read_text(encoding="utf-8")
+    assert "INITIAL_GROUP_RENDER_LIMIT" in text
+    assert "visibleGroupedDefs" in text
+    assert "requestAnimationFrame" in text
+    assert "v-for=\"(entry, idx) in visibleGroupedDefs\"" in text
+
+
 def test_filter_group_caps_rendered_pills_for_huge_enums():
     # Regression: icon module `semantic` field has 10,838 enum values. Rendering
     # all of them as <button> DOM nodes locked the UI on module switch. Cap

@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useSearchStore } from '@/stores/searchStore'
 import FilterGroup from './FilterGroup.vue'
 
 const store = useSearchStore()
+const INITIAL_GROUP_RENDER_LIMIT = 6
+const groupRenderLimit = ref(INITIAL_GROUP_RENDER_LIMIT)
+let frameId: number | null = null
 
 const filterableDefs = computed(() =>
   store.tagDefinitions.filter((d) => d.is_filterable),
@@ -29,6 +32,10 @@ const groupedDefs = computed(() => {
   return result
 })
 
+const visibleGroupedDefs = computed(() =>
+  groupedDefs.value.slice(0, groupRenderLimit.value),
+)
+
 const activeFilterCount = computed(() => {
   let count = 0
   for (const key in store.filters) {
@@ -44,6 +51,27 @@ function clearAll() {
   store.clearFilters()
   store.doSearch()
 }
+
+watch(
+  groupedDefs,
+  async (defs) => {
+    if (frameId !== null) {
+      cancelAnimationFrame(frameId)
+      frameId = null
+    }
+    groupRenderLimit.value = Math.min(INITIAL_GROUP_RENDER_LIMIT, defs.length)
+    await nextTick()
+    frameId = requestAnimationFrame(() => {
+      groupRenderLimit.value = defs.length
+      frameId = null
+    })
+  },
+  { immediate: true },
+)
+
+onBeforeUnmount(() => {
+  if (frameId !== null) cancelAnimationFrame(frameId)
+})
 </script>
 
 <template>
@@ -71,7 +99,7 @@ function clearAll() {
     <!-- Filter groups -->
     <div class="panel-scroll">
       <template v-if="groupedDefs.length">
-        <template v-for="(entry, idx) in groupedDefs" :key="entry.key">
+        <template v-for="(entry, idx) in visibleGroupedDefs" :key="entry.key">
           <!-- Grouped filters (e.g. 尺寸, 相机参数) -->
           <FilterGroup
             v-if="entry.group"

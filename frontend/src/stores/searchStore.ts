@@ -20,6 +20,7 @@ export const useSearchStore = defineStore('search', () => {
   const response = ref<SearchResponse | null>(null)
   const tagDefinitions = ref<TagDefinition[]>([])
   let latestSearchId = 0
+  let latestDefinitionsId = 0
   let currentSearchController: AbortController | null = null
 
   // ---- getters ----
@@ -74,13 +75,19 @@ export const useSearchStore = defineStore('search', () => {
   }
 
   async function loadDefinitions() {
-    tagDefinitions.value = await getTagDefinitions(moduleType.value)
+    const definitionsId = ++latestDefinitionsId
+    const mod = moduleType.value
+    const definitions = await getTagDefinitions(mod)
+    if (definitionsId === latestDefinitionsId && mod === moduleType.value) {
+      tagDefinitions.value = definitions
+    }
   }
 
   function setModuleType(mod: number) {
     moduleType.value = mod
     filters.value = {}
     dismissedFields.value = new Set()
+    tagDefinitions.value = []
     query.value = ''
     page.value = 1
     // Clear stale results AND raise loading flag synchronously so ResultGrid

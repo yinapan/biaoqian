@@ -84,6 +84,17 @@ const hasPairedPreviews = computed(() => {
 })
 
 const tagEntries = computed(() => Object.entries(props.item.tags))
+const svnEntries = computed(() => {
+  const svn = props.item.tags?.__svn
+  if (!svn || typeof svn !== 'object' || Array.isArray(svn)) return []
+  return Object.entries(svn)
+    .filter(([, value]) => value !== undefined && value !== null && value !== '')
+    .map(([key, value]) => ({
+      key,
+      label: SVN_LABELS[key] || key,
+      value: String(value),
+    }))
+})
 
 const TAG_LABELS: Record<string, string> = {
   species: '物种',
@@ -165,6 +176,19 @@ const HIDDEN_FIELDS = new Set([
 ])
 
 const DEDICATED_FIELDS = new Set(['icon_id'])
+
+const SVN_LABELS: Record<string, string> = {
+  author: '作者',
+  commit_author: '作者',
+  date: '日期',
+  last_changed_author: '作者',
+  last_changed_date: '日期',
+  last_changed_revision: '版本号',
+  path: '路径',
+  repository_root: '仓库',
+  revision: '版本号',
+  url: 'URL',
+}
 
 const FIELD_SHORT_LABELS: Record<string, string> = {
   length_cm: '长', width_cm: '宽', height_cm: '高',
@@ -249,6 +273,7 @@ function fallbackCopy(text: string) {
     destroy-on-close
     :append-to-body="true"
     class="asset-detail-dialog"
+    data-testid="detail-modal"
   >
     <template #header>
       <div class="dialog-header">
@@ -264,7 +289,7 @@ function fallbackCopy(text: string) {
           <div v-if="isIcon" class="icon-preview-pair">
             <div class="preview-frame is-icon-original">
               <div class="preview-label">{{ previewLabelLeft }}</div>
-              <img :src="previewSrc" :alt="item.name" loading="eager" fetchpriority="high" />
+              <img :src="previewSrc" :alt="item.name" data-testid="detail-preview" loading="eager" fetchpriority="high" />
             </div>
             <div class="preview-frame is-icon-zoom">
               <div class="preview-label">{{ previewLabelRight }}</div>
@@ -275,7 +300,7 @@ function fallbackCopy(text: string) {
           <div v-else-if="isEffect || isAnimator" class="effect-previews">
             <div class="preview-frame">
               <div class="preview-label">{{ previewLabelLeft }}</div>
-              <img :src="previewSrc" :alt="item.name" loading="eager" fetchpriority="high" />
+              <img :src="previewSrc" :alt="item.name" data-testid="detail-preview" loading="eager" fetchpriority="high" />
             </div>
             <div v-if="hasPairedPreviews" class="preview-frame">
               <div class="preview-label">{{ previewLabelRight }}</div>
@@ -295,7 +320,7 @@ function fallbackCopy(text: string) {
           </div>
 
           <div v-else class="preview-frame is-single">
-            <img :src="previewSrc" :alt="item.name" loading="eager" fetchpriority="high" />
+            <img :src="previewSrc" :alt="item.name" data-testid="detail-preview" loading="eager" fetchpriority="high" />
           </div>
         </div>
 
@@ -343,7 +368,7 @@ function fallbackCopy(text: string) {
               <span class="icon-id-badge">ID</span>
               <code class="icon-id-code">{{ item.tags?.icon_id ?? item.name }}</code>
             </div>
-            <button class="id-copy-action" :class="{ copied: iconIdCopied }" @click="copyIconId()">
+            <button class="id-copy-action" data-testid="copy-id-btn" :class="{ copied: iconIdCopied }" @click="copyIconId()">
               <svg v-if="!iconIdCopied" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="14" height="14" rx="2.5"/><path d="M4 16H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v1"/></svg>
               <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               <span class="id-copy-text" :class="{ visible: iconIdCopied }">已复制</span>
@@ -351,11 +376,25 @@ function fallbackCopy(text: string) {
           </div>
         </div>
 
+        <div v-if="svnEntries.length" class="meta-card svn-section">
+          <span class="card-label">SVN 信息</span>
+          <div class="svn-grid">
+            <div
+              v-for="entry in svnEntries"
+              :key="entry.key"
+              class="svn-item"
+            >
+              <span class="svn-label">{{ entry.label }}</span>
+              <code class="svn-value" :title="entry.value">{{ entry.value }}</code>
+            </div>
+          </div>
+        </div>
+
         <div class="meta-card path-section">
           <span class="card-label">资源路径</span>
           <div class="path-row">
             <code class="path-value">{{ item.resource_path }}</code>
-            <button class="copy-btn" :class="{ copied }" @click="copyPath" :title="copied ? '已复制' : '复制路径'">
+            <button class="copy-btn" data-testid="copy-path-btn" :class="{ copied }" @click="copyPath" :title="copied ? '已复制' : '复制路径'">
               <svg v-if="!copied" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
               <svg v-else xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             </button>
@@ -644,6 +683,39 @@ function fallbackCopy(text: string) {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--text-muted);
+}
+
+.svn-section {
+  gap: 10px;
+}
+
+.svn-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+
+.svn-item {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  align-items: baseline;
+  gap: 8px;
+}
+
+.svn-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.svn-value {
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .path-row {

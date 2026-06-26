@@ -64,6 +64,8 @@ case "$TARGET" in
     (cd tests/e2e && npx playwright install --with-deps chromium)
     echo "=== Running E2E tests ==="
     (cd tests/e2e && npx playwright test)
+    E2E_EXIT=$?
+    exit $E2E_EXIT
     ;;
   perf)
     echo "TODO: implement perf in phase 4"

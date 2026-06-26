@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { useSearchStore } from '@/stores/searchStore'
 import type { TagDefinition } from '@/types'
+import { slug } from '@/utils/testid'
 
 const props = defineProps<{
   definition: TagDefinition
@@ -214,6 +215,7 @@ function setGroupRangeValue(def: TagDefinition, val: [number, number]) {
               v-for="opt in filteredValues"
               :key="opt.value"
               class="tag-pill"
+              :data-testid="`filter-option-${field}-${slug(opt.value)}`"
               :class="{ active: isSelected(opt.value), 'is-zero': getFacetCount(opt.value) === 0 }"
               @click="toggleOption(opt.value)"
             >
@@ -255,6 +257,7 @@ function setGroupRangeValue(def: TagDefinition, val: [number, number]) {
         <div v-else class="range-wrap">
           <el-slider
             v-model="rangeValue"
+            :data-testid="`filter-range-${field}`"
             range
             :min="rangeMin"
             :max="rangeMax"

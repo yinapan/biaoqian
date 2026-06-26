@@ -411,3 +411,17 @@ def test_frontend_search_input_uses_cancellable_quiet_requests():
     assert "store.doSearch({ quiet: true })" in search_bar_text
     assert "}, 500)" in search_bar_text
     assert "store.loading && !store.items.length" in result_grid_text
+
+
+def test_frontend_zero_count_filter_options_have_explicit_state():
+    text = (ROOT / "frontend/src/components/FilterGroup.vue").read_text(encoding="utf-8")
+    assert "'is-zero': getFacetCount(opt.value) === 0" in text
+    assert "'zero-count': getFacetCount(opt.value) === 0" in text
+    assert ".tag-pill.is-zero" in text
+    assert ".zero-count" in text
+
+
+def test_asset_cards_mount_detail_modal_only_when_opened():
+    text = (ROOT / "frontend/src/components/AssetCard.vue").read_text(encoding="utf-8")
+    assert '<AssetDetailModal v-if="showDetail"' in text
+    assert 'fetchpriority="low"' in text

@@ -199,12 +199,18 @@ function setGroupRangeValue(def: TagDefinition, val: [number, number]) {
               v-for="opt in filteredValues"
               :key="opt.value"
               class="tag-pill"
-              :class="{ active: isSelected(opt.value) }"
+              :class="{ active: isSelected(opt.value), 'is-zero': getFacetCount(opt.value) === 0 }"
               @click="toggleOption(opt.value)"
             >
               <span class="pill-dot" v-if="isSelected(opt.value)"></span>
               {{ opt.display_name || opt.value }}
-              <span v-if="getFacetCount(opt.value) !== null" class="pill-count">{{ getFacetCount(opt.value) }}</span>
+              <span
+                v-if="getFacetCount(opt.value) !== null"
+                class="pill-count"
+                :class="{ 'zero-count': getFacetCount(opt.value) === 0 }"
+              >
+                {{ getFacetCount(opt.value) }}
+              </span>
             </button>
           </div>
           <span v-if="filteredValues && filteredValues.length === 0" class="no-match">
@@ -472,6 +478,16 @@ function setGroupRangeValue(def: TagDefinition, val: [number, number]) {
   color: var(--accent-text);
 }
 
+.tag-pill.is-zero:not(.active) {
+  color: var(--text-muted);
+  border-style: dashed;
+  opacity: 0.55;
+}
+
+.tag-pill.is-zero:not(.active):hover {
+  opacity: 0.8;
+}
+
 .tag-pill.active:hover {
   background: rgba(196, 154, 92, 0.15);
 }
@@ -490,6 +506,12 @@ function setGroupRangeValue(def: TagDefinition, val: [number, number]) {
   color: var(--text-muted);
   opacity: 0.7;
   margin-left: 2px;
+}
+
+.zero-count {
+  color: #f87171;
+  opacity: 1;
+  font-weight: 700;
 }
 
 .tag-pill.active .pill-count {

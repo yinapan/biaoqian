@@ -136,6 +136,7 @@ function fallbackCopy(text: string) {
         :alt="item.name"
         loading="lazy"
         decoding="async"
+        fetchpriority="low"
         @error="($event.target as HTMLImageElement).src = PLACEHOLDER"
       />
       <div class="thumb-overlay">
@@ -187,7 +188,7 @@ function fallbackCopy(text: string) {
     </div>
   </div>
 
-  <AssetDetailModal v-model="showDetail" :item="item" />
+  <AssetDetailModal v-if="showDetail" v-model="showDetail" :item="item" />
 </template>
 
 <style scoped>

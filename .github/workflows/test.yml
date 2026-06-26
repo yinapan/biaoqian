@@ -1,0 +1,101 @@
+name: test
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  frontend-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm, cache-dependency-path: frontend/package-lock.json }
+      - run: cd frontend && npm ci && npm run test:coverage
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frontend-coverage
+          path: frontend/coverage/
+
+  backend-integration:
+    runs-on: ubuntu-latest
+    env:
+      RUN_ID: ${{ github.run_id }}
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: biaoqiao
+          POSTGRES_PASSWORD: biaoqiao_test
+          POSTGRES_DB: biaoqiao_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U biaoqiao"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+        env:
+          discovery.type: single-node
+          ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+          xpack.security.enabled: "false"
+        ports: ["9200:9200"]
+        options: >-
+          --health-cmd "curl -f http://localhost:9200/_cluster/health"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Install postgresql-client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - run: pip install -r backend/requirements.txt
+      - name: Init schema
+        env:
+          PGPASSWORD: biaoqiao_test
+        run: |
+          psql -h localhost -U biaoqiao -d biaoqiao_test -f sql/001_init_schema.sql
+          psql -h localhost -U biaoqiao -d biaoqiao_test -f sql/002_init_tags.sql
+      - name: Run integration tests
+        env:
+          DATABASE_URL: postgresql://biaoqiao:biaoqiao_test@localhost:5432/biaoqiao_test
+          ELASTICSEARCH_URL: http://localhost:9200
+          ADMIN_API_KEY: test-key-12345
+          ES_INDEX_ALIAS: ci_assets_${RUN_ID}
+          DB_SCHEMA: ci_biaoqiao_${RUN_ID}
+        run: cd backend && python -m pytest tests/ -v --cov=app --cov-report=xml
+      - name: Cleanup ES indices
+        if: always()
+        run: |
+          curl -X DELETE "http://localhost:9200/ci_assets_${RUN_ID}_*" || true
+          curl -X DELETE "http://localhost:9200/_alias/ci_assets_${RUN_ID}" || true
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: [frontend-unit, backend-integration]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: cd frontend && npm ci && npx vite build
+      - run: docker compose -f docker-compose.test.yml up -d --build
+        env:
+          RUN_ID: ${{ github.run_id }}
+      - name: Wait for backend health
+        run: |
+          for i in {1..30}; do
+            curl -sf http://localhost:18000/api/v1/health && break
+            sleep 2
+          done
+      - run: npx playwright install --with-deps chromium
+      - run: cd tests/e2e && npx playwright test
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: tests/e2e/playwright-report/
+          retention-days: 30

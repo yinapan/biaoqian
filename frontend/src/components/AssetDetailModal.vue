@@ -376,20 +376,6 @@ function fallbackCopy(text: string) {
           </div>
         </div>
 
-        <div v-if="svnEntries.length" class="meta-card svn-section">
-          <span class="card-label">SVN 信息</span>
-          <div class="svn-grid">
-            <div
-              v-for="entry in svnEntries"
-              :key="entry.key"
-              class="svn-item"
-            >
-              <span class="svn-label">{{ entry.label }}</span>
-              <code class="svn-value" :title="entry.value">{{ entry.value }}</code>
-            </div>
-          </div>
-        </div>
-
         <div class="meta-card path-section">
           <span class="card-label">资源路径</span>
           <div class="path-row">

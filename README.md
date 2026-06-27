@@ -81,6 +81,15 @@ deploy\local\reimport-data.bat
 deploy\prod\import-new-data.bat
 ```
 
+默认不传模块参数时会导入全部模块。只想导入某一个模块时，可以直接在脚本后加模块名：
+
+```bat
+deploy\prod\import-new-data.bat model
+deploy\prod\import-new-data.bat animator
+deploy\prod\import-new-data.bat effect
+deploy\prod\import-new-data.bat icon
+```
+
 如果手动执行 `python scripts/import_data.py`，必须先进入项目根目录。不能在 `deploy\local` 或 `deploy` 目录下直接执行，否则会找不到 `scripts\import_data.py`：
 
 ```bat
@@ -109,6 +118,9 @@ python scripts/import_data.py --effects-json ../tag_data_upload/effect/merged/ef
 # 导入图标
 python scripts/import_data.py --icons-json ../tag_data_upload/ui/icon_png_results.json --reindex
 
+# 多个 JSON 一起传入时，只处理指定模块；不传 --module 则默认处理全部模块
+python scripts/import_data.py --module animator --models-json ../tag_data_upload/model/merged/model_png_results.json --animator-json ../tag_data_upload/animation/actions_tags_format.json --effects-json ../tag_data_upload/effect/merged/effect_gif_results.json --icons-json ../tag_data_upload/ui/icon_png_results.json --reindex
+
 # 从 canonical 归档恢复（不读源 JSON，从 runtime_data 的 JSONL 还原）
 python scripts/import_data.py --from-canonical --reindex
 
@@ -132,6 +144,7 @@ delete-stale-data.bat /apply
 - `--admin-key` 管理密钥（不传则从 `.env` 读取）
 - `--backend-url` 后端地址（默认 `http://localhost`）
 - `--reindex` 导入后触发 ES 重建索引 + 字典刷新
+- `--module` 指定导入模块，可选 `all/model/animator/effect/icon`，默认 `all`
 
 ### Admin API（在线导入）
 

@@ -101,6 +101,15 @@ docker info
 .\deploy\local\reimport-data.bat /models "F:\biaoqian\model\merged\model_png_results.json" /animator "F:\biaoqian\animator\actions_tags_format.json" /effects "F:\biaoqian\特效\data\effect_gif_results.json" /icons "F:\biaoqian\icon_png_results\icon_png_results.json"
 ```
 
+只想重导某一个模块时，可以直接传模块名；不传模块名则默认重导全部模块：
+
+```powershell
+.\deploy\local\reimport-data.bat model
+.\deploy\local\reimport-data.bat animator
+.\deploy\local\reimport-data.bat effect
+.\deploy\local\reimport-data.bat icon
+```
+
 正式环境把 `deploy\local` 换成 `deploy\prod` 即可。
 
 重导脚本不会删除数据库 volume。它会导入数据、统一重建 ES、刷新字典，并抽样验证预览图。
@@ -122,6 +131,15 @@ docker info
 ```
 
 只导入某一类数据：
+
+```powershell
+.\deploy\local\import-new-data.bat model
+.\deploy\local\import-new-data.bat animator
+.\deploy\local\import-new-data.bat effect
+.\deploy\local\import-new-data.bat icon
+```
+
+也可以继续显式指定自定义来源文件：
 
 ```powershell
 .\deploy\local\import-new-data.bat /models "F:\biaoqian\model\merged\model_png_results.json"

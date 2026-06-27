@@ -202,6 +202,31 @@ def test_import_scripts_accept_custom_data_source_arguments():
             assert '--animator-json "%ANIMATOR_JSON_PATH%"' in text
 
 
+def test_import_data_supports_module_selector():
+    text = (ROOT / "scripts" / "import_data.py").read_text(encoding="utf-8")
+    assert "--module" in text
+    assert 'choices=["all", "model", "animator", "effect", "icon"]' in text
+    assert "selected_modules" in text
+    assert '"model": args.models_json' in text
+    assert '"animator": args.animator_json' in text
+    assert '"effect": args.effects_json' in text
+    assert '"icon": args.icons_json' in text
+
+
+def test_import_scripts_accept_bare_module_arguments():
+    for env_dir in ENV_DIRS:
+        for script in ["import-new-data.bat", "reimport-data.bat"]:
+            text = _read_script(f"{env_dir}/{script}")
+            assert "Usage: %~nx0 [model|animator|effect|icon|all]" in text
+            assert 'if /I "%~1"=="model" goto select_models' in text
+            assert 'if /I "%~1"=="animator" goto select_animator' in text
+            assert 'if /I "%~1"=="effect" goto select_effects' in text
+            assert 'if /I "%~1"=="icon" goto select_icons' in text
+            assert 'if /I "%~1"=="all" goto select_all' in text
+            assert "set \"HAS_EXPLICIT_SOURCE=1\"" in text
+            assert "set \"IMPORT_ANIMATOR=1\"" in text
+
+
 def test_reimport_only_imports_explicit_sources_when_arguments_are_provided():
     for env_dir in ENV_DIRS:
         text = _read_script(f"{env_dir}/reimport-data.bat")

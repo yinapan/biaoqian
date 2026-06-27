@@ -409,6 +409,12 @@ async def verify_previews(pool: asyncpg.Pool, backend_url: str, sample_size: int
 
 async def main():
     parser = argparse.ArgumentParser(description="Import data into biaoqian platform")
+    parser.add_argument(
+        "--module",
+        default="all",
+        choices=["all", "model", "animator", "effect", "icon"],
+        help="Module to import when multiple JSON sources are provided. Defaults to all.",
+    )
     parser.add_argument("--models-json", help="Path to model JSON file")
     parser.add_argument("--animator-json", help="Path to animator JSON file")
     parser.add_argument("--effects-json", help="Path to effects JSON file")
@@ -436,6 +442,17 @@ async def main():
     parser.add_argument("--admin-key", default=None, help="Admin API key (reads from .env if not provided)")
     parser.add_argument("--backend-url", default="http://localhost", help="Backend URL for API calls")
     args = parser.parse_args()
+    selected_modules = (
+        {"model", "animator", "effect", "icon"}
+        if args.module == "all"
+        else {args.module}
+    )
+    module_sources = {
+        "model": args.models_json,
+        "animator": args.animator_json,
+        "effect": args.effects_json,
+        "icon": args.icons_json,
+    }
 
     if not any(
         [
@@ -468,13 +485,13 @@ async def main():
     ensure_runtime_dirs(root)
     previews_dir = str(root / "runtime_data")
 
-    for source, label in [
-        (args.models_json, "Model JSON"),
-        (args.animator_json, "Animator JSON"),
-        (args.effects_json, "Effects JSON"),
-        (args.icons_json, "Icons JSON"),
+    for module, source, label in [
+        ("model", args.models_json, "Model JSON"),
+        ("animator", args.animator_json, "Animator JSON"),
+        ("effect", args.effects_json, "Effects JSON"),
+        ("icon", args.icons_json, "Icons JSON"),
     ]:
-        if source and not Path(source).exists():
+        if module in selected_modules and source and not Path(source).exists():
             print(f"Error: {label} file not found: {source}", file=sys.stderr)
             sys.exit(1)
 
@@ -497,31 +514,36 @@ async def main():
         if args.reset_db:
             await reset_import_data(pool)
 
-        if should_import and args.models_json:
+        if should_import and "model" in selected_modules and args.models_json:
             await run_model_import(args.models_json, pool)
-        if should_import and args.animator_json:
+        if should_import and "animator" in selected_modules and args.animator_json:
             await run_animator_import(args.animator_json, pool)
-        if should_import and args.effects_json:
+        if should_import and "effect" in selected_modules and args.effects_json:
             await run_effects_import(args.effects_json, pool, previews_dir)
-        if should_import and args.icons_json:
+        if should_import and "icon" in selected_modules and args.icons_json:
             await run_icons_import(args.icons_json, pool)
         if args.from_canonical:
             await restore_from_canonical(pool)
 
         if args.delete_stale:
             delete_targets = [
-                (args.models_json, 1),
-                (args.effects_json, 2),
-                (args.animator_json, 3),
-                (args.icons_json, 4),
+                (module_sources["model"], 1, "model"),
+                (module_sources["effect"], 2, "effect"),
+                (module_sources["animator"], 3, "animator"),
+                (module_sources["icon"], 4, "icon"),
             ]
-            if not any(source for source, _module_type in delete_targets):
+            selected_delete_targets = [
+                (source, module_type)
+                for source, module_type, module in delete_targets
+                if module in selected_modules
+            ]
+            if not any(source for source, _module_type in selected_delete_targets):
                 print(
                     "Error: --delete-stale requires at least one module JSON file.",
                     file=sys.stderr,
                 )
                 sys.exit(1)
-            for source, module_type in delete_targets:
+            for source, module_type in selected_delete_targets:
                 if source:
                     await delete_stale_assets_for_manifest(
                         pool,

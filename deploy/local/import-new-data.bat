@@ -16,6 +16,15 @@ set "IMPORT_ICONS=0"
 
 :parse_args
 if "%~1"=="" goto args_done
+if /I "%~1"=="model" goto select_models
+if /I "%~1"=="models" goto select_models
+if /I "%~1"=="animator" goto select_animator
+if /I "%~1"=="animation" goto select_animator
+if /I "%~1"=="effect" goto select_effects
+if /I "%~1"=="effects" goto select_effects
+if /I "%~1"=="icon" goto select_icons
+if /I "%~1"=="icons" goto select_icons
+if /I "%~1"=="all" goto select_all
 if /I "%~1"=="/models" goto set_models
 if /I "%~1"=="--models" goto set_models
 if /I "%~1"=="/animator" goto set_animator
@@ -25,7 +34,7 @@ if /I "%~1"=="--effects" goto set_effects
 if /I "%~1"=="/icons" goto set_icons
 if /I "%~1"=="--icons" goto set_icons
 echo [ERROR] Unknown argument: %~1
-echo Usage: %~nx0 [/models models.json] [/animator animator.json] [/effects effects.json] [/icons icons.json]
+echo Usage: %~nx0 [model|animator|effect|icon|all] [/models models.json] [/animator animator.json] [/effects effects.json] [/icons icons.json]
 popd
 pause
 exit /b 1
@@ -63,6 +72,39 @@ set "ICONS_JSON_PATH=%~2"
 set "HAS_EXPLICIT_SOURCE=1"
 set "IMPORT_ICONS=1"
 shift
+shift
+goto parse_args
+
+:select_models
+set "HAS_EXPLICIT_SOURCE=1"
+set "IMPORT_MODELS=1"
+shift
+goto parse_args
+
+:select_animator
+set "HAS_EXPLICIT_SOURCE=1"
+set "IMPORT_ANIMATOR=1"
+shift
+goto parse_args
+
+:select_effects
+set "HAS_EXPLICIT_SOURCE=1"
+set "IMPORT_EFFECTS=1"
+shift
+goto parse_args
+
+:select_icons
+set "HAS_EXPLICIT_SOURCE=1"
+set "IMPORT_ICONS=1"
+shift
+goto parse_args
+
+:select_all
+set "HAS_EXPLICIT_SOURCE=1"
+set "IMPORT_MODELS=1"
+set "IMPORT_ANIMATOR=1"
+set "IMPORT_EFFECTS=1"
+set "IMPORT_ICONS=1"
 shift
 goto parse_args
 

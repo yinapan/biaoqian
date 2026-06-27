@@ -18,8 +18,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a001_front.gif",
-        "gif_rel_path_left": "gifs/a001_left.gif",
+        "gif_rel_path_front": "gifs/g000.gif",
+        "gif_rel_path_left": "gifs/g001.gif",
         "tags": {
           "资源类型": [
             "角色动作"
@@ -72,8 +72,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a002_front.gif",
-        "gif_rel_path_left": "gifs/a002_left.gif",
+        "gif_rel_path_front": "gifs/g001.gif",
+        "gif_rel_path_left": "gifs/g002.gif",
         "tags": {
           "资源类型": [
             "骑乘动作"
@@ -122,8 +122,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a003_front.gif",
-        "gif_rel_path_left": "gifs/a003_left.gif",
+        "gif_rel_path_front": "gifs/g002.gif",
+        "gif_rel_path_left": "gifs/g003.gif",
         "tags": {
           "资源类型": [
             "技能动作"
@@ -172,8 +172,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a004_front.gif",
-        "gif_rel_path_left": "gifs/a004_left.gif",
+        "gif_rel_path_front": "gifs/g003.gif",
+        "gif_rel_path_left": "gifs/g004.gif",
         "tags": {
           "资源类型": [
             "角色动作"
@@ -222,8 +222,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a005_front.gif",
-        "gif_rel_path_left": "gifs/a005_left.gif",
+        "gif_rel_path_front": "gifs/g004.gif",
+        "gif_rel_path_left": "gifs/g000.gif",
         "tags": {
           "资源类型": [
             "骑乘动作"
@@ -274,8 +274,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a006_front.gif",
-        "gif_rel_path_left": "gifs/a006_left.gif",
+        "gif_rel_path_front": "gifs/g000.gif",
+        "gif_rel_path_left": "gifs/g001.gif",
         "tags": {
           "资源类型": [
             "技能动作"
@@ -326,8 +326,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a007_front.gif",
-        "gif_rel_path_left": "gifs/a007_left.gif",
+        "gif_rel_path_front": "gifs/g001.gif",
+        "gif_rel_path_left": "gifs/g002.gif",
         "tags": {
           "资源类型": [
             "角色动作"
@@ -376,8 +376,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a008_front.gif",
-        "gif_rel_path_left": "gifs/a008_left.gif",
+        "gif_rel_path_front": "gifs/g002.gif",
+        "gif_rel_path_left": "gifs/g003.gif",
         "tags": {
           "资源类型": [
             "骑乘动作"
@@ -426,8 +426,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a009_front.gif",
-        "gif_rel_path_left": "gifs/a009_left.gif",
+        "gif_rel_path_front": "gifs/g003.gif",
+        "gif_rel_path_left": "gifs/g004.gif",
         "tags": {
           "资源类型": [
             "技能动作"
@@ -478,8 +478,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a010_front.gif",
-        "gif_rel_path_left": "gifs/a010_left.gif",
+        "gif_rel_path_front": "gifs/g004.gif",
+        "gif_rel_path_left": "gifs/g000.gif",
         "tags": {
           "资源类型": [
             "角色动作"
@@ -528,8 +528,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a011_front.gif",
-        "gif_rel_path_left": "gifs/a011_left.gif",
+        "gif_rel_path_front": "gifs/g000.gif",
+        "gif_rel_path_left": "gifs/g001.gif",
         "tags": {
           "资源类型": [
             "骑乘动作"
@@ -580,8 +580,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a012_front.gif",
-        "gif_rel_path_left": "gifs/a012_left.gif",
+        "gif_rel_path_front": "gifs/g001.gif",
+        "gif_rel_path_left": "gifs/g002.gif",
         "tags": {
           "资源类型": [
             "技能动作"
@@ -630,8 +630,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a013_front.gif",
-        "gif_rel_path_left": "gifs/a013_left.gif",
+        "gif_rel_path_front": "gifs/g002.gif",
+        "gif_rel_path_left": "gifs/g003.gif",
         "tags": {
           "资源类型": [
             "角色动作"
@@ -682,8 +682,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a014_front.gif",
-        "gif_rel_path_left": "gifs/a014_left.gif",
+        "gif_rel_path_front": "gifs/g003.gif",
+        "gif_rel_path_left": "gifs/g004.gif",
         "tags": {
           "资源类型": [
             "骑乘动作"
@@ -732,8 +732,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a015_front.gif",
-        "gif_rel_path_left": "gifs/a015_left.gif",
+        "gif_rel_path_front": "gifs/g004.gif",
+        "gif_rel_path_left": "gifs/g000.gif",
         "tags": {
           "资源类型": [
             "技能动作"
@@ -782,8 +782,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a016_front.gif",
-        "gif_rel_path_left": "gifs/a016_left.gif",
+        "gif_rel_path_front": "gifs/g000.gif",
+        "gif_rel_path_left": "gifs/g001.gif",
         "tags": {
           "资源类型": [
             "角色动作"
@@ -834,8 +834,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a017_front.gif",
-        "gif_rel_path_left": "gifs/a017_left.gif",
+        "gif_rel_path_front": "gifs/g001.gif",
+        "gif_rel_path_left": "gifs/g002.gif",
         "tags": {
           "资源类型": [
             "骑乘动作"
@@ -886,8 +886,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a018_front.gif",
-        "gif_rel_path_left": "gifs/a018_left.gif",
+        "gif_rel_path_front": "gifs/g002.gif",
+        "gif_rel_path_left": "gifs/g003.gif",
         "tags": {
           "资源类型": [
             "技能动作"
@@ -936,8 +936,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a019_front.gif",
-        "gif_rel_path_left": "gifs/a019_left.gif",
+        "gif_rel_path_front": "gifs/g003.gif",
+        "gif_rel_path_left": "gifs/g004.gif",
         "tags": {
           "资源类型": [
             "角色动作"
@@ -986,8 +986,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a020_front.gif",
-        "gif_rel_path_left": "gifs/a020_left.gif",
+        "gif_rel_path_front": "gifs/g004.gif",
+        "gif_rel_path_left": "gifs/g000.gif",
         "tags": {
           "资源类型": [
             "骑乘动作"
@@ -1036,8 +1036,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a021_front.gif",
-        "gif_rel_path_left": "gifs/a021_left.gif",
+        "gif_rel_path_front": "gifs/g000.gif",
+        "gif_rel_path_left": "gifs/g001.gif",
         "tags": {
           "资源类型": [
             "技能动作"
@@ -1090,8 +1090,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a022_front.gif",
-        "gif_rel_path_left": "gifs/a022_left.gif",
+        "gif_rel_path_front": "gifs/g001.gif",
+        "gif_rel_path_left": "gifs/g002.gif",
         "tags": {
           "资源类型": [
             "角色动作"
@@ -1140,8 +1140,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a023_front.gif",
-        "gif_rel_path_left": "gifs/a023_left.gif",
+        "gif_rel_path_front": "gifs/g002.gif",
+        "gif_rel_path_left": "gifs/g003.gif",
         "tags": {
           "资源类型": [
             "骑乘动作"
@@ -1190,8 +1190,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a024_front.gif",
-        "gif_rel_path_left": "gifs/a024_left.gif",
+        "gif_rel_path_front": "gifs/g003.gif",
+        "gif_rel_path_left": "gifs/g004.gif",
         "tags": {
           "资源类型": [
             "技能动作"
@@ -1240,8 +1240,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a025_front.gif",
-        "gif_rel_path_left": "gifs/a025_left.gif",
+        "gif_rel_path_front": "gifs/g004.gif",
+        "gif_rel_path_left": "gifs/g000.gif",
         "tags": {
           "资源类型": [
             "角色动作"
@@ -1292,8 +1292,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a026_front.gif",
-        "gif_rel_path_left": "gifs/a026_left.gif",
+        "gif_rel_path_front": "gifs/g000.gif",
+        "gif_rel_path_left": "gifs/g001.gif",
         "tags": {
           "资源类型": [
             "骑乘动作"
@@ -1344,8 +1344,8 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a027_front.gif",
-        "gif_rel_path_left": "gifs/a027_left.gif",
+        "gif_rel_path_front": "gifs/g001.gif",
+        "gif_rel_path_left": "gifs/g002.gif",
         "tags": {
           "资源类型": [
             "技能动作"
@@ -1394,7 +1394,7 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a028_front.gif",
+        "gif_rel_path_front": "gifs/g000.gif",
         "tags": {
           "资源类型": [
             "角色动作"
@@ -1434,7 +1434,7 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a029_front.gif",
+        "gif_rel_path_front": "gifs/g001.gif",
         "tags": {
           "资源类型": [
             "角色动作"
@@ -1474,7 +1474,7 @@
       },
       "result": {
         "status": "ok",
-        "gif_rel_path_front": "gifs/a030_front.gif",
+        "gif_rel_path_front": "gifs/g002.gif",
         "tags": {
           "资源类型": [
             "角色动作"

@@ -18,7 +18,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m001.png",
+        "png_rel_path": "pngs/p001.png",
         "tags": {
           "物种": [
             "人类"
@@ -67,7 +67,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m002.png",
+        "png_rel_path": "pngs/p002.png",
         "tags": {
           "物种": [
             "人类"
@@ -116,7 +116,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m003.png",
+        "png_rel_path": "pngs/p003.png",
         "tags": {
           "物种": [
             "人类"
@@ -165,7 +165,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m004.png",
+        "png_rel_path": "pngs/p004.png",
         "tags": {
           "物种": [
             "人类"
@@ -214,7 +214,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m005.png",
+        "png_rel_path": "pngs/p005.png",
         "tags": {
           "物种": [
             "人类"
@@ -263,7 +263,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m006.png",
+        "png_rel_path": "pngs/p006.png",
         "tags": {
           "物种": [
             "人类"
@@ -312,7 +312,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m007.png",
+        "png_rel_path": "pngs/p007.png",
         "tags": {
           "物种": [
             "精灵"
@@ -361,7 +361,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m008.png",
+        "png_rel_path": "pngs/p008.png",
         "tags": {
           "物种": [
             "精灵"
@@ -410,7 +410,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m009.png",
+        "png_rel_path": "pngs/p009.png",
         "tags": {
           "物种": [
             "精灵"
@@ -459,7 +459,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m010.png",
+        "png_rel_path": "pngs/p010.png",
         "tags": {
           "物种": [
             "精灵"
@@ -508,7 +508,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m011.png",
+        "png_rel_path": "pngs/p011.png",
         "tags": {
           "物种": [
             "精灵"
@@ -557,7 +557,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m012.png",
+        "png_rel_path": "pngs/p012.png",
         "tags": {
           "物种": [
             "精灵"
@@ -606,7 +606,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m013.png",
+        "png_rel_path": "pngs/p013.png",
         "tags": {
           "物种": [
             "兽人"
@@ -655,7 +655,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m014.png",
+        "png_rel_path": "pngs/p014.png",
         "tags": {
           "物种": [
             "兽人"
@@ -704,7 +704,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m015.png",
+        "png_rel_path": "pngs/p015.png",
         "tags": {
           "物种": [
             "兽人"
@@ -753,7 +753,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m016.png",
+        "png_rel_path": "pngs/p016.png",
         "tags": {
           "物种": [
             "兽人"
@@ -802,7 +802,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m017.png",
+        "png_rel_path": "pngs/p017.png",
         "tags": {
           "物种": [
             "兽人"
@@ -851,7 +851,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m018.png",
+        "png_rel_path": "pngs/p018.png",
         "tags": {
           "物种": [
             "兽人"
@@ -900,7 +900,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m019.png",
+        "png_rel_path": "pngs/p019.png",
         "tags": {
           "物种": [
             "魔族"
@@ -949,7 +949,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m020.png",
+        "png_rel_path": "pngs/p020.png",
         "tags": {
           "物种": [
             "魔族"
@@ -998,7 +998,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m021.png",
+        "png_rel_path": "pngs/p021.png",
         "tags": {
           "物种": [
             "魔族"
@@ -1047,7 +1047,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m022.png",
+        "png_rel_path": "pngs/p022.png",
         "tags": {
           "物种": [
             "魔族"
@@ -1096,7 +1096,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m023.png",
+        "png_rel_path": "pngs/p023.png",
         "tags": {
           "物种": [
             "魔族"
@@ -1145,7 +1145,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m024.png",
+        "png_rel_path": "pngs/p024.png",
         "tags": {
           "物种": [
             "魔族"
@@ -1194,7 +1194,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m025.png",
+        "png_rel_path": "pngs/p025.png",
         "tags": {
           "物种": [
             "龙族"
@@ -1243,7 +1243,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m026.png",
+        "png_rel_path": "pngs/p026.png",
         "tags": {
           "物种": [
             "龙族"
@@ -1292,7 +1292,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m027.png",
+        "png_rel_path": "pngs/p027.png",
         "tags": {
           "物种": [
             "龙族"
@@ -1341,7 +1341,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m028.png",
+        "png_rel_path": "pngs/p028.png",
         "tags": {
           "物种": [
             "龙族"
@@ -1390,7 +1390,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m029.png",
+        "png_rel_path": "pngs/p029.png",
         "tags": {
           "物种": [
             "龙族"
@@ -1439,7 +1439,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m030.png",
+        "png_rel_path": "pngs/p030.png",
         "tags": {
           "物种": [
             "龙族"
@@ -1623,7 +1623,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m036_extra.png",
+        "png_rel_path": "pngs/p036.png",
         "tags": {
           "物种": [
             "精灵"
@@ -1672,7 +1672,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m037_extra.png",
+        "png_rel_path": "pngs/p037.png",
         "tags": {
           "物种": [
             "兽人"
@@ -1721,7 +1721,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m038_extra.png",
+        "png_rel_path": "pngs/p038.png",
         "tags": {
           "物种": [
             "魔族"
@@ -1770,7 +1770,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m039_extra.png",
+        "png_rel_path": "pngs/p039.png",
         "tags": {
           "物种": [
             "龙族"
@@ -1819,7 +1819,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m040_extra.png",
+        "png_rel_path": "pngs/p040.png",
         "tags": {
           "物种": [
             "人类"
@@ -1868,7 +1868,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m041_extra.png",
+        "png_rel_path": "pngs/p041.png",
         "tags": {
           "物种": [
             "精灵"
@@ -1917,7 +1917,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m042_extra.png",
+        "png_rel_path": "pngs/p042.png",
         "tags": {
           "物种": [
             "兽人"
@@ -1966,7 +1966,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m043_extra.png",
+        "png_rel_path": "pngs/p043.png",
         "tags": {
           "物种": [
             "魔族"
@@ -2015,7 +2015,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m044_extra.png",
+        "png_rel_path": "pngs/p044.png",
         "tags": {
           "物种": [
             "龙族"
@@ -2064,7 +2064,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m045_extra.png",
+        "png_rel_path": "pngs/p045.png",
         "tags": {
           "物种": [
             "人类"
@@ -2113,7 +2113,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m046_extra.png",
+        "png_rel_path": "pngs/p046.png",
         "tags": {
           "物种": [
             "精灵"
@@ -2162,7 +2162,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m047_extra.png",
+        "png_rel_path": "pngs/p047.png",
         "tags": {
           "物种": [
             "兽人"
@@ -2211,7 +2211,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m048_extra.png",
+        "png_rel_path": "pngs/p048.png",
         "tags": {
           "物种": [
             "魔族"
@@ -2260,7 +2260,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m049_extra.png",
+        "png_rel_path": "pngs/p049.png",
         "tags": {
           "物种": [
             "龙族"
@@ -2309,7 +2309,7 @@
       },
       "result": {
         "status": "ok",
-        "png_rel_path": "pngs/m050_extra.png",
+        "png_rel_path": "pngs/p000.png",
         "tags": {
           "物种": [
             "人类"

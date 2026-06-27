@@ -91,6 +91,16 @@ jobs:
         with: { node-version: 20 }
       - run: cd frontend && npm ci && npx vite build
       - run: cd tests/e2e && npm ci
+      - name: Prepare preview fixtures
+        run: |
+          mkdir -p runtime_data_test/model/previews
+          mkdir -p runtime_data_test/animator/previews
+          mkdir -p runtime_data_test/effect/gifs
+          mkdir -p runtime_data_test/ui/pngs
+          cp tests/e2e/fixtures/previews/p*.png runtime_data_test/model/previews/
+          cp tests/e2e/fixtures/previews/g*.gif runtime_data_test/animator/previews/
+          cp tests/e2e/fixtures/previews/g*.gif runtime_data_test/effect/gifs/
+          cp tests/e2e/fixtures/previews/p*.png runtime_data_test/ui/pngs/
       - run: docker compose -f docker-compose.test.yml up -d --build
         env:
           RUN_ID: ${{ github.run_id }}

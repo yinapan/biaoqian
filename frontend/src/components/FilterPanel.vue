@@ -90,6 +90,7 @@ onBeforeUnmount(() => {
       <button
         v-if="activeFilterCount > 0"
         class="clear-btn"
+        data-testid="filter-clear-all"
         @click="clearAll"
       >
         清除 {{ activeFilterCount }}

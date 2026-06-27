@@ -53,6 +53,10 @@ def generate_models() -> dict:
     features_values = ["威严", "秀气", "魁梧", "苗条"]
     factions_npc = ["否", "是"]
 
+    # Preview files available in tests/e2e/fixtures/previews/p000.png .. p049.png
+    # Cycle through actual filenames so the importer can find source files in CI.
+    preview_files = [f"p{i:03d}.png" for i in range(50)]
+
     # Ensure full coverage of species × gender × body_type (5×2×3 = 30 combos)
     for species in species_values:
         for gender in gender_values:
@@ -66,7 +70,7 @@ def generate_models() -> dict:
                     "svn": svn(idx),
                     "result": {
                         "status": "ok",
-                        "png_rel_path": f"pngs/m{num}.png",
+                        "png_rel_path": f"pngs/{preview_files[idx % len(preview_files)]}",
                         "tags": {
                             "物种": [species],
                             "性别": [gender],
@@ -118,7 +122,7 @@ def generate_models() -> dict:
             "svn": svn(idx),
             "result": {
                 "status": "ok",
-                "png_rel_path": f"pngs/m{num}_extra.png",
+                "png_rel_path": f"pngs/{preview_files[idx % len(preview_files)]}",
                 "tags": {
                     "物种": [sp],
                     "性别": [gd],
@@ -165,10 +169,15 @@ def generate_animator() -> dict:
     qinggong_types = ["轻身", "御剑", "踏云"]
     common_actions = ["普攻", "技能1", "技能2", "被击", "死亡"]
 
+    # Preview gifs available in tests/e2e/fixtures/previews/g000.gif .. g004.gif
+    gif_files = [f"g{i:03d}.gif" for i in range(5)]
+
     # 27 records with front + left dual view
     for i in range(27):
         num = f"{i + 1:03d}"
         action_id = i + 1  # 1..27 for number_range coverage (boundary test)
+        gif_front = gif_files[i % len(gif_files)]
+        gif_left = gif_files[(i + 1) % len(gif_files)]
         resources.append({
             "resource_id": f"data/sources/animator/gifs/a{num}_front.gif",
             "source_path": f"data/sources/animator/gifs/a{num}_front.gif",
@@ -176,8 +185,8 @@ def generate_animator() -> dict:
             "svn": svn(i),
             "result": {
                 "status": "ok",
-                "gif_rel_path_front": f"gifs/a{num}_front.gif",
-                "gif_rel_path_left": f"gifs/a{num}_left.gif",
+                "gif_rel_path_front": f"gifs/{gif_front}",
+                "gif_rel_path_left": f"gifs/{gif_left}",
                 "tags": {
                     "资源类型": [resource_types[i % len(resource_types)]],
                     "体型": [body_types[i % len(body_types)]],
@@ -207,7 +216,7 @@ def generate_animator() -> dict:
             "svn": svn(100 + i),
             "result": {
                 "status": "ok",
-                "gif_rel_path_front": f"gifs/a{num}_front.gif",
+                "gif_rel_path_front": f"gifs/{gif_files[i % len(gif_files)]}",
                 # gif_rel_path_left intentionally omitted
                 "tags": {
                     "资源类型": ["角色动作"],
@@ -254,9 +263,14 @@ def generate_effects() -> dict:
     char_actions = ["释放", "受击", "移动", "待机"]
     item_props = ["武器光效", "道具闪光", "材料光晕", "无"]
 
+    # Preview gifs available in tests/e2e/fixtures/previews/g000.gif .. g004.gif
+    gif_files = [f"g{i:03d}.gif" for i in range(5)]
+
     # 22 records with all 12 tag categories + full quantitative fields
     for i in range(22):
         num = f"{i + 1:03d}"
+        gif_main = gif_files[i % len(gif_files)]
+        gif_grid = gif_files[(i + 1) % len(gif_files)]
         resources.append({
             "resource_id": f"data/source/other/hd特效/ui_m/pss/e{num}.pss",
             "source_path": f"data/source/other/hd特效/ui_m/pss/e{num}.pss",
@@ -264,8 +278,8 @@ def generate_effects() -> dict:
             "svn": svn(i),
             "result": {
                 "status": "ok",
-                "gif_rel_path": f"gifs/e{num}.gif",
-                "gif_grid_rel_path": f"gifs/e{num}_grid.gif",
+                "gif_rel_path": f"gifs/{gif_main}",
+                "gif_grid_rel_path": f"gifs/{gif_grid}",
                 "length_cm": round(2100.0 + i * 50, 1),
                 "width_cm": round(1000.0 + i * 30, 1),
                 "height_cm": round(1000.0 + i * 20, 1),
@@ -311,7 +325,7 @@ def generate_effects() -> dict:
         num = f"{i + 23:03d}"
         result = {
             "status": "ok",
-            "gif_rel_path": f"gifs/e{num}.gif",
+            "gif_rel_path": f"gifs/{gif_files[i % len(gif_files)]}",
             "description": f"部分量化字段缺失测试{i + 1}",
             "tags": {
                 "颜色": [colors[(i + 3) % len(colors)]],
@@ -347,7 +361,7 @@ def generate_effects() -> dict:
             "svn": svn(300 + i),
             "result": {
                 "status": "ok",
-                "gif_rel_path": f"gifs/e{num}_notag.gif",
+                "gif_rel_path": f"gifs/{gif_files[i % len(gif_files)]}",
                 "length_cm": 1000.0,
                 "effect_duration_sec": 1.0,
                 "tags": {},  # empty tags — test no-tags path
@@ -382,6 +396,8 @@ def generate_icons() -> dict:
     # Then 5 long description records, then pad to 40
 
     idx = 0
+    # Preview pngs available in tests/e2e/fixtures/previews/p000.png .. p049.png
+    png_files = [f"p{i:03d}.png" for i in range(50)]
     for predefined in predefined_values:
         for j in range(5):
             idx += 1
@@ -395,7 +411,7 @@ def generate_icons() -> dict:
                 "svn": svn(idx),
                 "result": {
                     "status": "ok",
-                    "rel_path": f"pngs/i{num}.png",
+                    "rel_path": f"pngs/{png_files[idx % len(png_files)]}",
                     "width_px": 64,
                     "height_px": 64,
                     "framed": idx % 3 == 0,
@@ -431,7 +447,7 @@ def generate_icons() -> dict:
             "svn": svn(500 + i),
             "result": {
                 "status": "ok",
-                "rel_path": f"pngs/i{num}_long.png",
+                "rel_path": f"pngs/{png_files[idx % len(png_files)]}",
                 "width_px": 128,
                 "height_px": 128,
                 "framed": True,
@@ -459,7 +475,7 @@ def generate_icons() -> dict:
                 "svn": svn(600 + i),
                 "result": {
                     "status": "ok",
-                    "rel_path": f"pngs/i{num}_color.png",
+                    "rel_path": f"pngs/{png_files[idx % len(png_files)]}",
                     "width_px": 64,
                     "height_px": 64,
                     "framed": False,
@@ -487,7 +503,7 @@ def generate_icons() -> dict:
                 "svn": svn(700 + i),
                 "result": {
                     "status": "ok",
-                    "rel_path": f"pngs/i{num}_sem.png",
+                    "rel_path": f"pngs/{png_files[idx % len(png_files)]}",
                     "width_px": 64,
                     "height_px": 64,
                     "framed": False,
@@ -514,7 +530,7 @@ def generate_icons() -> dict:
             "svn": svn(800 + i),
             "result": {
                 "status": "ok",
-                "rel_path": f"pngs/i{num}_nodesc.png",
+                "rel_path": f"pngs/{png_files[idx % len(png_files)]}",
                 "width_px": 64,
                 "height_px": 64,
                 "framed": False,

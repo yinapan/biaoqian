@@ -598,6 +598,25 @@ def test_detail_modal_shows_svn_metadata_as_dedicated_section():
     assert "'__svn'" in hidden_block
 
 
+def test_detail_modal_keeps_resource_path_above_svn_metadata():
+    text = (ROOT / "frontend/src/components/AssetDetailModal.vue").read_text(encoding="utf-8")
+    path_index = text.index('<span class="card-label">资源路径</span>')
+    svn_index = text.index('<span class="card-label">SVN 信息</span>')
+    assert path_index < svn_index
+
+
+def test_detail_modal_body_is_clamped_to_viewport():
+    text = (ROOT / "frontend/src/components/AssetDetailModal.vue").read_text(encoding="utf-8")
+    dialog_css = text[text.index(".asset-detail-dialog .el-dialog {"):text.index(".asset-detail-dialog .el-dialog__header")]
+    body_css = text[text.index(".asset-detail-dialog .el-dialog__body {"):text.index(".asset-detail-dialog .el-dialog__headerbtn")]
+    assert "max-height: min(92vh, 1080px)" in dialog_css
+    assert "display: flex" in dialog_css
+    assert "flex-direction: column" in dialog_css
+    assert "overflow: hidden" in dialog_css
+    assert "overflow: auto" in body_css
+    assert "min-height: 0" in body_css
+
+
 def test_preview_verification_uses_frontend_preview_paths_and_url_encoding():
     text = (ROOT / "scripts/import_data.py").read_text(encoding="utf-8")
     preview_block = text[text.index("def preview_url"):text.index("async def verify_previews")]

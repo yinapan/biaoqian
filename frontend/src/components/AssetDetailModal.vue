@@ -375,16 +375,6 @@ function fallbackCopy(text: string) {
           </div>
         </div>
 
-        <div v-if="svnEntries.length" class="meta-card svn-section">
-          <span class="card-label">SVN 信息</span>
-          <div class="svn-grid">
-            <div v-for="entry in svnEntries" :key="entry.key" class="svn-item">
-              <span class="svn-label">{{ entry.label }}</span>
-              <code class="svn-value" :title="entry.value">{{ entry.value }}</code>
-            </div>
-          </div>
-        </div>
-
         <div class="meta-card path-section">
           <span class="card-label">资源路径</span>
           <div class="path-row">
@@ -393,6 +383,16 @@ function fallbackCopy(text: string) {
               <svg v-if="!copied" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
               <svg v-else xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             </button>
+          </div>
+        </div>
+
+        <div v-if="svnEntries.length" class="meta-card svn-section">
+          <span class="card-label">SVN 信息</span>
+          <div class="svn-grid">
+            <div v-for="entry in svnEntries" :key="entry.key" class="svn-item">
+              <span class="svn-label">{{ entry.label }}</span>
+              <code class="svn-value" :title="entry.value">{{ entry.value }}</code>
+            </div>
           </div>
         </div>
       </aside>
@@ -861,6 +861,9 @@ function fallbackCopy(text: string) {
   background: var(--bg-elevated) !important;
   border: 1px solid var(--border-subtle) !important;
   border-radius: var(--radius-lg) !important;
+  display: flex;
+  flex-direction: column;
+  max-height: min(92vh, 1080px);
   overflow: hidden;
 }
 .asset-detail-dialog .el-dialog__header {
@@ -869,6 +872,9 @@ function fallbackCopy(text: string) {
   border-bottom: 1px solid var(--border-subtle);
 }
 .asset-detail-dialog .el-dialog__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
   padding: 18px 20px 20px !important;
 }
 .asset-detail-dialog .el-dialog__headerbtn {

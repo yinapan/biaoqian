@@ -70,18 +70,52 @@ verify-previews.bat
 
 ## 数据导入
 
-### 命令行脚本（推荐）
+### 数据导入脚本怎么选
 
-`scripts/import_data.py` 支持批量导入各模块数据，自动推断预览目录：
+日常操作优先使用 `.bat` 脚本，不建议直接执行 `python scripts/import_data.py`。`.bat` 脚本会自动切到项目根目录，并临时打开导入所需的 PostgreSQL/Elasticsearch 端口。
 
-推荐优先使用环境脚本，它会自动切到项目根目录，并临时暴露 PostgreSQL/Elasticsearch 端口：
+| 场景 | 使用脚本 | 说明 |
+| --- | --- | --- |
+| 第一次导入、清库后重导、想按源 JSON 覆盖现有标签 | `reimport-data.bat` | 不删除 Docker volume，会重新导入数据、重建 ES、刷新字典、抽样检查预览图。 |
+| 后续只新增或更新一批数据 | `import-new-data.bat` | 不清理旧数据，按 `module_type + resource_path` 更新已有记录或插入新记录。 |
+| 只想导入一个模块 | 在脚本后加模块名 | 支持 `model`、`animator`、`effect`、`icon`。不传模块名默认导入全部模块。 |
+| 需要删除源 JSON 已经不存在的旧数据 | `delete-stale-data.bat` | 先 dry-run 看差异，确认后再加 `/apply` 真删除。 |
+| 只想验证预览图是否可访问 | `verify-previews.bat` | 会抽样访问预览 URL，并把失败详情写到 `runtime_data/logs/imports/`。 |
+
+### 常用命令
+
+本地测试环境：
 
 ```bat
 deploy\local\reimport-data.bat
-deploy\prod\import-new-data.bat
+deploy\local\import-new-data.bat
+deploy\local\import-new-data.bat animator
+deploy\local\verify-previews.bat
 ```
 
-默认不传模块参数时会导入全部模块。只想导入某一个模块时，可以直接在脚本后加模块名：
+正式环境：
+
+```bat
+deploy\prod\reimport-data.bat
+deploy\prod\import-new-data.bat
+deploy\prod\import-new-data.bat model
+deploy\prod\import-new-data.bat animator
+deploy\prod\import-new-data.bat effect
+deploy\prod\import-new-data.bat icon
+deploy\prod\verify-previews.bat
+```
+
+根目录也有快捷脚本，默认指向正式环境：
+
+```bat
+reimport-data.bat
+import-new-data.bat
+verify-previews.bat
+```
+
+### 只导入某个模块
+
+模块名直接放在脚本后面即可：
 
 ```bat
 deploy\prod\import-new-data.bat model
@@ -90,7 +124,40 @@ deploy\prod\import-new-data.bat effect
 deploy\prod\import-new-data.bat icon
 ```
 
-如果手动执行 `python scripts/import_data.py`，必须先进入项目根目录。不能在 `deploy\local` 或 `deploy` 目录下直接执行，否则会找不到 `scripts\import_data.py`：
+重导也支持同样写法：
+
+```bat
+deploy\prod\reimport-data.bat animator
+```
+
+### 指定自定义 JSON 路径
+
+默认情况下，脚本会从项目同级目录的 `tag_data_upload` 查找数据源。如果数据源放在其他位置，可以显式指定路径：
+
+```bat
+deploy\prod\import-new-data.bat /models "F:\biaoqian\model\merged\model_png_results.json"
+deploy\prod\import-new-data.bat /animator "F:\biaoqian\animator\actions_tags_format.json"
+deploy\prod\import-new-data.bat /effects "F:\biaoqian\effect\merged\effect_gif_results.json"
+deploy\prod\import-new-data.bat /icons "F:\biaoqian\icon_png_results\icon_png_results.json"
+```
+
+### 清理旧数据
+
+如果源 JSON 删除了一批资源，普通导入不会自动删除数据库里的旧记录。需要先执行差异检查：
+
+```bat
+deploy\prod\delete-stale-data.bat
+```
+
+确认输出没问题后，再执行真实删除：
+
+```bat
+deploy\prod\delete-stale-data.bat /apply
+```
+
+### 手动执行 Python 脚本
+
+只有排查问题或临时调试时才建议直接执行 Python。必须先进入项目根目录，不能在 `deploy\local` 或 `deploy` 目录下执行：
 
 ```bat
 cd /d F:\biaoqian
@@ -102,49 +169,15 @@ cd /d F:\biaoqian
 docker compose -p biaoqian_local -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.import.yml up -d postgres elasticsearch
 ```
 
-```bash
-# 导入模型
-python scripts/import_data.py --models-json ../tag_data_upload/model/merged/model_png_results.json --reindex
+常用参数：
 
-# 本地测试环境手动导入模型
-python scripts/import_data.py --models-json ../tag_data_upload/model/merged/model_png_results.json --reindex --backend-url http://localhost:8081
-
-# 导入动作
-python scripts/import_data.py --animator-json ../tag_data_upload/animation/actions_tags_format.json --reindex
-
-# 导入特效
-python scripts/import_data.py --effects-json ../tag_data_upload/effect/merged/effect_gif_results.json --reindex
-
-# 导入图标
-python scripts/import_data.py --icons-json ../tag_data_upload/ui/icon_png_results.json --reindex
-
-# 多个 JSON 一起传入时，只处理指定模块；不传 --module 则默认处理全部模块
-python scripts/import_data.py --module animator --models-json ../tag_data_upload/model/merged/model_png_results.json --animator-json ../tag_data_upload/animation/actions_tags_format.json --effects-json ../tag_data_upload/effect/merged/effect_gif_results.json --icons-json ../tag_data_upload/ui/icon_png_results.json --reindex
-
-# 从 canonical 归档恢复（不读源 JSON，从 runtime_data 的 JSONL 还原）
-python scripts/import_data.py --from-canonical --reindex
-
-# 验证预览图可访问
-verify-previews.bat
-# 或按环境执行: deploy\local\verify-previews.bat / deploy\prod\verify-previews.bat
-
-# Dry-run: list DB assets missing from the current JSON files, no deletion
-python scripts/import_data.py --delete-stale --models-json ../tag_data_upload/model/merged/model_png_results.json --animator-json ../tag_data_upload/animation/actions_tags_format.json --effects-json ../tag_data_upload/effect/merged/effect_gif_results.json --icons-json ../tag_data_upload/ui/icon_png_results.json
-
-# Apply stale deletion, then rebuild ES
-python scripts/import_data.py --delete-stale --apply-delete-stale --models-json ../tag_data_upload/model/merged/model_png_results.json --animator-json ../tag_data_upload/animation/actions_tags_format.json --effects-json ../tag_data_upload/effect/merged/effect_gif_results.json --icons-json ../tag_data_upload/ui/icon_png_results.json --reindex
-
-# Bat wrappers: dry-run first, then apply after checking output
-delete-stale-data.bat
-delete-stale-data.bat /apply
-```
-
-参数说明：
-- `--pg-url` PostgreSQL 连接串（默认 `postgresql://biaoqiao:biaoqiao_dev@localhost:5432/biaoqiao`）
-- `--admin-key` 管理密钥（不传则从 `.env` 读取）
-- `--backend-url` 后端地址（默认 `http://localhost`）
-- `--reindex` 导入后触发 ES 重建索引 + 字典刷新
-- `--module` 指定导入模块，可选 `all/model/animator/effect/icon`，默认 `all`
+- `--models-json`：模型 JSON 路径。
+- `--animator-json`：动作 JSON 路径。
+- `--effects-json`：特效 JSON 路径。
+- `--icons-json`：图标 JSON 路径。
+- `--module`：指定导入模块，可选 `all/model/animator/effect/icon`，默认 `all`。
+- `--reindex`：导入后重建 ES 索引并刷新字典。
+- `--backend-url`：后端地址，正式默认 `http://localhost`，本地测试可用 `http://localhost:8081`。
 
 ### Admin API（在线导入）
 

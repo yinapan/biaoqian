@@ -90,6 +90,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
       - run: cd frontend && npm ci && npx vite build
+      - run: cd tests/e2e && npm ci
       - run: docker compose -f docker-compose.test.yml up -d --build
         env:
           RUN_ID: ${{ github.run_id }}

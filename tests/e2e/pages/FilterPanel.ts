@@ -30,8 +30,12 @@ export class FilterPanel {
     const clearBtn = this.page.locator('[data-testid="filter-clear-all"]')
     const count = await clearBtn.count()
     if (count > 0) {
+      const reqPromise = this.page.waitForRequest(r =>
+        r.url().includes('/api/v1/search/query')
+      ).catch(() => null)
       await clearBtn.click()
-      await this.page.waitForLoadState('networkidle')
+      await reqPromise
+      await this.page.waitForLoadState('networkidle').catch(() => {})
     }
   }
 }

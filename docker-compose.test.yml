@@ -10,7 +10,12 @@ services:
       - ./sql:/docker-entrypoint-initdb.d
       - ./runtime_data_test:/runtime_data
   elasticsearch-test:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+    image: biaoqiao-elasticsearch:8.15.0-ik
+    build:
+      context: ./docker/elasticsearch
+      args:
+        ELASTICSEARCH_BASE_IMAGE: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+        IK_PLUGIN_URL: https://get.infini.cloud/elasticsearch/analysis-ik/8.15.0
     environment:
       discovery.type: single-node
       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
@@ -21,6 +26,7 @@ services:
     environment:
       DATABASE_URL: postgresql://biaoqiao:biaoqiao_test@postgres-test:5432/biaoqiao_test
       ELASTICSEARCH_URL: http://elasticsearch-test:9200
+      ES_URL: http://elasticsearch-test:9200
       ADMIN_API_KEY: ${ADMIN_API_KEY:-test-key-12345}
       ES_INDEX_ALIAS: test_assets_${RUN_ID:-local}
       DB_SCHEMA: biaoqiao_test_${RUN_ID:-local}

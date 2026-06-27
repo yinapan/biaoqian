@@ -37,23 +37,22 @@ test.describe('辅助功能', () => {
       await page.waitForLoadState('networkidle')
       await sp.resultGrid.expectAtLeastOneCard()
 
-      // Tab to the first card
-      attempts = 0
-      while (attempts < 20) {
-        const testid = await page.evaluate(() =>
-          (document.activeElement as HTMLElement)?.dataset?.testid ?? ''
-        )
-        if (testid.startsWith('asset-card-') || testid.startsWith('asset-preview-')) break
-        await page.keyboard.press('Tab')
-        attempts++
-      }
-      const cardFocused = await page.evaluate(() => {
-        const testid = (document.activeElement as HTMLElement)?.dataset?.testid ?? ''
-        return testid.startsWith('asset-card-') || testid.startsWith('asset-preview-') ||
-          (document.activeElement?.closest('[data-testid^="asset-card-"]') !== null)
-      })
-      // Card or its children should be keyboard reachable
-      expect(cardFocused || attempts < 20).toBe(true)
+      // Verify the first card is keyboard-focusable (tabindex="0" on .asset-card)
+      // and can be activated via Enter to open the detail modal.
+      const firstCard = sp.resultGrid.firstCard()
+      await firstCard.focus()
+      const focusedTestid = await page.evaluate(() =>
+        (document.activeElement as HTMLElement)?.dataset?.testid ?? ''
+      )
+      expect(
+        focusedTestid.startsWith('asset-card-') ||
+        focusedTestid.startsWith('asset-preview-') ||
+        (document.activeElement?.closest('[data-testid^="asset-card-"]') !== null)
+      ).toBe(true)
+
+      // Enter should activate the focused card (open detail modal)
+      await page.keyboard.press('Enter')
+      await sp.detailModal.expectOpen()
     } else {
       // Basic keyboard navigation works (Tab moves focus)
       const finalTag = await page.evaluate(() => document.activeElement?.tagName)

@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     dict_refresh_interval: int = 600
     page_size_max: int = 100
     page_offset_max: int = 10000
+    project_root: str = "/"  # CI 可设为 /tmp/biaoqian_runtime 避免根目录权限问题
 
     class Config:
         env_file = ".env"

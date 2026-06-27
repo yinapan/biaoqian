@@ -60,13 +60,13 @@ def resolve_model_png_path(png_rel_path: str | None) -> str | None:
 def build_model_tags(resource: dict) -> dict:
     tags: dict = {}
 
-    raw_tags = resource.get("tags", {})
+    result = resource.get("result", {}) or {}
+    raw_tags = result.get("tags", {}) or resource.get("tags", {}) or {}
     for cn_key, en_field in MODEL_TAG_KEY_MAP.items():
         values = raw_tags.get(cn_key)
         if values:
             tags[en_field] = values if isinstance(values, list) else [values]
 
-    result = resource.get("result", {})
     if not result:
         return tags
 

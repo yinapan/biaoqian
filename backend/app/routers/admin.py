@@ -1,10 +1,12 @@
 import os
 import tempfile
+from pathlib import Path
 
 from fastapi import APIRouter, File, Header, HTTPException, UploadFile
 
 from app.config import settings
 from app.importers.animator_importer import import_animator_json
+from app.importers.canonical_data import ensure_runtime_dirs
 from app.importers.effects_importer import import_effects_json
 from app.importers.icon_importer import import_icons_json
 from app.importers.model_importer import import_models_json
@@ -107,12 +109,14 @@ async def admin_import_models_json(
 ):
     verify_admin(x_admin_key)
     pool = await get_pool()
+    project_root = Path(settings.project_root)
     with tempfile.NamedTemporaryFile(delete=False, suffix=".json") as tmp:
         tmp.write(await file.read())
         tmp_path = tmp.name
     try:
+        ensure_runtime_dirs(project_root)
         result = await import_models_json(
-            tmp_path, "/data/sources/model/pngs", pool, project_root="/"
+            tmp_path, "/data/sources/model/pngs", pool, project_root=str(project_root)
         )
         await sync_model_tag_values(pool)
         clear_all_caches()
@@ -129,12 +133,14 @@ async def admin_import_animator_json(
 ):
     verify_admin(x_admin_key)
     pool = await get_pool()
+    project_root = Path(settings.project_root)
     with tempfile.NamedTemporaryFile(delete=False, suffix=".json") as tmp:
         tmp.write(await file.read())
         tmp_path = tmp.name
     try:
+        ensure_runtime_dirs(project_root)
         result = await import_animator_json(
-            tmp_path, "/data/sources/animator/gifs", pool, project_root="/"
+            tmp_path, "/data/sources/animator/gifs", pool, project_root=str(project_root)
         )
         await sync_animator_tag_values(pool)
         clear_all_caches()

@@ -126,7 +126,12 @@ function fallbackCopy(text: string) {
   <div
     class="asset-card"
     :data-testid="`asset-card-${item.id}`"
+    tabindex="0"
+    role="button"
+    :aria-label="`查看 ${item.name} 详情`"
     @click="showDetail = true"
+    @keydown.enter.prevent="showDetail = true"
+    @keydown.space.prevent="showDetail = true"
     @mouseenter="hovering = true"
     @mouseleave="hovering = false"
   >

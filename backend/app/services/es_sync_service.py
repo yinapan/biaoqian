@@ -88,7 +88,7 @@ async def reindex_with_alias(pool, index_body: dict) -> dict:
             for doc in docs:
                 actions.append({"index": {"_index": new_index, "_id": doc["id"]}})
                 actions.append(doc)
-            await es.bulk(body=actions)
+            await es.bulk(body=actions, refresh="wait_for")
             total += len(rows)
             offset += batch_size
 

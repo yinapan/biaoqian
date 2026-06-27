@@ -16,13 +16,23 @@ export class SearchPage {
   get detailModal() { return new AssetDetailModal(this.page) }
 
   async search(text: string) {
+    // Wait for the debounced search request to fire (any status — error-state
+    // tests mock 500/abort, where waitForResponse(status==200) would hang).
+    const reqPromise = this.page.waitForRequest(r =>
+      r.url().includes('/api/v1/search/query')
+    ).catch(() => null)
     await this.searchInput.fill(text)
-    await this.page.waitForLoadState('networkidle')
+    await reqPromise
+    await this.page.waitForLoadState('networkidle').catch(() => {})
   }
 
   async clearSearch() {
+    const reqPromise = this.page.waitForRequest(r =>
+      r.url().includes('/api/v1/search/query')
+    ).catch(() => null)
     await this.searchInput.fill('')
-    await this.page.waitForLoadState('networkidle')
+    await reqPromise
+    await this.page.waitForLoadState('networkidle').catch(() => {})
   }
 
   async expectQueryTimeLessThan(ms: number) {

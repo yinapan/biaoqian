@@ -12,9 +12,9 @@ import pytest
 
 @pytest.mark.asyncio
 async def test_suggestions_prefix_match(test_client, seeded_db):
-    """前缀 '测' 返回至少一条建议。"""
+    """前缀 '人' 返回至少一条建议（匹配 '人类'）。"""
     resp = await test_client.get(
-        "/api/v1/search/suggestions", params={"q": "测", "module_type": 1}
+        "/api/v1/search/suggestions", params={"q": "人", "module_type": 1}
     )
     assert resp.status_code == 200
     data = resp.json()

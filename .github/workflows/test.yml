@@ -37,24 +37,26 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-      elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
-        env:
-          discovery.type: single-node
-          ES_JAVA_OPTS: "-Xms512m -Xmx512m"
-          xpack.security.enabled: "false"
-        ports: ["9200:9200"]
-        options: >-
-          --health-cmd "curl -f http://localhost:9200/_cluster/health"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
       - name: Install postgresql-client
         run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Build ES with IK plugin
+        run: docker compose -f docker-compose.test.yml build elasticsearch-test
+      - name: Start ES with IK plugin
+        run: |
+          docker run -d --name es-ik --network host \
+            -e discovery.type=single-node \
+            -e "ES_JAVA_OPTS=-Xms512m -Xmx512m" \
+            -e xpack.security.enabled=false \
+            biaoqiao-elasticsearch:8.15.0-ik
+          for i in {1..60}; do
+            curl -sf http://localhost:9200/_cluster/health > /dev/null && break
+            sleep 2
+          done
+          curl -sf http://localhost:9200/_cluster/health || exit 1
       - run: pip install -r backend/requirements.txt
       - name: Init schema
         env:
@@ -62,13 +64,17 @@ jobs:
         run: |
           psql -h localhost -U biaoqiao -d biaoqiao_test -f sql/001_init_schema.sql
           psql -h localhost -U biaoqiao -d biaoqiao_test -f sql/002_init_tags.sql
+      - name: Prepare runtime_data dir
+        run: mkdir -p /tmp/biaoqian_runtime && chmod 777 /tmp/biaoqian_runtime
       - name: Run integration tests
         env:
           DATABASE_URL: postgresql://biaoqiao:biaoqiao_test@localhost:5432/biaoqiao_test
           ELASTICSEARCH_URL: http://localhost:9200
+          ES_URL: http://localhost:9200
           ADMIN_API_KEY: test-key-12345
           ES_INDEX_ALIAS: ci_assets_${RUN_ID}
           DB_SCHEMA: ci_biaoqiao_${RUN_ID}
+          PROJECT_ROOT: /tmp/biaoqian_runtime
         run: cd backend && python -m pytest tests/ -v --cov=app --cov-report=xml
       - name: Cleanup ES indices
         if: always()
@@ -84,6 +90,17 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
       - run: cd frontend && npm ci && npx vite build
+      - run: cd tests/e2e && npm ci
+      - name: Prepare preview fixtures
+        run: |
+          mkdir -p runtime_data_test/model/previews
+          mkdir -p runtime_data_test/animator/previews
+          mkdir -p runtime_data_test/effect/gifs
+          mkdir -p runtime_data_test/ui/pngs
+          cp tests/e2e/fixtures/previews/p*.png runtime_data_test/model/previews/
+          cp tests/e2e/fixtures/previews/g*.gif runtime_data_test/animator/previews/
+          cp tests/e2e/fixtures/previews/g*.gif runtime_data_test/effect/gifs/
+          cp tests/e2e/fixtures/previews/p*.png runtime_data_test/ui/pngs/
       - run: docker compose -f docker-compose.test.yml up -d --build
         env:
           RUN_ID: ${{ github.run_id }}

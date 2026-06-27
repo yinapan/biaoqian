@@ -17,6 +17,8 @@ async def search_query(req: SearchRequest):
 @router.get("/suggestions", response_model=SuggestionsResponse)
 async def suggestions(module_type: int, q: str = ""):
     matcher = get_matcher()
+    if not q:
+        return SuggestionsResponse(suggestions=[])
     items = matcher.prefix_search(module_type, q, limit=10)
     return SuggestionsResponse(
         suggestions=[

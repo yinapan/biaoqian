@@ -12,6 +12,8 @@ Key API shape facts:
 """
 import pytest
 
+from app.services.llm_parse_service import settings as parse_settings
+
 
 # ===== 基础 14 个 =====
 
@@ -52,8 +54,12 @@ async def test_search_filters_and(test_client, seeded_db):
     )
     assert resp.status_code == 200
     for item in resp.json()["items"]:
-        # tags are nested under item["tags"]
-        assert item["tags"].get("species") == "人类"
+        # tags are nested under item["tags"]; species is stored as a list
+        species = item["tags"].get("species")
+        if isinstance(species, list):
+            assert "人类" in species
+        else:
+            assert species == "人类"
 
 
 @pytest.mark.asyncio
@@ -71,7 +77,11 @@ async def test_search_excludes(test_client, seeded_db):
     )
     assert resp.status_code == 200
     for item in resp.json()["items"]:
-        assert item["tags"].get("species") != "人类"
+        species = item["tags"].get("species")
+        if isinstance(species, list):
+            assert "人类" not in species
+        else:
+            assert species != "人类"
 
 
 @pytest.mark.asyncio
@@ -198,7 +208,7 @@ async def test_search_facets_count(test_client, seeded_db):
 @pytest.mark.asyncio
 async def test_search_llm_path(test_client, seeded_db, monkeypatch):
     """llm_enabled=True 时 LLM 路径可触发，parse_source 包含 'llm'。"""
-    monkeypatch.setattr("app.services.parse_service.settings.llm_enabled", True, raising=False)
+    monkeypatch.setattr(parse_settings, "llm_enabled", True, raising=False)
 
     async def _mock_llm(remaining, matched, unmatched_dims):
         return {"filter": {}, "exclude": {}, "keyword": remaining, "confidence": 0.8}

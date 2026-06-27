@@ -28,6 +28,7 @@ frontend/tsconfig.*.tsbuildinfo
 # Test/debug scripts
 .playwright-mcp/
 check_*.py
+artifacts/
 read_excel.py
 
 # Backups

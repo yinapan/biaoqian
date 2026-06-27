@@ -7,6 +7,7 @@ Session-scoped schema lifecycle + test fixtures for parallel CI isolation.
 - seeded_db   : imports 4 fixture JSON files via admin endpoints
 - admin_key   : ADMIN_API_KEY from environment
 """
+import asyncio
 import os
 from pathlib import Path
 from urllib.parse import urlparse, urlunparse
@@ -76,10 +77,16 @@ async def test_client(test_schema):
     """httpx AsyncClient targeting /api/v1/*.
     Lazy-imports app so DB_SCHEMA env var is already set."""
     from app.main import app  # noqa: PLC0415  lazy import — DB_SCHEMA must be set first
+    from app.services.es_sync_service import close_es
+    from app.models.database import close_pool
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url="http://test"
     ) as client:
         yield client
+    # Reset ES + PG singletons between tests so each test gets a fresh client
+    # bound to its own event loop (asyncio clients are loop-bound).
+    await close_es()
+    await close_pool()
 
 
 @pytest_asyncio.fixture

@@ -85,7 +85,11 @@ async def parse_query(
             and d["is_searchable"]
         ]
 
-        llm_result = await call_llm(remaining, dict_result.matched, unmatched_dims)
+        try:
+            llm_result = await call_llm(remaining, dict_result.matched, unmatched_dims)
+        except Exception:
+            logger.warning("LLM call failed unexpectedly", exc_info=True)
+            llm_result = None
 
         if llm_result:
             # 4. Validate

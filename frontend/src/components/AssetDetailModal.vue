@@ -557,6 +557,7 @@ function fallbackCopy(text: string) {
   height: auto;
   max-width: 100%;
   max-height: calc(88vh - 150px);
+  object-fit: contain;
 }
 
 .icon-preview-pair .preview-frame {

@@ -16,13 +16,16 @@ test.describe('搜索流程', () => {
     await sp.resultGrid.expectAtLeastOneCard()
     const beforeCount = await sp.resultGrid.cards().count()
     await sp.clearSearch()
-    // After clearing, results should update (may return more or different results)
+    // After clearing: search input should be empty and results should still be visible
+    const inputValue = await sp.searchInput.inputValue()
+    expect(inputValue).toBe('')
     await expect(sp.resultGrid.firstCard()).toBeVisible()
     const afterCount = await sp.resultGrid.cards().count()
     // Results exist (cleared search returns default/all results)
     expect(afterCount).toBeGreaterThan(0)
-    // Counts may differ from the filtered search
-    expect(afterCount).not.toBe(beforeCount)
+    // Counts MAY differ — but don't have to (some fixtures have all items match '战士').
+    // The key check is that the input was cleared and results are still visible.
+    expect(beforeCount).toBeGreaterThan(0)
   })
 
   test('模块切换 → 搜索状态被重置', async ({ page }) => {

@@ -545,14 +545,31 @@ def test_detail_preview_adapts_to_screen_size():
     # Single-preview branch keeps its own viewport-aware cap
     single_css = text[text.index(".preview-frame.is-single img"):text.index("/* Paired previews")]
     assert "max-height: calc(88vh - 130px)" in single_css
-    # Two-column grid so preview + metadata fit one screen; meta column tightened to 280px
-    assert "grid-template-columns: minmax(0, 1fr) 280px" in text
-    # Stacks vertically on narrow viewports
+    # Detail uses a single-column stack so the preview is not squeezed by a right rail
+    assert "detail-stack" in text
+    assert "<aside" not in text
+    assert "grid-template-columns: minmax(0, 1fr) 280px" not in text
+    assert "grid-template-columns: repeat(auto-fit, minmax(220px, 1fr))" in text
+    # Keeps mobile-specific caps for compact screens
     assert "@media (max-width: 880px)" in text
     assert 'v-if="isIcon"' in text
     assert "icon-preview-pair" in text
     assert "is-icon-original" in text
     assert "is-icon-zoom" in text
+
+
+def test_detail_modal_puts_preview_before_scrollable_metadata():
+    text = (ROOT / "frontend/src/components/AssetDetailModal.vue").read_text(encoding="utf-8")
+    stack_index = text.index('class="detail-stack"')
+    preview_index = text.index('<section class="preview-stage"', stack_index)
+    meta_index = text.index('<section class="meta-column"', stack_index)
+    assert preview_index < meta_index
+    stack_css = text[text.index(".detail-stack {"):text.index("/* ===== Preview stage =====")]
+    preview_css = text[text.index(".preview-canvas {"):text.index(".preview-stage.is-paired")]
+    assert "display: flex" in stack_css
+    assert "flex-direction: column" in stack_css
+    assert "max-height: none" in stack_css
+    assert "flex: 0 0 auto" in preview_css
 
 
 def test_detail_gif_previews_stay_side_by_side():
@@ -615,6 +632,15 @@ def test_detail_modal_body_is_clamped_to_viewport():
     assert "overflow: hidden" in dialog_css
     assert "overflow: auto" in body_css
     assert "min-height: 0" in body_css
+
+
+def test_detail_modal_copy_buttons_share_the_same_style():
+    text = (ROOT / "frontend/src/components/AssetDetailModal.vue").read_text(encoding="utf-8")
+    assert text.count('class="copy-action"') == 2
+    assert "copy-action.copied" in text
+    assert "copy-action-text" in text
+    assert 'iconIdCopied ? \'已复制\' : \'复制 ID\'' in text
+    assert 'copied ? \'已复制\' : \'复制路径\'' in text
 
 
 def test_preview_verification_uses_frontend_preview_paths_and_url_encoding():

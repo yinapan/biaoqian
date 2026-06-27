@@ -281,7 +281,7 @@ function fallbackCopy(text: string) {
       </div>
     </template>
 
-    <div class="detail-grid">
+    <div class="detail-stack">
       <!-- Preview stage -->
       <section class="preview-stage" :class="{ 'is-paired': hasPairedPreviews }">
         <div v-if="previewSrc" class="preview-canvas">
@@ -335,8 +335,8 @@ function fallbackCopy(text: string) {
         </div>
       </section>
 
-      <!-- Metadata column -->
-      <aside class="meta-column">
+      <!-- Metadata details -->
+      <section class="meta-column">
         <div class="meta-grid">
           <div
             v-for="[key, val] in visibleTagEntries"
@@ -367,10 +367,10 @@ function fallbackCopy(text: string) {
               <span class="icon-id-badge">ID</span>
               <code class="icon-id-code">{{ item.tags?.icon_id ?? item.name }}</code>
             </div>
-            <button class="id-copy-action" :class="{ copied: iconIdCopied }" @click="copyIconId()">
+            <button class="copy-action" :class="{ copied: iconIdCopied }" @click="copyIconId()" :title="iconIdCopied ? '已复制' : '复制 ID'">
               <svg v-if="!iconIdCopied" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="14" height="14" rx="2.5"/><path d="M4 16H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v1"/></svg>
               <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              <span class="id-copy-text" :class="{ visible: iconIdCopied }">已复制</span>
+              <span class="copy-action-text" :class="{ visible: iconIdCopied }">已复制</span>
             </button>
           </div>
         </div>
@@ -379,9 +379,10 @@ function fallbackCopy(text: string) {
           <span class="card-label">资源路径</span>
           <div class="path-row">
             <code class="path-value">{{ item.resource_path }}</code>
-            <button class="copy-btn" :class="{ copied }" @click="copyPath" :title="copied ? '已复制' : '复制路径'">
+            <button class="copy-action" :class="{ copied }" @click="copyPath" :title="copied ? '已复制' : '复制路径'">
               <svg v-if="!copied" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
               <svg v-else xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <span class="copy-action-text" :class="{ visible: copied }">已复制</span>
             </button>
           </div>
         </div>
@@ -395,7 +396,7 @@ function fallbackCopy(text: string) {
             </div>
           </div>
         </div>
-      </aside>
+      </section>
     </div>
   </el-dialog>
 </template>
@@ -457,12 +458,12 @@ function fallbackCopy(text: string) {
   text-overflow: ellipsis;
 }
 
-/* ===== Detail grid: preview | meta ===== */
-.detail-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 280px;
-  gap: 20px;
-  max-height: calc(90vh - 80px);
+/* ===== Detail stack: preview first, details below ===== */
+.detail-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-height: none;
 }
 
 .meta-column {
@@ -470,8 +471,8 @@ function fallbackCopy(text: string) {
   flex-direction: column;
   gap: 10px;
   min-height: 0;
-  overflow-y: auto;
-  padding-right: 4px;
+  overflow: visible;
+  padding-right: 0;
   scrollbar-width: thin;
 }
 
@@ -486,7 +487,7 @@ function fallbackCopy(text: string) {
 
 .preview-canvas {
   position: relative;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   min-height: 0;
   display: flex;
   align-items: center;
@@ -625,7 +626,7 @@ function fallbackCopy(text: string) {
 /* ===== Meta grid ===== */
 .meta-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1px;
   background: var(--border-subtle);
   border: 1px solid var(--border-subtle);
@@ -731,28 +732,45 @@ function fallbackCopy(text: string) {
   min-width: 0;
 }
 
-.copy-btn {
+.copy-action {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
+  gap: 6px;
+  min-width: 44px;
+  padding: 0 12px;
   border: 1px solid var(--border-subtle);
+  border-left: none;
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   background: var(--bg-surface);
   color: var(--text-muted);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
   flex-shrink: 0;
 }
-.copy-btn:hover {
+.copy-action:hover {
   background: var(--accent-soft);
   color: var(--accent-text);
   border-color: var(--border-accent);
 }
-.copy-btn.copied {
+.copy-action.copied {
   color: #4ade80;
   border-color: rgba(34, 197, 94, 0.3);
-  background: rgba(22, 163, 74, 0.12);
+  background: rgba(22, 163, 74, 0.14);
+  min-width: 72px;
+}
+.copy-action-text {
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.copy-action-text.visible {
+  opacity: 1;
+  width: 32px;
 }
 
 /* ===== Icon ID ===== */
@@ -798,55 +816,13 @@ function fallbackCopy(text: string) {
   white-space: nowrap;
   flex: 1;
 }
-.id-copy-action {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-width: 44px;
-  padding: 0 12px;
-  border: 1px solid var(--border-subtle);
-  border-left: none;
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  background: var(--bg-surface);
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-}
-.id-copy-action:hover {
-  background: var(--accent-soft);
-  color: var(--accent-text);
-  border-color: var(--border-accent);
-}
-.id-copy-action.copied {
-  background: rgba(22, 163, 74, 0.14);
-  color: #4ade80;
-  border-color: rgba(34, 197, 94, 0.3);
-  min-width: 72px;
-}
-.id-copy-text {
-  font-size: 11px;
-  font-weight: 600;
-  white-space: nowrap;
-  opacity: 0;
-  width: 0;
-  overflow: hidden;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.id-copy-text.visible {
-  opacity: 1;
-  width: 32px;
-}
-
 /* ===== Responsive: stack on narrow viewports ===== */
 @media (max-width: 880px) {
-  .detail-grid {
-    grid-template-columns: minmax(0, 1fr);
+  .detail-stack {
     max-height: none;
   }
   .meta-column {
-    overflow-y: visible;
+    overflow: visible;
   }
   .preview-frame img,
   .preview-frame.is-single img {

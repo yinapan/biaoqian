@@ -23,22 +23,34 @@ test.describe('筛选流程', () => {
     }
   })
 
-  test('enum_multi 多选 → AND', async ({ page }) => {
+  test('enum_multi 多选 → 同组内 OR', async ({ page }) => {
     const sp = new SearchPage(page)
     await sp.goto()
     await page.waitForLoadState('networkidle')
-    // Click two filter options from the same group
+    // Click two filter options from the same enum_multi group.
+    // enum_multi semantics: multiple values in the same group are OR'd
+    // (tags.{field}: [v1, v2] matches any), so adding a second option
+    // widens the result set rather than narrowing it.
     const options = page.locator('[data-testid^="filter-option-"]')
     const count = await options.count()
     if (count >= 2) {
+      const resp1 = page.waitForResponse(r =>
+        r.url().includes('/api/v1/search/query') && r.status() === 200
+      )
       await options.nth(0).click()
+      await resp1
       await page.waitForLoadState('networkidle')
       const firstCount = await sp.resultGrid.cards().count()
+      const resp2 = page.waitForResponse(r =>
+        r.url().includes('/api/v1/search/query') && r.status() === 200
+      )
       await options.nth(1).click()
+      await resp2
       await page.waitForLoadState('networkidle')
       const secondCount = await sp.resultGrid.cards().count()
-      // Multi-select AND: adding more filters should narrow or equal results
-      expect(secondCount).toBeLessThanOrEqual(firstCount)
+      // OR semantics: adding a second value to the same enum_multi group
+      // should widen or keep the result set, not narrow it.
+      expect(secondCount).toBeGreaterThanOrEqual(firstCount)
     } else {
       expect(true).toBe(true)
     }
@@ -128,7 +140,9 @@ test.describe('筛选流程', () => {
     const chipCount = await chips.count()
     if (chipCount > 0) {
       const firstChip = chips.first()
-      await firstChip.click()
+      // Click the dismiss button inside the chip, not the chip span itself.
+      const dismissBtn = firstChip.locator('button.pill-dismiss')
+      await dismissBtn.click()
       await page.waitForTimeout(400)
       // After dismissing, results or chips should update
       await sp.resultGrid.expectAtLeastOneCard()
@@ -141,14 +155,24 @@ test.describe('筛选流程', () => {
   test('多 filter 组合', async ({ page }) => {
     const sp = new SearchPage(page)
     await sp.goto()
+    // Wait for the actual search response so afterSearchCount reflects
+    // the post-search state, not a pre-search empty grid.
+    const resp1 = page.waitForResponse(r =>
+      r.url().includes('/api/v1/search/query') && r.status() === 200
+    )
     await sp.search('战士')
+    await resp1
     await page.waitForLoadState('networkidle')
     const afterSearchCount = await sp.resultGrid.cards().count()
     // Apply additional filter options
     const options = page.locator('[data-testid^="filter-option-"]')
     const optCount = await options.count()
     if (optCount > 0) {
+      const resp2 = page.waitForResponse(r =>
+        r.url().includes('/api/v1/search/query') && r.status() === 200
+      )
       await options.first().click()
+      await resp2
       await page.waitForLoadState('networkidle')
       const combinedCount = await sp.resultGrid.cards().count()
       // Combined search + filter should be <= search alone

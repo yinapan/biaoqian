@@ -113,16 +113,17 @@ test.describe('搜索流程', () => {
   test('输入"不要红色" → exclude chip 出现 → 结果不含红色', async ({ page }) => {
     const sp = new SearchPage(page)
     await sp.goto()
+    // Set up response listener BEFORE the search fires (sp.search awaits the
+    // request, so a response listener set up after would miss the response).
+    const respPromise = page.waitForResponse(r =>
+      r.url().includes('/api/v1/search/query') && r.status() === 200
+    )
     await sp.search('不要红色')
     await page.waitForLoadState('networkidle')
     // parse_info should identify exclude intent; check for exclude chip in UI
     const parseChips = page.locator('[data-testid^="parse-chip-"]')
     const chipCount = await parseChips.count()
-    // At least one chip should appear (exclude or keyword)
-    // Even if no chip, results must not contain "红色" in visible card text
-    const resp = await page.waitForResponse(r =>
-      r.url().includes('/api/v1/search/query') && r.status() === 200
-    )
+    const resp = await respPromise
     const body = await resp.json()
     // parse_info should contain exclude information
     expect(body).toHaveProperty('parse_info')
@@ -166,24 +167,20 @@ test.describe('搜索流程', () => {
     const parseChips = page.locator('[data-testid^="parse-chip-"]')
     const chipCount = await parseChips.count()
     if (chipCount > 0) {
-      // Click the first chip to dismiss/toggle it
-      await parseChips.first().click()
-      // After dismiss, a new search request should fire
+      // Set up response listener BEFORE clicking the dismiss button
+      // (dismissFilter calls store.doSearch synchronously, so the request
+      // fires immediately). Click the inner button.pill-dismiss, not the
+      // chip span — the span has no click handler; only the button does.
       const respPromise = page.waitForResponse(r =>
         r.url().includes('/api/v1/search/query') && r.status() === 200
       )
-      await page.waitForLoadState('networkidle')
-      const resp = await respPromise.catch(() => null)
-      if (resp) {
-        const body = await resp.json()
-        expect(body).toHaveProperty('parse_info')
-      }
+      const dismissBtn = parseChips.first().locator('button.pill-dismiss')
+      await dismissBtn.click()
+      const resp = await respPromise
+      const body = await resp.json()
+      expect(body).toHaveProperty('parse_info')
     } else {
       // No chips present: verify parse_info still returned
-      const resp = await page.waitForResponse(r =>
-        r.url().includes('/api/v1/search/query') && r.status() === 200
-      ).catch(() => null)
-      // Acceptable if no chips appear in this fixture
       expect(true).toBe(true)
     }
   })

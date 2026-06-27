@@ -63,7 +63,10 @@ test.describe('错误状态', () => {
   })
 
   test('空结果 → "无匹配"提示', async ({ page }) => {
-    // Mock search to return empty results
+    // Mock search to return empty results.
+    // parse_info must be null (or a fully-formed ParseInfo) — a partial object
+    // like { q: '...' } makes SearchBar.vue's Object.entries(info.effective_filters)
+    // throw, which takes down the entire SearchBar render — search-input disappears.
     await page.route('**/api/v1/search/query', route => route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -74,7 +77,7 @@ test.describe('错误状态', () => {
         limit: 20,
         query_time_ms: 1,
         facets: {},
-        parse_info: { q: '极不可能存在的词语xyzabc123' },
+        parse_info: null,
       }),
     }))
 

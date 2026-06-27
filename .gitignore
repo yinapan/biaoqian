@@ -25,6 +25,14 @@ frontend/tsconfig.*.tsbuildinfo
 .pnpm-store/
 .npm-cache/
 
+# E2E test runtime artifacts
+tests/e2e/node_modules/
+tests/e2e/test-results/
+tests/e2e/playwright-report/
+
+# Performance test reports
+tests/performance/reports/
+
 # Test/debug scripts
 .playwright-mcp/
 check_*.py
@@ -56,3 +64,7 @@ backups/
 !runtime_data_test/ui/
 !runtime_data_test/ui/pngs/
 !runtime_data_test/ui/pngs/*.png
+
+# Test runtime data files (jsonl logs, run logs) — not source artifacts
+runtime_data_test/**/data.jsonl
+runtime_data_test/logs/

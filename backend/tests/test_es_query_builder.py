@@ -23,7 +23,40 @@ def test_keyword_search():
         page_size=20,
     )
     must = q["query"]["function_score"]["query"]["bool"]["must"]
-    assert any("match" in clause for clause in must)
+    keyword_should = must[0]["bool"]["should"]
+    assert any("match" in clause and "search_text" in clause["match"] for clause in keyword_should)
+
+
+def test_keyword_search_covers_resource_name_and_path_fields():
+    q = build_search_query(module_type=2, keyword="h_蝴蝶01a", page=1, page_size=20)
+
+    must = q["query"]["function_score"]["query"]["bool"]["must"]
+    keyword_clause = must[0]
+    should_fields = keyword_clause["bool"]["should"]
+
+    assert {"match": {"search_text": {"query": "h_蝴蝶01a", "analyzer": "ik_smart", "boost": 3}}} in should_fields
+    assert {"match": {"resource_name": {"query": "h_蝴蝶01a", "analyzer": "ik_smart", "boost": 5}}} in should_fields
+    assert {"term": {"resource_name.keyword": {"value": "h_蝴蝶01a", "boost": 20}}} in should_fields
+    assert {"term": {"resource_name_tokens": {"value": "h_蝴蝶01a", "boost": 12}}} in should_fields
+    assert {"match": {"resource_path_text": {"query": "h_蝴蝶01a", "analyzer": "ik_smart", "boost": 2}}} in should_fields
+
+
+def test_parsed_filters_from_query_are_soft_when_keyword_exists():
+    q = build_search_query(
+        module_type=2,
+        filters={"scene_env": ["蝴蝶"]},
+        keyword="蝴蝶",
+        parsed_filter_fields={"scene_env"},
+        agg_fields=["scene_env"],
+        page=1,
+        page_size=20,
+    )
+
+    bool_query = q["query"]["function_score"]["query"]["bool"]
+    assert {"term": {"module_type": "2"}} in bool_query["filter"]
+    assert {"terms": {"tags.scene_env": ["蝴蝶"]}} not in bool_query["filter"]
+    assert {"terms": {"tags.scene_env": ["蝴蝶"]}} in bool_query["should"]
+    assert bool_query["minimum_should_match"] == 1
 
 
 def test_range_condition():

@@ -1,5 +1,7 @@
 import json
+import re
 import time
+from pathlib import PurePosixPath, PureWindowsPath
 
 from elasticsearch import AsyncElasticsearch
 
@@ -34,21 +36,54 @@ def flatten_tag_values(tags: dict) -> list[str]:
     return values
 
 
+def _split_resource_parts(value: str) -> list[str]:
+    return [part for part in re.split(r"[/\\_\s&+.,;:()（）\[\]【】{}<>《》|-]+", value) if part]
+
+
+def extract_resource_search_terms(resource_path: str) -> dict:
+    normalized_path = str(resource_path or "").replace("\\", "/")
+    filename = PurePosixPath(normalized_path).name or PureWindowsPath(str(resource_path or "")).name
+    resource_name = filename.rsplit(".", 1)[0] if "." in filename else filename
+    resource_path_text = " ".join(_split_resource_parts(normalized_path))
+    resource_name_tokens = []
+    seen = set()
+    for token in _split_resource_parts(resource_name):
+        if token not in seen:
+            seen.add(token)
+            resource_name_tokens.append(token)
+    return {
+        "resource_name": resource_name,
+        "resource_name_tokens": resource_name_tokens,
+        "resource_path_text": resource_path_text,
+    }
+
+
 def build_es_doc(row: dict) -> dict:
     tags = row["tags"]
     if isinstance(tags, str):
         tags = json.loads(tags)
+    resource_terms = extract_resource_search_terms(row["resource_path"])
+    resource_text = " ".join(
+        [
+            resource_terms["resource_name"],
+            " ".join(resource_terms["resource_name_tokens"]),
+            resource_terms["resource_path_text"],
+        ]
+    )
     doc = {
         "id": row["id"],
         "module_type": str(row["module_type"]),
         "name": row["name"],
         "resource_path": row["resource_path"],
+        "resource_name": resource_terms["resource_name"],
+        "resource_name_tokens": resource_terms["resource_name_tokens"],
+        "resource_path_text": resource_terms["resource_path_text"],
         "tags": tags,
         "version": row.get("version"),
         "file_size": row.get("file_size"),
         "created_at": row["created_at"].isoformat() if row.get("created_at") else None,
         "updated_at": row["updated_at"].isoformat() if row.get("updated_at") else None,
-        "search_text": f"{row['name']} {' '.join(flatten_tag_values(tags))}",
+        "search_text": f"{row['name']} {resource_text} {' '.join(flatten_tag_values(tags))}",
     }
     if row.get("thumbnail_path"):
         doc["thumbnail_path"] = row["thumbnail_path"]

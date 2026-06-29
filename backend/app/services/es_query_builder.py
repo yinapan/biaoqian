@@ -27,6 +27,7 @@ def build_search_query(
     excludes: dict | None = None,
     keyword: str = "",
     keyword_excludes: list[str] | None = None,
+    parsed_filter_fields: set[str] | None = None,
     conditions: list[dict] | None = None,
     sort: dict | None = None,
     page: int = 1,
@@ -41,6 +42,7 @@ def build_search_query(
     excludes = excludes or {}
     conditions = conditions or []
     keyword_excludes = keyword_excludes or []
+    parsed_filter_fields = parsed_filter_fields or set()
     filterable_fields = filterable_fields or []
     agg_fields = agg_fields or []
     agg_sizes = agg_sizes or {}
@@ -52,10 +54,14 @@ def build_search_query(
     must_not_clauses: list[dict] = []
     facet_clauses: dict[str, dict] = {}
     bool_must: list[dict] = []
+    bool_should: list[dict] = []
 
     # --- filters: separate facet (enum agg) vs non-facet ---
     for field, value in filters.items():
         clause = _build_filter_clause(field, value, text_fields, number_fields)
+        if keyword and field in parsed_filter_fields:
+            bool_should.append(clause)
+            continue
         if field in agg_fields_set:
             facet_clauses[field] = clause
         else:
@@ -86,11 +92,53 @@ def build_search_query(
     has_filters = len(filters) > 0
     if keyword:
         keyword_clause = {
-            "match": {
-                "search_text": {
-                    "query": keyword,
-                    "analyzer": "ik_smart",
-                }
+            "bool": {
+                "should": [
+                    {
+                        "match": {
+                            "search_text": {
+                                "query": keyword,
+                                "analyzer": "ik_smart",
+                                "boost": 3,
+                            }
+                        }
+                    },
+                    {
+                        "match": {
+                            "resource_name": {
+                                "query": keyword,
+                                "analyzer": "ik_smart",
+                                "boost": 5,
+                            }
+                        }
+                    },
+                    {
+                        "term": {
+                            "resource_name.keyword": {
+                                "value": keyword,
+                                "boost": 20,
+                            }
+                        }
+                    },
+                    {
+                        "term": {
+                            "resource_name_tokens": {
+                                "value": keyword,
+                                "boost": 12,
+                            }
+                        }
+                    },
+                    {
+                        "match": {
+                            "resource_path_text": {
+                                "query": keyword,
+                                "analyzer": "ik_smart",
+                                "boost": 2,
+                            }
+                        }
+                    },
+                ],
+                "minimum_should_match": 1,
             }
         }
         if has_filters:
@@ -107,6 +155,10 @@ def build_search_query(
             bool_query["minimum_should_match"] = 0
         else:
             bool_query["must"] = bool_must
+    if bool_should:
+        existing_should = bool_query.get("should", [])
+        bool_query["should"] = existing_should + bool_should
+        bool_query["minimum_should_match"] = max(1, bool_query.get("minimum_should_match", 0))
 
     # --- function_score: boost matched filters + time decay ---
     score_functions: list[dict] = []

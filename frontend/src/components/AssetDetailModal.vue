@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useSearchStore } from '@/stores/searchStore'
 import type { AssetItem } from '@/types'
 
@@ -82,6 +82,32 @@ const hasPairedPreviews = computed(() => {
   if (isIcon.value) return true
   return false
 })
+
+const pairedPreviewSrc = computed(() => {
+  if (isEffect.value) return effectGridSrc.value
+  if (isAnimator.value) return animatorLeftSrc.value
+  if (isIcon.value) return previewSrc.value
+  return ''
+})
+
+function warmPreviewImage(src: string) {
+  if (!src || typeof window === 'undefined') return
+  const img = new Image()
+  img.fetchPriority = 'high'
+  img.loading = 'eager'
+  img.src = src
+}
+
+watch(
+  () => [visible.value, previewSrc.value, pairedPreviewSrc.value] as const,
+  ([isVisible]) => {
+    if (!isVisible) return
+    for (const src of [previewSrc.value, pairedPreviewSrc.value]) {
+      warmPreviewImage(src)
+    }
+  },
+  { immediate: true }
+)
 
 const tagEntries = computed(() => Object.entries(props.item.tags))
 const svnEntries = computed(() => {
@@ -308,13 +334,17 @@ function fallbackCopy(text: string) {
                 v-if="isEffect"
                 :src="effectGridSrc"
                 :alt="item.name + ' grid'"
+                data-testid="detail-preview-pair"
                 loading="eager"
+                fetchpriority="high"
               />
               <img
                 v-else
                 :src="animatorLeftSrc"
                 :alt="item.name + ' left'"
+                data-testid="detail-preview-pair"
                 loading="eager"
+                fetchpriority="high"
               />
             </div>
           </div>

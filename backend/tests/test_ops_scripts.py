@@ -590,6 +590,17 @@ def test_detail_gif_previews_stay_side_by_side():
     assert "max-width: calc((100% - 10px) / 2)" in frame_css
 
 
+def test_detail_gif_previews_preload_both_angles_with_equal_priority():
+    text = (ROOT / "frontend/src/components/AssetDetailModal.vue").read_text(encoding="utf-8")
+    assert "import { computed, ref, watch } from 'vue'" in text
+    assert "pairedPreviewSrc" in text
+    assert "warmPreviewImage" in text
+    assert "fetchPriority = 'high'" in text
+    assert "[previewSrc.value, pairedPreviewSrc.value]" in text
+    assert 'data-testid="detail-preview-pair"' in text
+    assert text.count('fetchpriority="high"') >= 2
+
+
 def test_all_importers_attach_svn_version_metadata():
     importer_paths = [
         "backend/app/importers/model_importer.py",

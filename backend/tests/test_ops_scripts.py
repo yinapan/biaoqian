@@ -383,6 +383,14 @@ def test_backend_container_healthcheck_uses_shallow_ready_probe():
     assert "start_period: 90s" in backend_block
 
 
+def test_elasticsearch_healthcheck_allows_slow_cold_start():
+    compose = _read_script("docker-compose.yml")
+    es_block = compose[compose.index("  elasticsearch:"):compose.index("  backend:")]
+    assert "_cluster/health" in es_block
+    assert "timeout: 10s" in es_block
+    assert "start_period: 300s" in es_block
+
+
 def test_backend_startup_refreshes_dictionary_in_background():
     main_text = (ROOT / "backend/app/main.py").read_text(encoding="utf-8")
     lifespan_block = main_text[main_text.index("async def lifespan"):main_text.index("app = FastAPI")]

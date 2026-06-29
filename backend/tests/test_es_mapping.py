@@ -1,4 +1,4 @@
-from app.services.es_mapping import generate_tag_properties
+from app.services.es_mapping import build_index_settings_and_mappings, generate_tag_properties
 
 
 def test_generate_tag_properties_enum():
@@ -27,3 +27,15 @@ def test_generate_tag_properties_text():
     definitions = [{"field_name": "remark", "field_type": "text"}]
     props = generate_tag_properties(definitions)
     assert props["tags.remark"]["type"] == "keyword"
+
+
+def test_mapping_indexes_resource_name_without_making_it_a_tag():
+    body = build_index_settings_and_mappings([])
+    props = body["mappings"]["properties"]
+
+    assert props["resource_name"]["type"] == "text"
+    assert props["resource_name"]["fields"]["keyword"]["type"] == "keyword"
+    assert props["resource_name_tokens"]["type"] == "keyword"
+    assert props["resource_path_text"]["type"] == "text"
+    assert props["resource_path_text"]["fields"]["keyword"]["type"] == "keyword"
+    assert "tags.resource_name" not in props

@@ -90,6 +90,8 @@ async def search(req: SearchRequest, pool) -> SearchResponse:
     effective_excludes: dict = dict(req.exclude_filters)
     keyword_excludes: list[str] = []
     keyword = ""
+    es_keyword = ""
+    parsed_filter_fields: set[str] = set()
     ignored_tags = []
 
     if req.query:
@@ -102,7 +104,11 @@ async def search(req: SearchRequest, pool) -> SearchResponse:
             boolean_fields,
         )
         keyword = parsed.get("keyword", "")
+        es_keyword = keyword
         keyword_excludes = parsed.get("excluded_keywords", [])
+        parsed_filter_fields = set(parsed["parsed_filters"].keys()) - set(req.filters.keys()) - dismissed
+        if not es_keyword and parsed_filter_fields:
+            es_keyword = req.query.strip()
 
         for field, value in parsed["parsed_filters"].items():
             if field in req.filters:
@@ -154,8 +160,9 @@ async def search(req: SearchRequest, pool) -> SearchResponse:
         module_type=req.module_type,
         filters=effective_filters,
         excludes=effective_excludes,
-        keyword=keyword,
+        keyword=es_keyword,
         keyword_excludes=keyword_excludes,
+        parsed_filter_fields=parsed_filter_fields,
         conditions=[c.model_dump() for c in req.conditions],
         sort=req.sort.model_dump() if req.sort else None,
         page=req.page,
@@ -182,7 +189,7 @@ async def search(req: SearchRequest, pool) -> SearchResponse:
                 resource_path=src["resource_path"],
                 thumbnail_path=src.get("thumbnail_path"),
                 tags=src.get("tags", {}),
-                relevance_score=round(raw_score / max_score, 3) if keyword else 0,
+                relevance_score=round(raw_score / max_score, 3) if es_keyword else 0,
                 highlight=hit.get("highlight", {}),
             )
         )

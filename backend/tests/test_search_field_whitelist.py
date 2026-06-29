@@ -39,6 +39,19 @@ FAKE_TAG_DEFS = [
     },
 ]
 
+FAKE_EFFECT_TAG_DEFS = [
+    {
+        "id": 1,
+        "field_name": "scene_env",
+        "display_name": "场景氛围",
+        "field_type": "enum_multi",
+        "is_filterable": True,
+        "is_searchable": True,
+        "sort_order": 1,
+        "values": ["蝴蝶"],
+    },
+]
+
 
 @pytest.mark.asyncio
 async def test_unknown_filter_field_returns_422():
@@ -144,3 +157,65 @@ async def test_unknown_exclude_filter_field_returns_422():
             await search(req, pool=AsyncMock())
         assert exc_info.value.status_code == 422
         assert "nonexistent_field" in exc_info.value.detail
+
+
+@pytest.mark.asyncio
+async def test_parsed_tag_only_query_still_searches_resource_name():
+    req = SearchRequest(module_type=2, query="蝴蝶")
+    mock_es_response = {
+        "hits": {
+            "total": {"value": 1},
+            "max_score": 2,
+            "hits": [
+                {
+                    "_score": 2,
+                    "_source": {
+                        "id": 1,
+                        "name": "h_蝴蝶01a",
+                        "resource_path": "data/source/effect/h_蝴蝶01a.eff",
+                        "thumbnail_path": "gifs/data/source/effect/h_蝴蝶01a.gif",
+                        "tags": {"scene_env": ["场景氛围"]},
+                    },
+                }
+            ],
+        },
+        "aggregations": {},
+    }
+    mock_es = AsyncMock()
+    mock_es.search = AsyncMock(return_value=mock_es_response)
+
+    with (
+        patch(
+            "app.services.search_service.get_tag_definitions",
+            return_value=FAKE_EFFECT_TAG_DEFS,
+        ),
+        patch(
+            "app.services.search_service.parse_query",
+            new=AsyncMock(
+                return_value={
+                    "parsed_filters": {"scene_env": ["蝴蝶"]},
+                    "parsed_excludes": {},
+                    "excluded_keywords": [],
+                    "keyword": "",
+                    "confidence": 1.0,
+                    "fallback": False,
+                    "parse_source": "dict",
+                    "parse_time_ms": 1,
+                }
+            ),
+        ),
+        patch(
+            "app.services.search_service.get_es",
+            return_value=mock_es,
+        ),
+    ):
+        resp = await search(req, pool=AsyncMock())
+
+    body = mock_es.search.await_args.kwargs["body"]
+    bool_query = body["query"]["function_score"]["query"]["bool"]
+    keyword_should = bool_query["should"][0]["bool"]["should"]
+
+    assert {"terms": {"tags.scene_env": ["蝴蝶"]}} in bool_query["should"]
+    assert any("resource_name" in clause.get("match", {}) for clause in keyword_should)
+    assert any("resource_path_text" in clause.get("match", {}) for clause in keyword_should)
+    assert resp.items[0].relevance_score == 1

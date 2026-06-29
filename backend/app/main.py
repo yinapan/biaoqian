@@ -1,5 +1,6 @@
 import logging
 import time
+import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -16,8 +17,19 @@ from app.services.parse_service import init_matcher
 logger = logging.getLogger(__name__)
 
 
+async def refresh_runtime_dictionary(pool):
+    try:
+        await ensure_animator_tag_definitions(pool)
+        await sync_all_tag_values(pool)
+        await init_matcher(pool)
+        logger.info("Dictionary matcher initialized")
+    except Exception:
+        logger.exception("Failed to refresh dictionary matcher")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    app.state.ready = False
     if not settings.admin_api_key or settings.admin_api_key == "dev-admin-key-change-in-prod":
         logger.warning(
             "ADMIN_API_KEY is using default value! "
@@ -50,14 +62,20 @@ async def lifespan(app: FastAPI):
             await es.indices.create(index=idx_name, body=body)
             await es.indices.put_alias(index=idx_name, name="assets")
         logger.info("Elasticsearch ready")
-        await ensure_animator_tag_definitions(pool)
-        # Sync tag values for all modules before loading the dictionary matcher
-        await sync_all_tag_values(pool)
-        await init_matcher(pool)
-        logger.info("Dictionary matcher initialized")
+        app.state.dictionary_refresh_task = asyncio.create_task(
+            refresh_runtime_dictionary(pool)
+        )
+        app.state.ready = True
     except Exception:
         logger.exception("Failed to initialize ES/dictionary matcher — search may not work")
     yield
+    task = getattr(app.state, "dictionary_refresh_task", None)
+    if task and not task.done():
+        task.cancel()
+        try:
+            await task
+        except asyncio.CancelledError:
+            pass
     await close_pool()
     await close_es()
 

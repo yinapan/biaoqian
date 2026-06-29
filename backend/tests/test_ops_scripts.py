@@ -375,10 +375,31 @@ def test_backend_runs_single_worker_for_in_memory_dictionary_consistency():
     assert "--workers 1" in compose
 
 
+def test_backend_container_healthcheck_uses_shallow_ready_probe():
+    compose = _read_script("docker-compose.yml")
+    backend_block = compose[compose.index("  backend:"):compose.index("  nginx:")]
+    assert "/api/v1/ready" in backend_block
+    assert "/api/v1/health" not in backend_block
+    assert "start_period: 90s" in backend_block
+
+
+def test_backend_startup_refreshes_dictionary_in_background():
+    main_text = (ROOT / "backend/app/main.py").read_text(encoding="utf-8")
+    lifespan_block = main_text[main_text.index("async def lifespan"):main_text.index("app = FastAPI")]
+    assert "asyncio.create_task(" in lifespan_block
+    assert "refresh_runtime_dictionary(pool)" in lifespan_block
+    assert "await sync_all_tag_values(pool)" not in lifespan_block
+    assert "await init_matcher(pool)" not in lifespan_block
+
+
 def test_backend_startup_migrates_animator_tag_definitions():
     main_text = (ROOT / "backend/app/main.py").read_text(encoding="utf-8")
     assert "ensure_animator_tag_definitions" in main_text
-    assert "await ensure_animator_tag_definitions(pool)" in main_text
+    refresh_block = main_text[
+        main_text.index("async def refresh_runtime_dictionary"):
+        main_text.index("@asynccontextmanager")
+    ]
+    assert "await ensure_animator_tag_definitions(pool)" in refresh_block
 
 
 def test_runtime_data_uses_ui_and_animator_module_dirs():

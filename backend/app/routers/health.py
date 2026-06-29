@@ -1,10 +1,17 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 
 from app.models.database import get_pool
 from app.services.es_sync_service import get_es
 
 router = APIRouter(prefix="/api/v1", tags=["health"])
+
+
+@router.get("/ready")
+async def ready_check(request: Request):
+    if not getattr(request.app.state, "ready", False):
+        return JSONResponse(status_code=503, content={"status": "starting"})
+    return {"status": "ready"}
 
 
 @router.get("/health")

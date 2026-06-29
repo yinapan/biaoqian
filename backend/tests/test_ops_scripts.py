@@ -621,11 +621,19 @@ def test_detail_gif_previews_stay_side_by_side():
 
 def test_detail_gif_previews_preload_both_angles_with_equal_priority():
     text = (ROOT / "frontend/src/components/AssetDetailModal.vue").read_text(encoding="utf-8")
-    assert "import { computed, ref, watch } from 'vue'" in text
+    assert "import { computed, onBeforeUnmount, ref, watch } from 'vue'" in text
     assert "pairedPreviewSrc" in text
-    assert "warmPreviewImage" in text
+    assert "displayPreviewSrc" in text
+    assert "displayPairedPreviewSrc" in text
+    assert "loadPreviewImage" in text
+    assert "Promise.all" in text
+    assert "URL.createObjectURL" in text
+    assert "URL.revokeObjectURL" in text
     assert "fetchPriority = 'high'" in text
-    assert "[previewSrc.value, pairedPreviewSrc.value]" in text
+    assert "[visible.value, previewSrc.value, pairedPreviewSrc.value]" in text
+    assert "displayPreviewSrc || previewSrc" in text
+    assert "displayPairedPreviewSrc || effectGridSrc" in text
+    assert "displayPairedPreviewSrc || animatorLeftSrc" in text
     assert 'data-testid="detail-preview-pair"' in text
     assert text.count('fetchpriority="high"') >= 2
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useSearchStore } from '@/stores/searchStore'
 import type { AssetItem } from '@/types'
 
@@ -21,6 +21,9 @@ const visible = computed({
 
 const copied = ref(false)
 const iconIdCopied = ref(false)
+const displayPreviewSrc = ref('')
+const displayPairedPreviewSrc = ref('')
+const previewsLoading = ref(false)
 
 const isIcon = computed(() => store.moduleType === 4)
 const isEffect = computed(() => store.moduleType === 2)
@@ -90,24 +93,83 @@ const pairedPreviewSrc = computed(() => {
   return ''
 })
 
-function warmPreviewImage(src: string) {
-  if (!src || typeof window === 'undefined') return
-  const img = new Image()
-  img.fetchPriority = 'high'
-  img.loading = 'eager'
-  img.src = src
+let previewLoadToken = 0
+let activeObjectUrls: string[] = []
+
+function releasePreviewObjectUrls(urls = activeObjectUrls) {
+  if (typeof URL === 'undefined') return
+  for (const url of urls) {
+    if (url.startsWith('blob:')) URL.revokeObjectURL(url)
+  }
+  if (urls === activeObjectUrls) activeObjectUrls = []
+}
+
+function decodePreviewImage(src: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.fetchPriority = 'high'
+    img.loading = 'eager'
+    img.onload = () => resolve()
+    img.onerror = () => reject(new Error(`preview load failed: ${src}`))
+    img.src = src
+  })
+}
+
+async function loadPreviewImage(src: string): Promise<string> {
+  if (!src || typeof window === 'undefined') return src
+  const response = await fetch(src, { cache: 'force-cache' })
+  if (!response.ok) throw new Error(`preview request failed: ${response.status}`)
+  const objectUrl = URL.createObjectURL(await response.blob())
+  try {
+    await decodePreviewImage(objectUrl)
+    return objectUrl
+  } catch (error) {
+    URL.revokeObjectURL(objectUrl)
+    throw error
+  }
 }
 
 watch(
   () => [visible.value, previewSrc.value, pairedPreviewSrc.value] as const,
-  ([isVisible]) => {
-    if (!isVisible) return
-    for (const src of [previewSrc.value, pairedPreviewSrc.value]) {
-      warmPreviewImage(src)
+  async ([isVisible, primarySrc, secondarySrc]) => {
+    const token = ++previewLoadToken
+    const nextSources = [primarySrc, secondarySrc].filter(Boolean)
+
+    releasePreviewObjectUrls()
+    displayPreviewSrc.value = ''
+    displayPairedPreviewSrc.value = ''
+
+    if (!isVisible || !primarySrc) {
+      previewsLoading.value = false
+      return
+    }
+
+    previewsLoading.value = hasPairedPreviews.value
+
+    try {
+      const loadedSources = await Promise.all(nextSources.map(src => loadPreviewImage(src)))
+      if (token !== previewLoadToken) {
+        releasePreviewObjectUrls(loadedSources)
+        return
+      }
+      activeObjectUrls = loadedSources.filter(src => src.startsWith('blob:'))
+      displayPreviewSrc.value = loadedSources[0] || primarySrc
+      displayPairedPreviewSrc.value = loadedSources[1] || secondarySrc || ''
+    } catch {
+      if (token !== previewLoadToken) return
+      displayPreviewSrc.value = primarySrc
+      displayPairedPreviewSrc.value = secondarySrc || ''
+    } finally {
+      if (token === previewLoadToken) previewsLoading.value = false
     }
   },
   { immediate: true }
 )
+
+onBeforeUnmount(() => {
+  previewLoadToken++
+  releasePreviewObjectUrls()
+})
 
 const tagEntries = computed(() => Object.entries(props.item.tags))
 const svnEntries = computed(() => {
@@ -312,27 +374,32 @@ function fallbackCopy(text: string) {
       <!-- Preview stage -->
       <section class="preview-stage" :class="{ 'is-paired': hasPairedPreviews }">
         <div v-if="previewSrc" class="preview-canvas">
+          <div v-if="previewsLoading" class="preview-loading">
+            <span class="preview-loading-dot" />
+            <span>正在准备双视角预览</span>
+          </div>
+
           <div v-if="isIcon" class="icon-preview-pair">
             <div class="preview-frame is-icon-original">
               <div class="preview-label">{{ previewLabelLeft }}</div>
-              <img :src="previewSrc" :alt="item.name" data-testid="detail-preview" loading="eager" fetchpriority="high" />
+              <img :src="displayPreviewSrc || previewSrc" :alt="item.name" data-testid="detail-preview" loading="eager" fetchpriority="high" />
             </div>
             <div class="preview-frame is-icon-zoom">
               <div class="preview-label">{{ previewLabelRight }}</div>
-              <img :src="previewSrc" :alt="item.name + ' zoom'" loading="eager" />
+              <img :src="displayPreviewSrc || previewSrc" :alt="item.name + ' zoom'" loading="eager" />
             </div>
           </div>
 
-          <div v-else-if="isEffect || isAnimator" class="effect-previews">
+          <div v-else-if="isEffect || isAnimator" class="effect-previews" :class="{ 'is-loading': previewsLoading }">
             <div class="preview-frame">
               <div class="preview-label">{{ previewLabelLeft }}</div>
-              <img :src="previewSrc" :alt="item.name" data-testid="detail-preview" loading="eager" fetchpriority="high" />
+              <img :src="displayPreviewSrc || previewSrc" :alt="item.name" data-testid="detail-preview" loading="eager" fetchpriority="high" />
             </div>
             <div v-if="hasPairedPreviews" class="preview-frame">
               <div class="preview-label">{{ previewLabelRight }}</div>
               <img
                 v-if="isEffect"
-                :src="effectGridSrc"
+                :src="displayPairedPreviewSrc || effectGridSrc"
                 :alt="item.name + ' grid'"
                 data-testid="detail-preview-pair"
                 loading="eager"
@@ -340,7 +407,7 @@ function fallbackCopy(text: string) {
               />
               <img
                 v-else
-                :src="animatorLeftSrc"
+                :src="displayPairedPreviewSrc || animatorLeftSrc"
                 :alt="item.name + ' left'"
                 data-testid="detail-preview-pair"
                 loading="eager"
@@ -350,7 +417,7 @@ function fallbackCopy(text: string) {
           </div>
 
           <div v-else class="preview-frame is-single">
-            <img :src="previewSrc" :alt="item.name" data-testid="detail-preview" loading="eager" fetchpriority="high" />
+            <img :src="displayPreviewSrc || previewSrc" :alt="item.name" data-testid="detail-preview" loading="eager" fetchpriority="high" />
           </div>
         </div>
 
@@ -532,6 +599,46 @@ function fallbackCopy(text: string) {
   overflow: hidden;
 }
 
+.preview-loading {
+  position: absolute;
+  inset: 12px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border-radius: var(--radius-md);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(79, 156, 175, 0.14), transparent 45%),
+    rgba(11, 15, 20, 0.78);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  pointer-events: none;
+  backdrop-filter: blur(2px);
+}
+
+.preview-loading-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 14px rgba(79, 156, 175, 0.8);
+  animation: preview-loading-pulse 1s ease-in-out infinite;
+}
+
+@keyframes preview-loading-pulse {
+  0%,
+  100% {
+    transform: scale(0.85);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
 .preview-stage.is-paired .preview-canvas {
   padding: 8px;
 }
@@ -564,6 +671,10 @@ function fallbackCopy(text: string) {
   width: max-content;
   max-width: 100%;
   margin: 0 auto;
+}
+
+.effect-previews.is-loading {
+  opacity: 0;
 }
 
 .effect-previews .preview-frame,

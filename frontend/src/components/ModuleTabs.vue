@@ -10,7 +10,14 @@ const modules = [
   { type: 4, label: '图标', count: 'Icon' },
 ]
 
+const SWITCH_COOLDOWN_MS = 300
+let lastSwitchAt = -SWITCH_COOLDOWN_MS
+
 function selectModule(mod: number) {
+  if (mod === store.moduleType) return
+  const now = Date.now()
+  if (now - lastSwitchAt < SWITCH_COOLDOWN_MS) return
+  lastSwitchAt = now
   store.setModuleType(mod)
   // Definitions and search are independent (search doesn't read tagDefinitions).
   // Run in parallel to cut switch latency by ~one network RTT.

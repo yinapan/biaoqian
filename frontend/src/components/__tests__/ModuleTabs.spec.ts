@@ -19,6 +19,7 @@ describe('ModuleTabs', () => {
   })
 
   afterEach(() => {
+    vi.useRealTimers()
     vi.restoreAllMocks()
   })
 
@@ -40,6 +41,8 @@ describe('ModuleTabs', () => {
     await wrapper.find('[data-testid="module-tab-2"]').trigger('click')
     await flushPromises()
     expect(store.moduleType).toBe(2)
+
+    await new Promise(resolve => setTimeout(resolve, 300))
 
     // Click tab 4
     await wrapper.find('[data-testid="module-tab-4"]').trigger('click')
@@ -107,5 +110,46 @@ describe('ModuleTabs', () => {
 
     // They should be called after setModuleType (module should be 2)
     expect(store.moduleType).toBe(2)
+  })
+
+  it('点击当前 tab 不重复清空结果和发请求', async () => {
+    const store = useSearchStore()
+    const setModuleSpy = vi.spyOn(store, 'setModuleType')
+    const defSpy = vi.spyOn(store, 'loadDefinitions').mockResolvedValue()
+    const searchSpy = vi.spyOn(store, 'doSearch').mockResolvedValue()
+
+    const wrapper = mount(ModuleTabs)
+
+    await wrapper.find('[data-testid="module-tab-1"]').trigger('click')
+    await flushPromises()
+
+    expect(setModuleSpy).not.toHaveBeenCalled()
+    expect(defSpy).not.toHaveBeenCalled()
+    expect(searchSpy).not.toHaveBeenCalled()
+    expect(store.moduleType).toBe(1)
+  })
+
+  it('快速连续切换 tab 时只执行冷却窗口内的第一次切换', async () => {
+    vi.useFakeTimers()
+    const store = useSearchStore()
+    const setModuleSpy = vi.spyOn(store, 'setModuleType')
+    vi.spyOn(store, 'loadDefinitions').mockResolvedValue()
+    vi.spyOn(store, 'doSearch').mockResolvedValue()
+
+    const wrapper = mount(ModuleTabs)
+
+    await wrapper.find('[data-testid="module-tab-2"]').trigger('click')
+    await wrapper.find('[data-testid="module-tab-3"]').trigger('click')
+    await flushPromises()
+
+    expect(setModuleSpy).toHaveBeenCalledTimes(1)
+    expect(store.moduleType).toBe(2)
+
+    vi.advanceTimersByTime(300)
+    await wrapper.find('[data-testid="module-tab-3"]').trigger('click')
+    await flushPromises()
+
+    expect(setModuleSpy).toHaveBeenCalledTimes(2)
+    expect(store.moduleType).toBe(3)
   })
 })

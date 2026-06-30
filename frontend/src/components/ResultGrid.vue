@@ -5,6 +5,7 @@ import AssetCard from './AssetCard.vue'
 
 const store = useSearchStore()
 const INITIAL_RENDER_LIMIT = 18
+const RENDER_BATCH_SIZE = 12
 const renderLimit = ref(INITIAL_RENDER_LIMIT)
 let frameId: number | null = null
 
@@ -103,10 +104,17 @@ watch(
     }
     renderLimit.value = Math.min(INITIAL_RENDER_LIMIT, items.length)
     await nextTick()
-    frameId = requestAnimationFrame(() => {
-      renderLimit.value = items.length
-      frameId = null
-    })
+    const renderNextBatch = () => {
+      renderLimit.value = Math.min(renderLimit.value + RENDER_BATCH_SIZE, items.length)
+      if (renderLimit.value < items.length) {
+        frameId = requestAnimationFrame(renderNextBatch)
+      } else {
+        frameId = null
+      }
+    }
+    if (renderLimit.value < items.length) {
+      frameId = requestAnimationFrame(renderNextBatch)
+    }
   },
   { immediate: true },
 )

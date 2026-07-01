@@ -6,8 +6,13 @@ import AssetCard from './AssetCard.vue'
 const store = useSearchStore()
 const INITIAL_RENDER_LIMIT = 18
 const RENDER_BATCH_SIZE = 12
+const GIF_PREVIEW_MODULES = new Set([2, 3])
+const GIF_PREVIEW_INITIAL_RENDER_LIMIT = 8
+const GIF_PREVIEW_RENDER_BATCH_SIZE = 4
+const GIF_PREVIEW_RENDER_BATCH_DELAY_MS = 140
 const renderLimit = ref(INITIAL_RENDER_LIMIT)
 let frameId: number | null = null
+let batchTimerId: number | null = null
 
 const MODULE_LABELS: Record<number, string> = {
   1: '模型',
@@ -17,6 +22,16 @@ const MODULE_LABELS: Record<number, string> = {
 }
 
 const visibleItems = computed(() => store.items.slice(0, renderLimit.value))
+const usesGifPreviewBatching = computed(() => GIF_PREVIEW_MODULES.has(store.moduleType))
+const initialRenderLimit = computed(() => (
+  usesGifPreviewBatching.value ? GIF_PREVIEW_INITIAL_RENDER_LIMIT : INITIAL_RENDER_LIMIT
+))
+const renderBatchSize = computed(() => (
+  usesGifPreviewBatching.value ? GIF_PREVIEW_RENDER_BATCH_SIZE : RENDER_BATCH_SIZE
+))
+const renderBatchDelayMs = computed(() => (
+  usesGifPreviewBatching.value ? GIF_PREVIEW_RENDER_BATCH_DELAY_MS : 0
+))
 const moduleLabel = computed(() => MODULE_LABELS[store.moduleType] ?? '当前')
 const hasManualFilters = computed(() => Object.keys(store.filters).length > 0)
 const hasActiveSearch = computed(() =>
@@ -102,18 +117,31 @@ watch(
       cancelAnimationFrame(frameId)
       frameId = null
     }
-    renderLimit.value = Math.min(INITIAL_RENDER_LIMIT, items.length)
+    if (batchTimerId !== null) {
+      window.clearTimeout(batchTimerId)
+      batchTimerId = null
+    }
+    renderLimit.value = Math.min(initialRenderLimit.value, items.length)
     await nextTick()
     const renderNextBatch = () => {
-      renderLimit.value = Math.min(renderLimit.value + RENDER_BATCH_SIZE, items.length)
+      renderLimit.value = Math.min(renderLimit.value + renderBatchSize.value, items.length)
       if (renderLimit.value < items.length) {
-        frameId = requestAnimationFrame(renderNextBatch)
+        if (renderBatchDelayMs.value > 0) {
+          batchTimerId = window.setTimeout(renderNextBatch, renderBatchDelayMs.value)
+        } else {
+          frameId = requestAnimationFrame(renderNextBatch)
+        }
       } else {
         frameId = null
+        batchTimerId = null
       }
     }
     if (renderLimit.value < items.length) {
-      frameId = requestAnimationFrame(renderNextBatch)
+      if (renderBatchDelayMs.value > 0) {
+        batchTimerId = window.setTimeout(renderNextBatch, renderBatchDelayMs.value)
+      } else {
+        frameId = requestAnimationFrame(renderNextBatch)
+      }
     }
   },
   { immediate: true },
@@ -121,6 +149,7 @@ watch(
 
 onBeforeUnmount(() => {
   if (frameId !== null) cancelAnimationFrame(frameId)
+  if (batchTimerId !== null) window.clearTimeout(batchTimerId)
 })
 </script>
 

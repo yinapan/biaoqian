@@ -18,6 +18,7 @@ SCRIPT_NAMES = [
     "delete-stale-data.bat",
     "restore-from-canonical.bat",
     "backup.bat",
+    "recover-after-reboot.bat",
 ]
 ROOT_WRAPPERS = [
     "build.bat",
@@ -32,6 +33,7 @@ ROOT_WRAPPERS = [
     "delete-stale-data.bat",
     "restore-from-canonical.bat",
     "backup.bat",
+    "recover-after-reboot.bat",
 ]
 
 
@@ -111,10 +113,21 @@ def test_root_wrappers_delegate_to_prod_scripts():
         "delete-stale-data.bat": r"deploy\prod\delete-stale-data.bat",
         "restore-from-canonical.bat": r"deploy\prod\restore-from-canonical.bat",
         "backup.bat": r"deploy\prod\backup.bat",
+        "recover-after-reboot.bat": r"deploy\prod\recover-after-reboot.bat",
     }
     for wrapper, target in expected.items():
         text = _read_script(wrapper)
         assert target in text
+
+
+def test_recover_after_reboot_scripts_start_without_rebuilding_and_restart_backend():
+    for env_dir in ENV_DIRS:
+        text = _read_script(f"{env_dir}/recover-after-reboot.bat")
+        assert "%COMPOSE% up -d" in text
+        assert "--build" not in text
+        assert "%COMPOSE% restart backend" in text
+        assert "docker compose -p %PROJECT_NAME% logs --tail=200 backend" in text
+        assert "%APP_URL%/api/v1/health" in text
 
 
 def test_deploy_environments_have_distinct_urls():

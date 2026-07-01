@@ -10,6 +10,7 @@ SCRIPT_NAMES = [
     "build.bat",
     "start.bat",
     "stop.bat",
+    "migrate-to-ssd-start.bat",
     "deploy.bat",
     "import-new-data.bat",
     "reimport-data.bat",
@@ -34,6 +35,7 @@ ROOT_WRAPPERS = [
     "restore-from-canonical.bat",
     "backup.bat",
     "recover-after-reboot.bat",
+    "migrate-to-ssd-start.bat",
 ]
 
 
@@ -128,6 +130,43 @@ def test_recover_after_reboot_scripts_start_without_rebuilding_and_restart_backe
         assert "%COMPOSE% restart backend" in text
         assert "docker compose -p %PROJECT_NAME% logs --tail=200 backend" in text
         assert "%APP_URL%/api/v1/health" in text
+
+
+def test_migrate_to_ssd_scripts_stop_old_root_and_start_new_root():
+    expected = {
+        "deploy/local/migrate-to-ssd-start.bat": {
+            "project": "biaoqian_local",
+            "env": "local",
+            "postgres": "biaoqian_local-postgres-1",
+            "elasticsearch": "biaoqian_local-elasticsearch-1",
+        },
+        "deploy/prod/migrate-to-ssd-start.bat": {
+            "project": "biaoqian",
+            "env": "prod",
+            "postgres": "biaoqian-postgres-1",
+            "elasticsearch": "biaoqian-elasticsearch-1",
+        },
+    }
+    for script, values in expected.items():
+        text = _read_script(script)
+        assert "OLD_ROOT=F:\\biaoqian" in text
+        assert "NEW_ROOT=E:\\biaoqian" in text
+        assert 'if not "%~1"=="" set "OLD_ROOT=%~1"' in text
+        assert 'if not "%~2"=="" set "NEW_ROOT=%~2"' in text
+        assert "pushd \"%OLD_ROOT%\"" in text
+        assert f"docker compose -p {values['project']}" in text
+        assert "pushd \"%NEW_ROOT%\"" in text
+        assert f"call \"%NEW_ROOT%\\deploy\\{values['env']}\\env.bat\"" in text
+        assert "%COMPOSE% up -d" in text
+        assert "%COMPOSE% restart backend" in text
+        assert "%APP_URL%/api/v1/health" in text
+        assert values["postgres"] in text
+        assert values["elasticsearch"] in text
+
+
+def test_root_migrate_to_ssd_wrapper_delegates_to_prod_script():
+    text = _read_script("migrate-to-ssd-start.bat")
+    assert r"deploy\prod\migrate-to-ssd-start.bat" in text
 
 
 def test_deploy_environments_have_distinct_urls():

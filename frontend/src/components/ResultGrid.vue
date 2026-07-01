@@ -6,10 +6,10 @@ import AssetCard from './AssetCard.vue'
 const store = useSearchStore()
 const INITIAL_RENDER_LIMIT = 18
 const RENDER_BATCH_SIZE = 12
-const GIF_PREVIEW_MODULES = new Set([2, 3])
-const GIF_PREVIEW_INITIAL_RENDER_LIMIT = 8
-const GIF_PREVIEW_RENDER_BATCH_SIZE = 4
-const GIF_PREVIEW_RENDER_BATCH_DELAY_MS = 140
+const THROTTLED_PREVIEW_MODULES = new Set([1, 2, 3, 4])
+const THROTTLED_PREVIEW_INITIAL_RENDER_LIMIT = 8
+const THROTTLED_PREVIEW_RENDER_BATCH_SIZE = 4
+const THROTTLED_PREVIEW_RENDER_BATCH_DELAY_MS = 140
 const renderLimit = ref(INITIAL_RENDER_LIMIT)
 let frameId: number | null = null
 let batchTimerId: number | null = null
@@ -22,15 +22,15 @@ const MODULE_LABELS: Record<number, string> = {
 }
 
 const visibleItems = computed(() => store.items.slice(0, renderLimit.value))
-const usesGifPreviewBatching = computed(() => GIF_PREVIEW_MODULES.has(store.moduleType))
+const usesThrottledPreviewBatching = computed(() => THROTTLED_PREVIEW_MODULES.has(store.moduleType))
 const initialRenderLimit = computed(() => (
-  usesGifPreviewBatching.value ? GIF_PREVIEW_INITIAL_RENDER_LIMIT : INITIAL_RENDER_LIMIT
+  usesThrottledPreviewBatching.value ? THROTTLED_PREVIEW_INITIAL_RENDER_LIMIT : INITIAL_RENDER_LIMIT
 ))
 const renderBatchSize = computed(() => (
-  usesGifPreviewBatching.value ? GIF_PREVIEW_RENDER_BATCH_SIZE : RENDER_BATCH_SIZE
+  usesThrottledPreviewBatching.value ? THROTTLED_PREVIEW_RENDER_BATCH_SIZE : RENDER_BATCH_SIZE
 ))
 const renderBatchDelayMs = computed(() => (
-  usesGifPreviewBatching.value ? GIF_PREVIEW_RENDER_BATCH_DELAY_MS : 0
+  usesThrottledPreviewBatching.value ? THROTTLED_PREVIEW_RENDER_BATCH_DELAY_MS : 0
 ))
 const moduleLabel = computed(() => MODULE_LABELS[store.moduleType] ?? '当前')
 const hasManualFilters = computed(() => Object.keys(store.filters).length > 0)

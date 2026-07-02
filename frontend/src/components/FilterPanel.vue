@@ -9,8 +9,14 @@ const groupRenderLimit = ref(INITIAL_GROUP_RENDER_LIMIT)
 let frameId: number | null = null
 
 const filterableDefs = computed(() =>
-  store.tagDefinitions.filter((d) => d.is_filterable),
+  [...store.tagDefinitions.filter((d) => d.is_filterable)]
+    .sort((a, b) => filterDisplayPriority(a) - filterDisplayPriority(b)),
 )
+
+function filterDisplayPriority(def: { field_name: string; sort_order: number }) {
+  if (def.field_name === 'file_type') return -900
+  return def.sort_order
+}
 
 /** Group consecutive definitions that share the same config.group into one entry */
 const groupedDefs = computed(() => {

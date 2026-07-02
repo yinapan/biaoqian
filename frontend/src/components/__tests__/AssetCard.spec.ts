@@ -30,6 +30,12 @@ function makeItem(overrides: Partial<AssetItem> = {}): AssetItem {
 describe('AssetCard', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
+    Object.defineProperty(navigator, 'clipboard', {
+      value: {
+        writeText: vi.fn().mockResolvedValue(undefined),
+      },
+      configurable: true,
+    })
   })
 
   afterEach(() => {
@@ -126,7 +132,7 @@ describe('AssetCard', () => {
   })
 
   // 6. icon 才显示 ID 行（showIdRow = isIcon）
-  it('icon 才显示 ID 行', () => {
+  it('icon 才显示 ID 行', async () => {
     const store = useSearchStore()
 
     // Non-icon module: ID row should NOT be shown
@@ -148,5 +154,28 @@ describe('AssetCard', () => {
       },
     })
     expect(iconWrapper.find('.card-icon-id').exists()).toBe(true)
+    await iconWrapper.trigger('mouseenter')
+    expect(iconWrapper.find('.id-copy-chip').exists()).toBe(false)
+  })
+
+  it.each([1, 2, 3, 4])('module %i card exposes resource path copy without opening detail', async (moduleType) => {
+    const store = useSearchStore()
+    store.moduleType = moduleType
+
+    const wrapper = mount(AssetCard, {
+      props: { item: makeItem({ id: moduleType, resource_path: `/resources/module-${moduleType}.asset` }) },
+      global: {
+        stubs: { AssetDetailModal: true },
+      },
+    })
+
+    const copyBtn = wrapper.find(`[data-testid="asset-copy-path-${moduleType}"]`)
+    expect(copyBtn.exists()).toBe(true)
+
+    await copyBtn.trigger('click')
+    await flushPromises()
+
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(`/resources/module-${moduleType}.asset`)
+    expect(wrapper.findComponent({ name: 'AssetDetailModal' }).exists()).toBe(false)
   })
 })

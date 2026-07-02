@@ -12,6 +12,7 @@ const store = useSearchStore()
 const showDetail = ref(false)
 const hovering = ref(false)
 const assetIdCopied = ref(false)
+const pathCopied = ref(false)
 
 const PLACEHOLDER = 'data:image/svg+xml;charset=UTF-8,' +
   encodeURIComponent(
@@ -110,6 +111,18 @@ function copyAssetId(event: MouseEvent) {
   setTimeout(() => (assetIdCopied.value = false), 1500)
 }
 
+function copyResourcePath(event: MouseEvent) {
+  event.stopPropagation()
+  const text = props.item.resource_path
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).catch(() => fallbackCopy(text))
+  } else {
+    fallbackCopy(text)
+  }
+  pathCopied.value = true
+  setTimeout(() => (pathCopied.value = false), 1500)
+}
+
 function fallbackCopy(text: string) {
   const ta = document.createElement('textarea')
   ta.value = text
@@ -149,22 +162,17 @@ function fallbackCopy(text: string) {
       <div class="thumb-overlay">
         <span class="overlay-action">查看详情</span>
       </div>
-      <!-- ID copy chip - appears on hover -->
-      <Transition name="copy-fade">
-        <button
-          v-if="showIdRow && hovering"
-          class="id-copy-chip"
-          :class="{ copied: assetIdCopied }"
-          @click="copyAssetId"
-        >
-          <span class="chip-label">ID</span>
-          <span class="chip-value">{{ assetId }}</span>
-          <span class="chip-action">
-            <svg v-if="!assetIdCopied" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="14" height="14" rx="2.5"/><path d="M4 16H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v1"/></svg>
-            <svg v-else width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          </span>
-        </button>
-      </Transition>
+      <button
+        class="path-copy-button"
+        :class="{ copied: pathCopied }"
+        :data-testid="`asset-copy-path-${item.id}`"
+        :title="pathCopied ? '已复制路径' : '复制资源路径'"
+        :aria-label="pathCopied ? '已复制路径' : `复制 ${item.name} 资源路径`"
+        @click="copyResourcePath"
+      >
+        <svg v-if="!pathCopied" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2.5"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </button>
     </div>
 
     <!-- Info -->
@@ -253,6 +261,43 @@ function fallbackCopy(text: string) {
   display: none;
 }
 
+.path-copy-button {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 7px;
+  background: rgba(13, 17, 23, 0.72);
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0.76;
+  backdrop-filter: blur(8px);
+  transition: opacity 0.16s ease, color 0.16s ease, background 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.path-copy-button:hover,
+.path-copy-button:focus-visible {
+  opacity: 1;
+  color: var(--accent-text);
+  background: rgba(18, 25, 33, 0.94);
+  border-color: rgba(79, 156, 175, 0.45);
+  box-shadow: 0 0 0 3px rgba(79, 156, 175, 0.12);
+  outline: none;
+}
+
+.path-copy-button.copied {
+  opacity: 1;
+  color: #4ade80;
+  background: rgba(22, 163, 74, 0.16);
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
 /* Floating badge */
 .float-badge {
   position: absolute;
@@ -265,104 +310,6 @@ function fallbackCopy(text: string) {
   background: rgba(16, 20, 24, 0.84);
   color: var(--text-secondary);
   border: 1px solid var(--border-light);
-}
-
-/* ID copy chip (top-right overlay) */
-.id-copy-chip {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  height: 28px;
-  padding: 0 4px 0 10px;
-  border: 1px solid var(--border-light);
-  border-radius: 8px;
-  background: rgba(13, 17, 23, 0.92);
-  backdrop-filter: blur(8px);
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  overflow: hidden;
-}
-
-.id-copy-chip:hover {
-  background: rgba(23, 32, 42, 0.95);
-  border-color: rgba(79, 156, 175, 0.45);
-  box-shadow: 0 0 12px rgba(79, 156, 175, 0.12);
-}
-
-.id-copy-chip.copied {
-  background: rgba(22, 163, 74, 0.18);
-  border-color: rgba(34, 197, 94, 0.4);
-  box-shadow: 0 0 16px rgba(34, 197, 94, 0.14);
-}
-
-.chip-label {
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
-  transition: color 0.2s;
-}
-
-.id-copy-chip:hover .chip-label {
-  color: var(--accent-text);
-}
-
-.id-copy-chip.copied .chip-label {
-  color: #4ade80;
-}
-
-.chip-value {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  max-width: 100px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  transition: color 0.2s;
-}
-
-.id-copy-chip:hover .chip-value {
-  color: var(--text-primary);
-}
-
-.chip-action {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 5px;
-  background: rgba(226, 232, 240, 0.06);
-  color: var(--text-muted);
-  transition: all 0.2s;
-}
-
-.id-copy-chip:hover .chip-action {
-  background: var(--accent);
-  color: var(--text-on-accent);
-}
-
-.id-copy-chip.copied .chip-action {
-  background: rgba(34, 197, 94, 0.25);
-  color: #4ade80;
-}
-
-.copy-fade-enter-active,
-.copy-fade-leave-active {
-  transition: opacity 0.12s ease, transform 0.12s ease;
-}
-
-.copy-fade-enter-from,
-.copy-fade-leave-to {
-  opacity: 0;
-  transform: scale(0.85);
 }
 
 /* --- Info section --- */

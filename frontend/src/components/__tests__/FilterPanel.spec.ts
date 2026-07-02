@@ -79,4 +79,24 @@ describe('FilterPanel', () => {
 
     expect(cancelSpy).toHaveBeenCalled()
   })
+  it('keeps file type near the top when definitions include file_type', async () => {
+    const store = useSearchStore()
+    store.tagDefinitions = [
+      makeFilterableDef(1),
+      makeFilterableDef(2),
+      { ...makeFilterableDef(99), field_name: 'file_type', display_name: '文件类型', sort_order: 99 },
+      makeFilterableDef(3),
+    ]
+
+    const wrapper = mount(FilterPanel, {
+      global: {
+        stubs: { 'el-slider': true, 'el-switch': true },
+      },
+    })
+
+    await nextTick()
+
+    const labels = wrapper.findAll('.filter-group .header-label').map((node) => node.text())
+    expect(labels.slice(0, 2)).toContain('文件类型')
+  })
 })

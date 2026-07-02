@@ -5,6 +5,7 @@ import FilterGroup from './FilterGroup.vue'
 
 const store = useSearchStore()
 const INITIAL_GROUP_RENDER_LIMIT = 6
+const GROUP_RENDER_BATCH_SIZE = 4
 const groupRenderLimit = ref(INITIAL_GROUP_RENDER_LIMIT)
 let frameId: number | null = null
 
@@ -58,25 +59,41 @@ function clearAll() {
   store.doSearch()
 }
 
+function cancelScheduledRender() {
+  if (frameId !== null) {
+    cancelAnimationFrame(frameId)
+    frameId = null
+  }
+}
+
+function scheduleNextRenderBatch(total: number) {
+  if (groupRenderLimit.value >= total) {
+    frameId = null
+    return
+  }
+
+  frameId = requestAnimationFrame(() => {
+    groupRenderLimit.value = Math.min(
+      groupRenderLimit.value + GROUP_RENDER_BATCH_SIZE,
+      total,
+    )
+    scheduleNextRenderBatch(total)
+  })
+}
+
 watch(
   groupedDefs,
   async (defs) => {
-    if (frameId !== null) {
-      cancelAnimationFrame(frameId)
-      frameId = null
-    }
+    cancelScheduledRender()
     groupRenderLimit.value = Math.min(INITIAL_GROUP_RENDER_LIMIT, defs.length)
     await nextTick()
-    frameId = requestAnimationFrame(() => {
-      groupRenderLimit.value = defs.length
-      frameId = null
-    })
+    scheduleNextRenderBatch(defs.length)
   },
   { immediate: true },
 )
 
 onBeforeUnmount(() => {
-  if (frameId !== null) cancelAnimationFrame(frameId)
+  cancelScheduledRender()
 })
 </script>
 

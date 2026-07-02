@@ -52,7 +52,15 @@ describe('FilterPanel', () => {
     await nextTick()
     expect(wrapper.findAll('.filter-group').length).toBe(6)
 
-    // After rAF fires, all 15 groups should be rendered
+    // Each rAF adds a small batch so first open stays responsive.
+    await new Promise<void>(r => requestAnimationFrame(() => r()))
+    await nextTick()
+    expect(wrapper.findAll('.filter-group').length).toBe(10)
+
+    await new Promise<void>(r => requestAnimationFrame(() => r()))
+    await nextTick()
+    expect(wrapper.findAll('.filter-group').length).toBe(14)
+
     await new Promise<void>(r => requestAnimationFrame(() => r()))
     await nextTick()
     expect(wrapper.findAll('.filter-group').length).toBe(15)

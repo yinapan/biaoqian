@@ -246,4 +246,62 @@ describe('FilterGroup', () => {
     const bluePill = wrapper.find(`[data-testid="filter-option-color-${slug('Blue Sky')}"]`)
     expect(bluePill.exists()).toBe(true)
   })
+  it('shows zero facet counts when search returned no results and facet buckets are empty', () => {
+    const store = useSearchStore()
+    store.response = {
+      total: 0,
+      page: 1,
+      page_size: 60,
+      parse_info: null,
+      items: [],
+      facets: {},
+      query_time_ms: 17,
+    }
+
+    const wrapper = mount(FilterGroup, {
+      props: {
+        definition: makeEnumDef('resource_type', 'enum_multi', [
+          { value: 'npc_source', display_name: 'npc_source' },
+          { value: 'player', display_name: 'player' },
+        ]),
+      },
+    })
+
+    const pills = wrapper.findAll('.tag-pill')
+    expect(pills).toHaveLength(2)
+    expect(pills[0].text()).toContain('0')
+    expect(pills[1].text()).toContain('0')
+    expect(pills[0].classes()).toContain('is-zero')
+    expect(pills[1].classes()).toContain('is-zero')
+  })
+
+  it('shows zero counts for fields missing from facets after a non-empty search response', () => {
+    const store = useSearchStore()
+    store.response = {
+      total: 327,
+      page: 1,
+      page_size: 60,
+      parse_info: null,
+      items: [],
+      facets: {
+        file_type: [{ value: 'ani', count: 327 }],
+      },
+      query_time_ms: 55,
+    }
+
+    const wrapper = mount(FilterGroup, {
+      props: {
+        definition: makeEnumDef('resource_type', 'enum_multi', [
+          { value: 'npc_source', display_name: 'npc_source' },
+          { value: 'player', display_name: 'player' },
+        ]),
+      },
+    })
+
+    const pills = wrapper.findAll('.tag-pill')
+    expect(pills[0].text()).toContain('0')
+    expect(pills[1].text()).toContain('0')
+    expect(pills[0].classes()).toContain('is-zero')
+    expect(pills[1].classes()).toContain('is-zero')
+  })
 })
